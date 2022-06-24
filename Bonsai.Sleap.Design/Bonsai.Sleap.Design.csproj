@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+  <PropertyGroup>
+    <Title>Bonsai - SLEAP Design Library</Title>
+    <Description>Bonsai Library containing reactive visualizations for markerless multi-animal pose estimation using SLEAP.</Description>
+    <PackageTags>Bonsai Rx SLEAP LEAP Markerless Pose Tracking Visualizers Multi-animal</PackageTags>
+    <TargetFramework>net472</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <Version>0.1.0</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Bonsai.Vision.Design" Version="2.6.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Bonsai.Sleap\Bonsai.Sleap.csproj" />
+	
+  </ItemGroup>
+
+</Project>
+
