@@ -64,11 +64,6 @@ namespace Bonsai.Sleap
                     var batchSize = input.Length;
                     var scaleFactor = ScaleFactor;
 
-                    if (batchSize == 0)
-                    {
-                        return new IdedPoseCollection(false);
-                    }
-
                     if (scaleFactor.HasValue)
                     {
                         poseScale = scaleFactor.Value;
@@ -125,7 +120,7 @@ namespace Bonsai.Sleap
                     var partThreshold = PartMinConfidence;
                     var idThreshold = IdentityMinConfidence;
 
-                    var identityCollection = new IdedPoseCollection(false);
+                    var identityCollection = new IdedPoseCollection();
                     //Loop the available identifications
                     for (int iid = 0; iid < idArr.GetLength(0); iid++)
                     {

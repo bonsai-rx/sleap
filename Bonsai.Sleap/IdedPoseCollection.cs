@@ -6,18 +6,13 @@ namespace Bonsai.Sleap
     public class IdedPoseCollection : Collection<IdedPose>
     {
 
-        public IdedPoseCollection(IList<IdedPose> idedposes, bool wasBatch)
+        public IdedPoseCollection(IList<IdedPose> idedposes)
             : base(idedposes)
         {
-            RanBatch = wasBatch;
         }
-
-        public IdedPoseCollection(bool wasBatch)
+        public IdedPoseCollection()
         {
-            RanBatch = wasBatch;
         }
-
-        public bool RanBatch { get; private set; }
     }
 
 }
