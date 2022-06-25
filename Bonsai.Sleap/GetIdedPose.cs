@@ -24,7 +24,7 @@ namespace Bonsai.Sleap
                 }
                 else
                 {
-                    return new IdedPoseCollection(idedCol.Where(x => x.IdName == Name).ToList(), idedCol.RanBatch);
+                    return new IdedPoseCollection(idedCol.Where(x => x.IdName == Name).ToList());
                 }
 
             });
