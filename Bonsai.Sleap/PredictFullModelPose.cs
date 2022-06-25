@@ -91,30 +91,19 @@ namespace Bonsai.Sleap
 
                     // Run 
 
-                    Point offset;
-                    if (batchSize == 1)
+                    var _frame = TensorHelper.GetRegionOfInterest(input[0], roi, out Point offset);
+                    IplImage[] frame = input.Select(im => 
                     {
-                        var _frame = TensorHelper.GetRegionOfInterest(input[0], roi, out offset);
-                        _frame = TensorHelper.EnsureFrameSize(_frame, tensorSize, ref resizeTemp);
-                        _frame = TensorHelper.EnsureColorFormat(_frame, ColorConversion, ref colorTemp);
-                        var frame = new IplImage[] { _frame };
-                        TensorHelper.UpdateTensor(tensor, frame);
-                    }
-                    else
-                    {
-                        var _frame = TensorHelper.GetRegionOfInterest(input[0], roi, out offset);
-                        IplImage[] frame = input.Select(im => 
-                        {
-                            var cFrame = TensorHelper.GetRegionOfInterest(im, roi, out Point _);
-                            cFrame = TensorHelper.EnsureFrameSize(cFrame, tensorSize, ref resizeTemp);
-                            cFrame = TensorHelper.EnsureColorFormat(cFrame, ColorConversion, ref colorTemp);
-                            return cFrame;
 
-                        }).ToArray();
+                        var cFrame = TensorHelper.GetRegionOfInterest(im, roi, out Point _);
+                        cFrame = TensorHelper.EnsureFrameSize(cFrame, tensorSize, ref resizeTemp);
+                        cFrame = TensorHelper.EnsureColorFormat(cFrame, ColorConversion, ref colorTemp);
+                        return cFrame;
 
-                        TensorHelper.UpdateTensor(tensor, frame);
+                    }).ToArray();
 
-                    }
+                    TensorHelper.UpdateTensor(tensor, frame);
+
 
                     var output = runner.Run();
 
