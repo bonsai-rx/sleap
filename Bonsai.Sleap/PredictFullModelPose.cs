@@ -132,9 +132,10 @@ namespace Bonsai.Sleap
                         {
                             conf[trainedClass] = idArr[iid, trainedClass];
                         }
-                        idedPose.IdConfidence = conf;
+                        idedPose.IdLayerOutput = conf;
                         // Find the argmax of the confidence tensor
                         var argMaxConfidence = argmax_confidence(conf);
+                        idedPose.MaxIdConfidence = conf[argMaxConfidence];
                         if ((conf[argMaxConfidence] < idThreshold) | (argMaxConfidence == -1))
                         {
                             idedPose.IdArgMax = -1;
