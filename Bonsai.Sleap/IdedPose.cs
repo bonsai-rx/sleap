@@ -6,8 +6,9 @@ namespace Bonsai.Sleap
     public struct IdedPose
     {
         public int IdArgMax;
+        public float MaxIdConfidence;
         public string IdName;
-        public float[] IdConfidence;
+        public float[] IdLayerOutput;
         public Pose Pose;
 
     }
