@@ -148,7 +148,15 @@ namespace Bonsai.Sleap
                             idedPose.IdName = config.classes_names[idedPose.IdArgMax];
                         }
 
-                        var result = new Pose(input[iid]);
+                        Pose result;
+                        if (input.Length == 1){
+                            result = new Pose(input[0]);
+
+                        }
+                        else
+                        {
+                            result = new Pose(input[iid]);
+                        }
                         // Iterate on the body parts
                         for (int iBodyPart = 0; iBodyPart < poseArr.GetLength(1); iBodyPart++)
                         {
