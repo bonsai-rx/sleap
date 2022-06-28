@@ -3,13 +3,10 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Collections.Generic;
 using OpenCV.Net;
+using Bonsai.Vision;
 using TensorFlow;
 using System.ComponentModel;
 
-
-// TODO:
-// CHECK if array is empty and return an empty collection
-// CHECK that all images have the same size in the array
 
 namespace Bonsai.Sleap
 {
@@ -41,7 +38,7 @@ namespace Bonsai.Sleap
         public float? ScaleFactor { get; set; }
 
         [Description("The optional color conversion used to prepare RGB video frames for inference.")]
-        public ColorConversion? ColorConversion { get; set; } = OpenCV.Net.ColorConversion.Bgr2Gray;
+        public ColorConversion? ColorConversion { get; set; }
 
         IObservable<IdedPoseCollection> Process<TSource>(IObservable<TSource> source, Func<TSource, (IplImage[], Rect)> roiSelector)
         {
@@ -60,9 +57,11 @@ namespace Bonsai.Sleap
 
                     var poseScale = 1.0;
                     var (input, roi) = roiSelector(value);
+                    int colorChannels = (ColorConversion is null) ? input[0].Channels : ExtensionMethods.GetConversionNumChannels((ColorConversion)ColorConversion);
                     var tensorSize = roi.Width > 0 && roi.Height > 0 ? new Size(roi.Width, roi.Height) : input[0].Size;
                     var batchSize = input.Length;
                     var scaleFactor = ScaleFactor;
+                    
 
                     if (scaleFactor.HasValue)
                     {
@@ -72,17 +71,21 @@ namespace Bonsai.Sleap
                         poseScale = 1.0 / poseScale;
                     }
 
-                    if (tensor == null || tensor.Shape[1] != tensorSize.Height || tensor.Shape[2] != tensorSize.Width)
+
+
+                    if (tensor == null || tensor.Shape[0] != batchSize || tensor.Shape[1] != tensorSize.Height || tensor.Shape[2] != tensorSize.Width )
                     {
                         tensor?.Dispose();
                         runner = session.GetRunner();
-                        tensor = TensorHelper.CreatePlaceholder(graph, runner, tensorSize, batchSize);
+                        tensor = TensorHelper.CreatePlaceholder(graph, runner, tensorSize, batchSize, colorChannels);
 
-                        //Batch processing 
                         runner.Fetch(graph["Identity"][0]); //Class identification confidence [batch x trained classes]
                         runner.Fetch(graph["Identity_1"][0]); //Part confidence [batch x parts]
                         runner.Fetch(graph["Identity_2"][0]); //Part position [batch x parts x 2]
                     }
+
+
+
 
                     // Run 
 
@@ -92,12 +95,12 @@ namespace Bonsai.Sleap
 
                         var cFrame = TensorHelper.GetRegionOfInterest(im, roi, out Point _);
                         cFrame = TensorHelper.EnsureFrameSize(cFrame, tensorSize, ref resizeTemp);
-                        cFrame = TensorHelper.EnsureColorFormat(cFrame, ColorConversion, ref colorTemp);
+                        cFrame = TensorHelper.EnsureColorFormat(cFrame, ColorConversion, ref colorTemp, colorChannels);
                         return cFrame;
 
                     }).ToArray();
 
-                    TensorHelper.UpdateTensor(tensor, frame);
+                    TensorHelper.UpdateTensor(tensor, colorChannels, frame);
 
 
                     var output = runner.Run();
@@ -124,7 +127,6 @@ namespace Bonsai.Sleap
                     //Loop the available identifications
                     for (int iid = 0; iid < idArr.GetLength(0); iid++)
                     {
-
                         IdedPose idedPose;
                         // Collect the confidence on the identity
                         var conf = new float[idArr.GetLength(1)];
@@ -179,7 +181,6 @@ namespace Bonsai.Sleap
 
                     };
                     return identityCollection;
-
                 });
             });
 

@@ -7,8 +7,6 @@ namespace Bonsai.Sleap
 {
     static class TensorHelper
     {
-        const int TensorChannels = 1;
-
         public static TFGraph ImportModel(string fileName, out TFSession session)
         {
             using (var options = new TFSessionOptions())
@@ -31,7 +29,7 @@ namespace Bonsai.Sleap
             }
         }
 
-        public static TFTensor CreatePlaceholder(TFGraph graph, TFSession.Runner runner, Size frameSize, int batchSize = 1)
+        public static TFTensor CreatePlaceholder(TFGraph graph, TFSession.Runner runner, Size frameSize, int batchSize = 1, int TensorChannels = 1)
         {
             var tensor = new TFTensor(
                 TFDataType.UInt8,
@@ -68,7 +66,7 @@ namespace Bonsai.Sleap
             return frame;
         }
 
-        public static IplImage EnsureColorFormat(IplImage frame, ColorConversion? colorConversion, ref IplImage colorTemp)
+        public static IplImage EnsureColorFormat(IplImage frame, ColorConversion? colorConversion, ref IplImage colorTemp, int TensorChannels = 1)
         {
             if (colorConversion != null)
             {
@@ -84,7 +82,7 @@ namespace Bonsai.Sleap
             return frame;
         }
 
-        public static void UpdateTensor(TFTensor tensor, params IplImage[] frames)
+        public static void UpdateTensor(TFTensor tensor, int TensorChannels, params IplImage[] frames)
         {
             var batchSize = (int)tensor.Shape[0];
             var tensorRows = (int)tensor.Shape[1];
