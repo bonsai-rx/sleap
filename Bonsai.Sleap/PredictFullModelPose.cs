@@ -3,10 +3,8 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Collections.Generic;
 using OpenCV.Net;
-using Bonsai.Vision;
 using TensorFlow;
 using System.ComponentModel;
-
 
 namespace Bonsai.Sleap
 {
@@ -49,12 +47,11 @@ namespace Bonsai.Sleap
                 TFTensor tensor = null;
                 TFSession.Runner runner = null;
                 var graph = TensorHelper.ImportModel(ModelFileName, out TFSession session);
-                
+
                 var config = ConfigHelper.LoadPoseConfig(PoseConfigFileName);
 
                 return source.Select(value =>
                 {
-
                     var poseScale = 1.0;
                     var (input, roi) = roiSelector(value);
                     int colorChannels = (ColorConversion is null) ? input[0].Channels : ExtensionMethods.GetConversionNumChannels((ColorConversion)ColorConversion);
@@ -62,7 +59,6 @@ namespace Bonsai.Sleap
                     var batchSize = input.Length;
                     var scaleFactor = ScaleFactor;
                     
-
                     if (scaleFactor.HasValue)
                     {
                         poseScale = scaleFactor.Value;
@@ -70,8 +66,6 @@ namespace Bonsai.Sleap
                         tensorSize.Height = (int)(tensorSize.Height * poseScale);
                         poseScale = 1.0 / poseScale;
                     }
-
-
 
                     if (tensor == null || tensor.Shape[0] != batchSize || tensor.Shape[1] != tensorSize.Height || tensor.Shape[2] != tensorSize.Width )
                     {
@@ -84,30 +78,19 @@ namespace Bonsai.Sleap
                         runner.Fetch(graph["Identity_2"][0]); //Part position [batch x parts x 2]
                     }
 
-
-
-
-                    // Run 
-
                     var _frame = TensorHelper.GetRegionOfInterest(input[0], roi, out Point offset);
                     IplImage[] frame = input.Select(im => 
                     {
-
                         var cFrame = TensorHelper.GetRegionOfInterest(im, roi, out Point _);
                         cFrame = TensorHelper.EnsureFrameSize(cFrame, tensorSize, ref resizeTemp);
                         cFrame = TensorHelper.EnsureColorFormat(cFrame, ColorConversion, ref colorTemp, colorChannels);
                         return cFrame;
 
                     }).ToArray();
-
                     TensorHelper.UpdateTensor(tensor, colorChannels, frame);
-
-
                     var output = runner.Run();
 
                     // Fetch the results from output
-
-                    // Class identification
                     var idTensor = output[0];
                     float[,] idArr = new float[idTensor.Shape[0], idTensor.Shape[1]];
                     idTensor.GetValue(idArr);
@@ -120,10 +103,10 @@ namespace Bonsai.Sleap
                     float[,,] poseArr = new float[poseTensor.Shape[0], poseTensor.Shape[1], poseTensor.Shape[2]];
                     poseTensor.GetValue(poseArr);
 
+                    var identityCollection = new IdedPoseCollection();
                     var partThreshold = PartMinConfidence;
                     var idThreshold = IdentityMinConfidence;
 
-                    var identityCollection = new IdedPoseCollection();
                     //Loop the available identifications
                     for (int iid = 0; iid < idArr.GetLength(0); iid++)
                     {
@@ -135,6 +118,7 @@ namespace Bonsai.Sleap
                             conf[trainedClass] = idArr[iid, trainedClass];
                         }
                         idedPose.IdLayerOutput = conf;
+
                         // Find the argmax of the confidence tensor
                         var argMaxConfidence = argmax_confidence(conf);
                         idedPose.MaxIdConfidence = conf[argMaxConfidence];
@@ -146,19 +130,10 @@ namespace Bonsai.Sleap
                         else
                         {
                             idedPose.IdArgMax = argMaxConfidence;
-                            
                             idedPose.IdName = config.classes_names[idedPose.IdArgMax];
                         }
+                        Pose result = input.Length == 1? new Pose(input[0]) : new Pose(input[iid]);
 
-                        Pose result;
-                        if (input.Length == 1){
-                            result = new Pose(input[0]);
-
-                        }
-                        else
-                        {
-                            result = new Pose(input[iid]);
-                        }
                         // Iterate on the body parts
                         for (int iBodyPart = 0; iBodyPart < poseArr.GetLength(1); iBodyPart++)
                         {
@@ -178,14 +153,12 @@ namespace Bonsai.Sleap
                         }
                         idedPose.Pose = result;
                         identityCollection.Add(idedPose);
-
                     };
                     return identityCollection;
                 });
             });
 
         }
-
 
         public override IObservable<IdedPoseCollection> Process(IObservable<IplImage> source)
         {
@@ -218,10 +191,7 @@ namespace Bonsai.Sleap
                 }
                 ++idx;
             }
-
             return maxIdx;
         }
     }
-
-
 }
