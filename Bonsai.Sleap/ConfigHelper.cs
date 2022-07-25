@@ -22,56 +22,44 @@ namespace Bonsai.Sleap
             }
 
             var mapping = document.RootNode as YamlMappingNode;
-            
             return mapping;
         }
 
-        public static NetworkConfig LoadPoseConfig(string fileName)
+        public static TrainingConfig LoadTrainingConfig(string fileName)
         {
             var mapping = OpenFile(fileName);
-            return LoadPoseConfig(mapping);
+            return LoadTrainingConfig(mapping);
         }
 
-        public static NetworkConfig LoadPoseConfig(YamlMappingNode mapping)
+        public static TrainingConfig LoadTrainingConfig(YamlMappingNode mapping)
         {
-            var config = new NetworkConfig();
+            var config = new TrainingConfig();
 
-            // Get the part names
-            var partNames = (YamlSequenceNode) mapping["model"]["heads"]["multi_class_topdown"]["confmaps"]["part_names"];
+            var partNames = (YamlSequenceNode)mapping["model"]["heads"]["multi_class_topdown"]["confmaps"]["part_names"];
             foreach (var part in partNames.Children)
             {
-                config.part_names.Add((string)part);
-
+                config.PartNames.Add((string)part);
             }
 
-            //Get the class names
-            var identityNames = (YamlSequenceNode)mapping["model"]["heads"]["multi_class_topdown"]["class_vectors"]["classes"];
-            foreach (var id in identityNames.Children)
+            var classNames = (YamlSequenceNode)mapping["model"]["heads"]["multi_class_topdown"]["class_vectors"]["classes"];
+            foreach (var id in classNames.Children)
             {
-                config.classes_names.Add((string)id);
-
+                config.ClassNames.Add((string)id);
             }
 
+            var skeleton = new Skeleton();
+            skeleton.DirectedEdges = (string)mapping["data"]["labels"]["skeletons"][0]["directed"] == "true";
+            skeleton.Name = (string)mapping["data"]["labels"]["skeletons"][0]["graph"]["name"];
 
-            //Build the skeleton
-            var skel = new Skeleton();
-            skel.DirectedEdges = ((string)mapping["data"]["labels"]["skeletons"][0]["directed"] == "true");
-            skel.Name = (string) mapping["data"]["labels"]["skeletons"][0]["graph"]["name"];
-            //TODO
+            //TODO: fill edges
             var edges = new List<Link>();
-            skel.Edges = edges;
+            skeleton.Edges = edges;
+            config.Skeleton = skeleton;
 
-            // set the Skeleton
-            config.Skeleton = skel;
-
-
-            // Network metadata
-            config.original_input_size = new Size(
-                Int32.Parse((string)mapping["data"]["preprocessing"]["target_width"]),
-                Int32.Parse((string)mapping["data"]["preprocessing"]["target_height"]));
-
-            config.original_input_scaling = float.Parse((string)mapping["data"]["preprocessing"]["input_scaling"]);
-
+            config.TargetSize = new Size(
+                int.Parse((string)mapping["data"]["preprocessing"]["target_width"]),
+                int.Parse((string)mapping["data"]["preprocessing"]["target_height"]));
+            config.InputScaling = float.Parse((string)mapping["data"]["preprocessing"]["input_scaling"]);
             return config;
 
         }

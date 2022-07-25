@@ -3,7 +3,7 @@ using OpenCV.Net;
 
 namespace Bonsai.Sleap
 {
-    public static class ExtensionMethods
+    static class ExtensionMethods
     {
         public static int GetConversionNumChannels(this ColorConversion conversion)
         {

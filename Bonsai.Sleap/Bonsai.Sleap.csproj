@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <Title>Bonsai - SLEAP Library</Title>
-    <Description>Bonsai Library for real-time multi-animal pose tracking using SLEAP. TensorFlow 2.8.0 or compatible is required.</Description>
-    <PackageTags>Bonsai Rx Sleap Multi Animal Pose Tracking</PackageTags>
+    <Description>Bonsai Library for real-time multi-pose tracking using SLEAP. TensorFlow 2.8.0 or compatible is required.</Description>
+    <PackageTags>Bonsai Rx SLEAP LEAP Markerless Multi Pose Tracking</PackageTags>
     <TargetFramework>net472</TargetFramework>
     <Version>0.1.0</Version>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
