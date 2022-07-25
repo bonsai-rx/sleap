@@ -9,12 +9,12 @@ using System.ComponentModel;
 namespace Bonsai.Sleap
 {
     [DefaultProperty(nameof(ModelFileName))]
-    [Description("Performs markerless pose estimation using a DeepLabCut model on the input image sequence.")]
-    public class PredictFullModelPose : Transform<IplImage, IdedPoseCollection>
+    [Description("Performs multi- markerless pose estimation using a SLEAP model on the input image sequence.")]
+    public class PredictLabeledPoses : Transform<IplImage, LabeledPoseCollection>
     {
         [FileNameFilter("Protocol Buffer Files(*.pb)|*.pb")]
         [Editor("Bonsai.Design.OpenFileNameEditor, Bonsai.Design", DesignTypes.UITypeEditor)]
-        [Description("The path to the exported Protocol Buffer file containing the pretrained DeepLabCut model.")]
+        [Description("The path to the exported Protocol Buffer file containing the pretrained SLEAP model.")]
         public string ModelFileName { get; set; }
 
         [FileNameFilter("Config Files(*.json)|*.json|All Files|*.*")]
@@ -38,7 +38,7 @@ namespace Bonsai.Sleap
         [Description("The optional color conversion used to prepare RGB video frames for inference.")]
         public ColorConversion? ColorConversion { get; set; }
 
-        IObservable<IdedPoseCollection> Process<TSource>(IObservable<TSource> source, Func<TSource, (IplImage[], Rect)> roiSelector)
+        IObservable<LabeledPoseCollection> Process<TSource>(IObservable<TSource> source, Func<TSource, (IplImage[], Rect)> roiSelector)
         {
             return Observable.Defer(() =>
             {
@@ -47,8 +47,7 @@ namespace Bonsai.Sleap
                 TFTensor tensor = null;
                 TFSession.Runner runner = null;
                 var graph = TensorHelper.ImportModel(ModelFileName, out TFSession session);
-
-                var config = ConfigHelper.LoadPoseConfig(PoseConfigFileName);
+                var config = ConfigHelper.LoadTrainingConfig(PoseConfigFileName);
 
                 return source.Select(value =>
                 {
@@ -103,56 +102,42 @@ namespace Bonsai.Sleap
                     float[,,] poseArr = new float[poseTensor.Shape[0], poseTensor.Shape[1], poseTensor.Shape[2]];
                     poseTensor.GetValue(poseArr);
 
-                    var identityCollection = new IdedPoseCollection();
+                    var identityCollection = new LabeledPoseCollection();
                     var partThreshold = PartMinConfidence;
                     var idThreshold = IdentityMinConfidence;
 
                     //Loop the available identifications
                     for (int iid = 0; iid < idArr.GetLength(0); iid++)
                     {
-                        IdedPose idedPose;
-                        // Collect the confidence on the identity
-                        var conf = new float[idArr.GetLength(1)];
-                        for (int trainedClass = 0; trainedClass < idArr.GetLength(1); trainedClass++)
+                        // Find the class with max score
+                        var labeledPose = new LabeledPose(input.Length == 1 ? input[0] : input[iid]);
+                        var maxIndex = ArgMax(idArr, iid, Comparer<float>.Default, out float maxScore);
+                        labeledPose.Confidence = maxScore;
+                        if (maxScore < idThreshold || maxIndex < 0)
                         {
-                            conf[trainedClass] = idArr[iid, trainedClass];
+                            labeledPose.Label = string.Empty;
                         }
-                        idedPose.IdLayerOutput = conf;
-
-                        // Find the argmax of the confidence tensor
-                        var argMaxConfidence = argmax_confidence(conf);
-                        idedPose.MaxIdConfidence = conf[argMaxConfidence];
-                        if ((conf[argMaxConfidence] < idThreshold) | (argMaxConfidence == -1))
-                        {
-                            idedPose.IdArgMax = -1;
-                            idedPose.IdName = "";
-                        }
-                        else
-                        {
-                            idedPose.IdArgMax = argMaxConfidence;
-                            idedPose.IdName = config.classes_names[idedPose.IdArgMax];
-                        }
-                        Pose result = input.Length == 1? new Pose(input[0]) : new Pose(input[iid]);
+                        else labeledPose.Label = config.ClassNames[maxIndex];
 
                         // Iterate on the body parts
-                        for (int iBodyPart = 0; iBodyPart < poseArr.GetLength(1); iBodyPart++)
+                        for (int bodyPartIdx = 0; bodyPartIdx < poseArr.GetLength(1); bodyPartIdx++)
                         {
                             BodyPart bodyPart;
-                            bodyPart.Name = config.part_names[iBodyPart];
-                            bodyPart.Confidence = (float)partConfArr[iid, iBodyPart];
+                            bodyPart.Name = config.PartNames[bodyPartIdx];
+                            bodyPart.Confidence = partConfArr[iid, bodyPartIdx];
                             if (bodyPart.Confidence < partThreshold)
                             {
                                 bodyPart.Position = new Point2f(float.NaN, float.NaN);
                             }
                             else
                             {
-                                bodyPart.Position.X = (float)(poseArr[iid, iBodyPart, 0] * poseScale) + offset.X;
-                                bodyPart.Position.Y = (float)(poseArr[iid, iBodyPart, 1] * poseScale) + offset.Y;
+                                bodyPart.Position.X = (float)(poseArr[iid, bodyPartIdx, 0] * poseScale) + offset.X;
+                                bodyPart.Position.Y = (float)(poseArr[iid, bodyPartIdx, 1] * poseScale) + offset.Y;
                             }
-                            result.Add(bodyPart);
+                            labeledPose.Add(bodyPart);
                         }
-                        idedPose.Pose = result;
-                        identityCollection.Add(idedPose);
+
+                        identityCollection.Add(labeledPose);
                     };
                     return identityCollection;
                 });
@@ -160,38 +145,38 @@ namespace Bonsai.Sleap
 
         }
 
-        public override IObservable<IdedPoseCollection> Process(IObservable<IplImage> source)
+        public override IObservable<LabeledPoseCollection> Process(IObservable<IplImage> source)
         {
             return Process(source, frame => (new IplImage[] { frame }, new Rect(0, 0, 0, 0)));
         }
 
-        public IObservable<IdedPoseCollection> Process(IObservable<IplImage[]> source)
+        public IObservable<LabeledPoseCollection> Process(IObservable<IplImage[]> source)
         {
             return Process(source, frame => (frame , new Rect(0, 0, 0, 0)));
         }
 
-        public IObservable<IdedPoseCollection> Process(IObservable<Tuple<IplImage, Rect>> source)
+        public IObservable<LabeledPoseCollection> Process(IObservable<Tuple<IplImage, Rect>> source)
         {
             return Process(source, input => (new IplImage[] { input.Item1 }, input.Item2));
         }
 
-        public static int argmax_confidence<T>(IEnumerable<T> seq) where T : IComparable<T>
+        static int ArgMax<TElement>(TElement[,] array, int instance, IComparer<TElement> comparer, out TElement maxValue)
         {
-            if (!seq.Any()) return -1;
-            T max = seq.First();
-            int maxIdx = 0;
-            int idx = 1;
+            if (array == null) throw new ArgumentNullException(nameof(array));
+            if (comparer == null) throw new ArgumentNullException(nameof(comparer));
 
-            foreach (T item in seq.Skip(1))
+            int maxIndex = -1;
+            maxValue = default;
+            for (int i = 0; i < array.GetLength(1); i++)
             {
-                if (max.CompareTo(item) < 0)
+                if (i == 0 || comparer.Compare(array[instance, i], maxValue) > 0)
                 {
-                    max = item;
-                    maxIdx = idx;
+                    maxIndex = i;
+                    maxValue = array[instance, i];
                 }
-                ++idx;
             }
-            return maxIdx;
+
+            return maxIndex;
         }
     }
 }

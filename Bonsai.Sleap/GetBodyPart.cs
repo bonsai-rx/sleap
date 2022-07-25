@@ -4,9 +4,8 @@ using System.Linq;
 using System.Reactive.Linq;
 
 namespace Bonsai.Sleap
-
 {
-    [Description("Selects the body part with the specified name from each input pose.")]
+    [Description("Returns the body part with the specified name for each pose in the sequence.")]
     public class GetBodyPart : Transform<Pose, BodyPart>
     {
         [Description("The name of the body part.")]

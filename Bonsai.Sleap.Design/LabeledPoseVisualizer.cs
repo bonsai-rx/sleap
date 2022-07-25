@@ -13,13 +13,13 @@ using System.Drawing.Text;
 using System.Windows.Forms;
 using Font = System.Drawing.Font;
 
-[assembly: TypeVisualizer(typeof(IdedPoseVisualizer), Target = typeof(IdedPose))]
+[assembly: TypeVisualizer(typeof(LabeledPoseVisualizer), Target = typeof(LabeledPose))]
 
 namespace Bonsai.Sleap.Design
 {
-    public class IdedPoseVisualizer : IplImageVisualizer
+    public class LabeledPoseVisualizer : IplImageVisualizer
     {
-        IdedPose idedpose;
+        LabeledPose labeledPose;
         IplImage labelImage;
         IplImageTexture labelTexture;
         ToolStripButton drawLabelsButton;
@@ -59,11 +59,10 @@ namespace Bonsai.Sleap.Design
 
         public override void Show(object value)
         {
-            idedpose = (IdedPose)value;
-            var pose = idedpose.Pose;
-            if (pose != null)
+            labeledPose = (LabeledPose)value;
+            if (labeledPose != null)
             {
-                base.Show(pose.Image);
+                base.Show(labeledPose.Image);
             }
         }
 
@@ -81,15 +80,14 @@ namespace Bonsai.Sleap.Design
             GL.Color4(Color4.White);
             base.RenderFrame();
 
-            if (idedpose.Pose != null)
+            if (labeledPose != null)
             {
-                var pose = idedpose.Pose;
+                var pose = labeledPose;
                 GL.PointSize(5 * VisualizerCanvas.Height / 480f);
                 GL.Disable(EnableCap.Texture2D);
                 GL.Begin(PrimitiveType.Points);
                 for (int i = 0; i < pose.Count; i++)
                 {
-
                     var bodyPart = pose[i];
                     var position = bodyPart.Position;
                     GL.Color3(ColorPalette.GetColor(i));
@@ -150,7 +148,7 @@ namespace Bonsai.Sleap.Design
                         format.Alignment = StringAlignment.Center;
                         format.LineAlignment = StringAlignment.Center;
                         var position = pose[0].Position;
-                        graphics.DrawString(idedpose.IdName, labelFont, Brushes.White, position.X, position.Y);
+                        graphics.DrawString(labeledPose.Label, labelFont, Brushes.White, position.X, position.Y);
                     }
                     GL.Color4(Color4.White);
                     GL.Enable(EnableCap.Texture2D);

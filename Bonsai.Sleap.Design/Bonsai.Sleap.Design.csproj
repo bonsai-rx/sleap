@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <Title>Bonsai - SLEAP Design Library</Title>
-    <Description>Bonsai Library containing reactive visualizations for markerless multi-animal pose estimation using SLEAP.</Description>
-    <PackageTags>Bonsai Rx SLEAP LEAP Markerless Pose Tracking Visualizers Multi-animal</PackageTags>
+    <Description>Bonsai Library containing reactive visualizations for markerless multi-pose estimation using SLEAP.</Description>
+    <PackageTags>Bonsai Rx SLEAP LEAP Markerless Multi Pose Tracking Visualizers</PackageTags>
     <TargetFramework>net472</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
     <Version>0.1.0</Version>
