@@ -9,7 +9,7 @@ using System.ComponentModel;
 namespace Bonsai.Sleap
 {
     [DefaultProperty(nameof(ModelFileName))]
-    [Description("Performs multi- markerless pose estimation using a SLEAP model on the input image sequence.")]
+    [Description("Performs markerless, single instance, pose estimation using a SLEAP model on the input image sequence.")]
     public class PredictPoses : Transform<IplImage, PoseCollection>
     {
         [FileNameFilter("Protocol Buffer Files(*.pb)|*.pb")]
@@ -42,7 +42,8 @@ namespace Bonsai.Sleap
                 TFTensor tensor = null;
                 TFSession.Runner runner = null;
                 var graph = TensorHelper.ImportModel(ModelFileName, out TFSession session);
-                var config = SingleInstance_ConfigHelper.LoadTrainingConfig(PoseConfigFileName);
+                //var config = SingleInstance_ConfigHelper.LoadTrainingConfig(PoseConfigFileName);
+                var config = ConfigHelper.LoadTrainingConfig(PoseConfigFileName);
 
                 return source.Select(value =>
                 {
@@ -67,8 +68,8 @@ namespace Bonsai.Sleap
                         runner = session.GetRunner();
                         tensor = TensorHelper.CreatePlaceholder(graph, runner, tensorSize, batchSize, colorChannels);
 
-                        runner.Fetch(graph["Identity"][0]); //Part confidence [batch x parts]
-                        runner.Fetch(graph["Identity_1"][0]); //Part position [batch x parts x 2]
+                        runner.Fetch(graph["Identity"][0]);
+                        runner.Fetch(graph["Identity_1"][0]); 
                     }
 
                     var _frame = TensorHelper.GetRegionOfInterest(input[0], roi, out Point offset);
@@ -80,6 +81,7 @@ namespace Bonsai.Sleap
                         return cFrame;
 
                     }).ToArray();
+
                     TensorHelper.UpdateTensor(tensor, colorChannels, frame);
                     var output = runner.Run();
 
@@ -117,7 +119,6 @@ namespace Bonsai.Sleap
                             }
                             pose.Add(bodyPart);
                         }
-
                         PoseCollection.Add(pose);
                     };
                     return PoseCollection;
