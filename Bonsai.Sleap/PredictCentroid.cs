@@ -100,11 +100,18 @@ namespace Bonsai.Sleap
                         //TODO not sure what to do here if multiple images are given....
                         var centroid = new InferedCentroid(input[0]);
                         centroid.Confidence = centroidConfArr[i];
-                        centroid.Centroid = new Point2f(
-                             (float)(centroidArr[i, 0] * poseScale) + offset.X,
-                             (float)(centroidArr[i, 1] * poseScale) + offset.Y
-                            );
 
+                        if (centroid.Confidence < confidenceThreshold)
+                        {
+                            centroid.Centroid = new Point2f(float.NaN, float.NaN);
+                        }
+                        else
+                        {
+                            centroid.Centroid = new Point2f(
+                                 (float)(centroidArr[i, 0] * poseScale) + offset.X,
+                                 (float)(centroidArr[i, 1] * poseScale) + offset.Y
+                                );
+                        }
                         centroidPoseCollection.Add(centroid);
                     };
                     return centroidPoseCollection;
