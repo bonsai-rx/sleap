@@ -10,7 +10,7 @@ namespace Bonsai.Sleap
 {
     [DefaultProperty(nameof(ModelFileName))]
     [Description("Performs multi- markerless pose estimation using a SLEAP model on the input image sequence.")]
-    public class PredictCentroid : Transform<IplImage, CentroidPoseCollection>
+    public class PredictCentroids : Transform<IplImage, CentroidPoseCollection>
     {
         [FileNameFilter("Protocol Buffer Files(*.pb)|*.pb")]
         [Editor("Bonsai.Design.OpenFileNameEditor, Bonsai.Design", DesignTypes.UITypeEditor)]
