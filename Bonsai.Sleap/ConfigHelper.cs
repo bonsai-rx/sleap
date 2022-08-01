@@ -94,10 +94,13 @@ namespace Bonsai.Sleap
                     Parse_SingleInstance_Model(config, mapping);
                     break;
                 case ModelType.Centroid:
+                    Parse_Centroid_Model(config, mapping);
                     break;
                 case ModelType.CenteredInstance:
+                    Parse_CenteredInstance_Model(config, mapping);
                     break;
                 case ModelType.MultiInstance:
+                    Parse_MultiInstance_Model(config, mapping);
                     break;
             }
         }
@@ -108,6 +111,26 @@ namespace Bonsai.Sleap
             foreach (var part in partNames.Children)
             {
                 config.PartNames.Add((string)part);
+            }
+            AddSkeleton(config, mapping);
+        }
+
+        public static void Parse_Centroid_Model(TrainingConfig config, YamlMappingNode mapping)
+        {
+            AddSkeleton(config, mapping); //TODO: Not sure this is necessary for centroid model?
+        }
+
+        public static void Parse_CenteredInstance_Model(TrainingConfig config, YamlMappingNode mapping)
+        {
+            var partNames = (YamlSequenceNode)mapping["model"]["heads"]["multi_class_topdown"]["confmaps"]["part_names"];
+            foreach (var part in partNames.Children)
+            {
+                config.PartNames.Add((string)part);
+            }
+            var classNames = (YamlSequenceNode)mapping["model"]["heads"]["multi_class_topdown"]["class_vectors"]["classes"];
+            foreach (var id in classNames.Children)
+            {
+                config.ClassNames.Add((string)id);
             }
             AddSkeleton(config, mapping);
         }
