@@ -42,10 +42,10 @@ namespace Bonsai.Sleap
                 TFTensor tensor = null;
                 TFSession.Runner runner = null;
                 var graph = TensorHelper.ImportModel(ModelFileName, out TFSession session);
-                //var config = SingleInstance_ConfigHelper.LoadTrainingConfig(PoseConfigFileName);
                 var config = ConfigHelper.LoadTrainingConfig(PoseConfigFileName);
 
                 return source.Select(value =>
+
                 {
                     var poseScale = 1.0;
                     var (input, roi) = roiSelector(value);

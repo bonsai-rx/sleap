@@ -7,9 +7,9 @@ using YamlDotNet.RepresentationModel;
 
 namespace Bonsai.Sleap
 {
-    static class ConfigHelper
+    public static class ConfigHelper
     {
-        static YamlMappingNode OpenFile(string fileName)
+        public static YamlMappingNode OpenFile(string fileName)
         {
             var yaml = new YamlStream();
             var reader = new StringReader(File.ReadAllText(fileName));
@@ -35,29 +35,10 @@ namespace Bonsai.Sleap
 
         public static TrainingConfig LoadTrainingConfig(YamlMappingNode mapping)
         {
+
             var config = new TrainingConfig();
-            var modelType = ParseModelType(mapping);
-
-            var partNames = (YamlSequenceNode)mapping["model"]["heads"]["multi_class_topdown"]["confmaps"]["part_names"];
-            foreach (var part in partNames.Children)
-            {
-                config.PartNames.Add((string)part);
-            }
-
-            var classNames = (YamlSequenceNode)mapping["model"]["heads"]["multi_class_topdown"]["class_vectors"]["classes"];
-            foreach (var id in classNames.Children)
-            {
-                config.ClassNames.Add((string)id);
-            }
-
-            var skeleton = new Skeleton();
-            skeleton.DirectedEdges = (string)mapping["data"]["labels"]["skeletons"][0]["directed"] == "true";
-            skeleton.Name = (string)mapping["data"]["labels"]["skeletons"][0]["graph"]["name"];
-
-            //TODO: fill edges
-            var edges = new List<Link>();
-            skeleton.Edges = edges;
-            config.Skeleton = skeleton;
+            config.ModelType = GetModelType(mapping);
+            ParseModel(config, mapping);
 
             config.TargetSize = new Size(
                 int.Parse((string)mapping["data"]["preprocessing"]["target_width"]),
@@ -67,7 +48,7 @@ namespace Bonsai.Sleap
 
         }
 
-        public static ModelType ParseModelType(YamlMappingNode mapping)
+        public static ModelType GetModelType(YamlMappingNode mapping)
         {
             int Nfound = 0;
             var availableModels = mapping["model"]["heads"];
@@ -105,6 +86,59 @@ namespace Bonsai.Sleap
             return outArg;
         }
 
+        public static void ParseModel(TrainingConfig config, YamlMappingNode mapping)
+        {
+            switch (config.ModelType)
+            {
+                case ModelType.SingleInstance:
+                    Parse_SingleInstance_Model(config, mapping);
+                    break;
+                case ModelType.Centroid:
+                    break;
+                case ModelType.CenteredInstance:
+                    break;
+                case ModelType.MultiInstance:
+                    break;
+            }
+        }
+
+        public static void Parse_SingleInstance_Model(TrainingConfig config, YamlMappingNode mapping)
+        {
+            var partNames = (YamlSequenceNode)mapping["model"]["heads"]["single_instance"]["part_names"];
+            foreach (var part in partNames.Children)
+            {
+                config.PartNames.Add((string)part);
+            }
+            AddSkeleton(config, mapping);
+        }
+
+        public static void Parse_MultiInstance_Model(TrainingConfig config, YamlMappingNode mapping)
+        {
+            var partNames = (YamlSequenceNode) mapping["model"]["heads"]["multi_class_topdown"]["confmaps"]["part_names"];
+            foreach (var part in partNames.Children)
+            {
+                config.PartNames.Add((string) part);
+            }
+            var classNames = (YamlSequenceNode)mapping["model"]["heads"]["multi_class_topdown"]["class_vectors"]["classes"];
+            foreach (var id in classNames.Children)
+            {
+                config.ClassNames.Add((string) id);
+            }
+            AddSkeleton(config, mapping);
+        }
+
+        public static void AddSkeleton(TrainingConfig config, YamlMappingNode mapping)
+        {
+            var skeleton = new Skeleton();
+            skeleton.DirectedEdges = (string)mapping["data"]["labels"]["skeletons"][0]["directed"] == "true";
+            skeleton.Name = (string)mapping["data"]["labels"]["skeletons"][0]["graph"]["name"];
+
+            //TODO: fill edges
+            var edges = new List<Link>();
+            skeleton.Edges = edges;
+            config.Skeleton = skeleton;
+        }
+
         public enum ModelType
         {
             InvalidModel = 0,
@@ -113,5 +147,6 @@ namespace Bonsai.Sleap
             CenteredInstance = 3,
             MultiInstance = 4
         }
+
     }
 }
