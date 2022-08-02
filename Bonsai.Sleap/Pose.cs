@@ -12,6 +12,8 @@ namespace Bonsai.Sleap
 
         public IplImage Image { get; private set; }
 
+        public InferedCentroid InferedCentroid { get; set; }
+
         protected override string GetKeyForItem(BodyPart item)
         {
             return item.Name;
