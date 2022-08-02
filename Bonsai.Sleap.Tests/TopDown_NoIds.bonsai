@@ -8,7 +8,7 @@
     <Nodes>
       <Expression xsi:type="Combinator">
         <Combinator xsi:type="cv:FileCapture">
-          <cv:FileName>C:\Users\neurogears\Downloads\190719_090330_wt_18159206_rig1.2@15000-17560.mp4</cv:FileName>
+          <cv:FileName>C:\Users\neurogears\Documents\git\bruno-f-cruz\SLEAPyBonsai\All models\bonsai_test\Original\video.mp4</cv:FileName>
           <cv:PlaybackRate>10</cv:PlaybackRate>
           <cv:StartPosition>0.5</cv:StartPosition>
           <cv:PositionUnits>Frames</cv:PositionUnits>
@@ -21,15 +21,34 @@
       </Expression>
       <Expression xsi:type="Combinator">
         <Combinator xsi:type="sleap:PredictPoses">
+          <sleap:ModelFileName>C:\Users\neurogears\Documents\git\bruno-f-cruz\SLEAPyBonsai\All models\bonsai_test\bonsai_graphs\top_down_model\frozen_graph.pb</sleap:ModelFileName>
+          <sleap:PoseConfigFileName>C:\Users\neurogears\Documents\git\bruno-f-cruz\SLEAPyBonsai\All models\bonsai_test\Original\centered_instance_model\training_config.json</sleap:PoseConfigFileName>
+          <sleap:CentroidMinConfidence xsi:nil="true" />
           <sleap:PartMinConfidence xsi:nil="true" />
           <sleap:ScaleFactor xsi:nil="true" />
           <sleap:ColorConversion xsi:nil="true" />
         </Combinator>
       </Expression>
+      <Expression xsi:type="Index">
+        <Operand xsi:type="IntProperty">
+          <Value>0</Value>
+        </Operand>
+      </Expression>
+      <Expression xsi:type="Combinator">
+        <Combinator xsi:type="sleap:GetBodyPart">
+          <sleap:Name>head</sleap:Name>
+        </Combinator>
+      </Expression>
+      <Expression xsi:type="MemberSelector">
+        <Selector>Position</Selector>
+      </Expression>
     </Nodes>
     <Edges>
       <Edge From="0" To="1" Label="Source1" />
       <Edge From="1" To="2" Label="Source1" />
+      <Edge From="2" To="3" Label="Source1" />
+      <Edge From="3" To="4" Label="Source1" />
+      <Edge From="4" To="5" Label="Source1" />
     </Edges>
   </Workflow>
 </WorkflowBuilder>

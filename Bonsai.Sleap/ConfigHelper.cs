@@ -74,6 +74,13 @@ namespace Bonsai.Sleap
                 Nfound++;
                 outArg = ModelType.MultiInstance;
             }
+            if (Nfound == 0){ //TODO Sometime it does not appear in the json, might need a try/catch
+                if (availableModels["multi_class_topdown"].AllNodes.Count() > 1)
+                {
+                    Nfound++;
+                    outArg = ModelType.MultiClass;
+                }
+            }
 
             if (Nfound == 0)
             {
@@ -102,6 +109,9 @@ namespace Bonsai.Sleap
                 case ModelType.MultiInstance:
                     Parse_MultiInstance_Model(config, mapping);
                     break;
+                case ModelType.MultiClass:
+                    Parse_MultiClass_Model(config, mapping);
+                    break;
             }
         }
 
@@ -122,20 +132,15 @@ namespace Bonsai.Sleap
 
         public static void Parse_CenteredInstance_Model(TrainingConfig config, YamlMappingNode mapping)
         {
-            var partNames = (YamlSequenceNode)mapping["model"]["heads"]["multi_class_topdown"]["confmaps"]["part_names"];
+            var partNames = (YamlSequenceNode)mapping["model"]["heads"]["centered_instance"]["part_names"];
             foreach (var part in partNames.Children)
             {
                 config.PartNames.Add((string)part);
             }
-            var classNames = (YamlSequenceNode)mapping["model"]["heads"]["multi_class_topdown"]["class_vectors"]["classes"];
-            foreach (var id in classNames.Children)
-            {
-                config.ClassNames.Add((string)id);
-            }
             AddSkeleton(config, mapping);
         }
 
-        public static void Parse_MultiInstance_Model(TrainingConfig config, YamlMappingNode mapping)
+        public static void Parse_MultiClass_Model(TrainingConfig config, YamlMappingNode mapping)
         {
             var partNames = (YamlSequenceNode) mapping["model"]["heads"]["multi_class_topdown"]["confmaps"]["part_names"];
             foreach (var part in partNames.Children)
@@ -146,6 +151,21 @@ namespace Bonsai.Sleap
             foreach (var id in classNames.Children)
             {
                 config.ClassNames.Add((string) id);
+            }
+            AddSkeleton(config, mapping);
+        }
+
+        public static void Parse_MultiInstance_Model(TrainingConfig config, YamlMappingNode mapping)
+        {
+            var partNames = (YamlSequenceNode)mapping["model"]["heads"]["multi_instance"]["confmaps"]["part_names"];
+            foreach (var part in partNames.Children)
+            {
+                config.PartNames.Add((string)part);
+            }
+            var classNames = (YamlSequenceNode)mapping["model"]["heads"]["multi_instance"]["class_vectors"]["classes"];
+            foreach (var id in classNames.Children)
+            {
+                config.ClassNames.Add((string)id);
             }
             AddSkeleton(config, mapping);
         }
@@ -168,7 +188,8 @@ namespace Bonsai.Sleap
             SingleInstance = 1,
             Centroid = 2,
             CenteredInstance = 3,
-            MultiInstance = 4
+            MultiInstance = 4,
+            MultiClass = 5
         }
 
     }
