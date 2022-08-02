@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.1.32319.34
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.32602.291
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bonsai.Sleap", "Bonsai.Sleap\Bonsai.Sleap.csproj", "{DE54420F-E2A7-48E5-B96E-7D9CEA1B2CB0}"
 EndProject
@@ -9,6 +9,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		Directory.Build.props = Directory.Build.props
 	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bonsai.Sleap.Design", "Bonsai.Sleap.Design\Bonsai.Sleap.Design.csproj", "{F7A288A7-0045-4302-82CA-44C5E78B6C6F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -20,6 +22,10 @@ Global
 		{DE54420F-E2A7-48E5-B96E-7D9CEA1B2CB0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DE54420F-E2A7-48E5-B96E-7D9CEA1B2CB0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DE54420F-E2A7-48E5-B96E-7D9CEA1B2CB0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F7A288A7-0045-4302-82CA-44C5E78B6C6F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F7A288A7-0045-4302-82CA-44C5E78B6C6F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F7A288A7-0045-4302-82CA-44C5E78B6C6F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F7A288A7-0045-4302-82CA-44C5E78B6C6F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
