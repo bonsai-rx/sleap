@@ -20,7 +20,7 @@ namespace Bonsai.Sleap
         [FileNameFilter("Config Files(*.json)|*.json|All Files|*.*")]
         [Editor("Bonsai.Design.OpenFileNameEditor, Bonsai.Design", DesignTypes.UITypeEditor)]
         [Description("The path to the configuration json file containing joint labels.")]
-        public string PoseConfigFileName { get; set; }
+        public string TrainingConfig { get; set; }
 
         [Range(0, 1)]
         [Editor(DesignTypes.SliderEditor, DesignTypes.UITypeEditor)]
@@ -42,7 +42,11 @@ namespace Bonsai.Sleap
                 TFTensor tensor = null;
                 TFSession.Runner runner = null;
                 var graph = TensorHelper.ImportModel(ModelFileName, out TFSession session);
-                var config = ConfigHelper.LoadTrainingConfig(PoseConfigFileName);
+                var config = ConfigHelper.LoadTrainingConfig(TrainingConfig);
+                
+                if (config.ModelType != ConfigHelper.ModelType.Centroid){
+                    throw new UnexpectedModelTypeException(String.Format("Expected {0} model type.", "Centroid"));
+                }
 
                 return source.Select(value =>
                 {
@@ -94,7 +98,7 @@ namespace Bonsai.Sleap
 
                     var centroidPoseCollection = new CentroidPoseCollection();
                     var confidenceThreshold = CentroidMinConfidence;
-                    //Loop the available identifications
+
                     for (int i = 0; i < centroidConfArr.GetLength(0); i++)
                     {
                         //TODO not sure what to do here if multiple images are given....
@@ -117,7 +121,6 @@ namespace Bonsai.Sleap
                     return centroidPoseCollection;
                 });
             });
-
         }
 
         public override IObservable<CentroidPoseCollection> Process(IObservable<IplImage> source)
@@ -150,7 +153,6 @@ namespace Bonsai.Sleap
                     maxValue = array[instance, i];
                 }
             }
-
             return maxIndex;
         }
     }

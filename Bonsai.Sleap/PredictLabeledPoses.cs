@@ -20,7 +20,7 @@ namespace Bonsai.Sleap
         [FileNameFilter("Config Files(*.json)|*.json|All Files|*.*")]
         [Editor("Bonsai.Design.OpenFileNameEditor, Bonsai.Design", DesignTypes.UITypeEditor)]
         [Description("The path to the configuration json file containing joint labels.")]
-        public string PoseConfigFileName { get; set; }
+        public string TrainingConfig { get; set; }
 
         [Range(0, 1)]
         [Editor(DesignTypes.SliderEditor, DesignTypes.UITypeEditor)]
@@ -52,7 +52,12 @@ namespace Bonsai.Sleap
                 TFTensor tensor = null;
                 TFSession.Runner runner = null;
                 var graph = TensorHelper.ImportModel(ModelFileName, out TFSession session);
-                var config = ConfigHelper.LoadTrainingConfig(PoseConfigFileName);
+                var config = ConfigHelper.LoadTrainingConfig(TrainingConfig);
+
+                if (config.ModelType != ConfigHelper.ModelType.MultiClass)
+                {
+                    throw new UnexpectedModelTypeException(String.Format("Expected {0} model type.", "MultiClass"));
+                }
 
                 return source.Select(value =>
                 {
@@ -82,7 +87,6 @@ namespace Bonsai.Sleap
                         runner.Fetch(graph["Identity_4"][0]);
                         runner.Fetch(graph["Identity_5"][0]);
                         runner.Fetch(graph["Identity_6"][0]);
-
                     }
 
                     var _frame = TensorHelper.GetRegionOfInterest(input[0], roi, out Point offset);
@@ -98,7 +102,6 @@ namespace Bonsai.Sleap
                     var output = runner.Run();
                         
                     // Fetch the results from output
-
                     var centroidConfidenceTensor = output[0];
                     float[] centroidConfArr = new float[centroidConfidenceTensor.Shape[0]];
                     centroidConfidenceTensor.GetValue(centroidConfArr);
@@ -120,12 +123,10 @@ namespace Bonsai.Sleap
                     idTensor.GetValue(idArr);
 
                     var identityCollection = new LabeledPoseCollection();
-
                     var partThreshold = PartMinConfidence;
                     var idThreshold = IdentityMinConfidence;
                     var centroidTreshold = CentroidMinConfidence;
 
-                    //Loop the available identifications
                     for (int iid = 0; iid < idArr.GetLength(0); iid++)
                     {
                         // Find the class with max score
@@ -171,13 +172,11 @@ namespace Bonsai.Sleap
                             }
                             labeledPose.Add(bodyPart);
                         }
-
                         identityCollection.Add(labeledPose);
                     };
                     return identityCollection;
                 });
             });
-
         }
 
         public override IObservable<LabeledPoseCollection> Process(IObservable<IplImage> source)
@@ -210,7 +209,6 @@ namespace Bonsai.Sleap
                     maxValue = array[instance, i];
                 }
             }
-
             return maxIndex;
         }
     }
