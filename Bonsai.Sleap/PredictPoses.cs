@@ -20,7 +20,7 @@ namespace Bonsai.Sleap
         [FileNameFilter("Config Files(*.json)|*.json|All Files|*.*")]
         [Editor("Bonsai.Design.OpenFileNameEditor, Bonsai.Design", DesignTypes.UITypeEditor)]
         [Description("The path to the configuration json file containing joint labels.")]
-        public string PoseConfigFileName { get; set; }
+        public string TrainingConfig { get; set; }
 
         [Range(0, 1)]
         [Editor(DesignTypes.SliderEditor, DesignTypes.UITypeEditor)]
@@ -47,10 +47,14 @@ namespace Bonsai.Sleap
                 TFTensor tensor = null;
                 TFSession.Runner runner = null;
                 var graph = TensorHelper.ImportModel(ModelFileName, out TFSession session);
-                var config = ConfigHelper.LoadTrainingConfig(PoseConfigFileName);
+                var config = ConfigHelper.LoadTrainingConfig(TrainingConfig);
+
+                if (config.ModelType != ConfigHelper.ModelType.CenteredInstance)
+                {
+                    throw new UnexpectedModelTypeException(String.Format("Expected {0} model type.", "CenteredInstance"));
+                }
 
                 return source.Select(value =>
-
                 {
                     var poseScale = 1.0;
                     var (input, roi) = roiSelector(value);
@@ -72,7 +76,7 @@ namespace Bonsai.Sleap
                         tensor?.Dispose();
                         runner = session.GetRunner();
                         tensor = TensorHelper.CreatePlaceholder(graph, runner, tensorSize, batchSize, colorChannels);
-                        //Top-Down centered instanced
+
                         runner.Fetch(graph["Identity"][0]);
                         runner.Fetch(graph["Identity_2"][0]);
                         runner.Fetch(graph["Identity_4"][0]);
@@ -155,7 +159,6 @@ namespace Bonsai.Sleap
                     return PoseCollection;
                 });
             });
-
         }
 
         public override IObservable<PoseCollection> Process(IObservable<IplImage> source)
@@ -188,7 +191,6 @@ namespace Bonsai.Sleap
                     maxValue = array[instance, i];
                 }
             }
-
             return maxIndex;
         }
     }

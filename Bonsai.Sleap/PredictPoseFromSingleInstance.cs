@@ -20,7 +20,7 @@ namespace Bonsai.Sleap
         [FileNameFilter("Config Files(*.json)|*.json|All Files|*.*")]
         [Editor("Bonsai.Design.OpenFileNameEditor, Bonsai.Design", DesignTypes.UITypeEditor)]
         [Description("The path to the configuration json file containing joint labels.")]
-        public string PoseConfigFileName { get; set; }
+        public string TrainingConfig { get; set; }
 
         [Range(0, 1)]
         [Editor(DesignTypes.SliderEditor, DesignTypes.UITypeEditor)]
@@ -42,10 +42,14 @@ namespace Bonsai.Sleap
                 TFTensor tensor = null;
                 TFSession.Runner runner = null;
                 var graph = TensorHelper.ImportModel(ModelFileName, out TFSession session);
-                var config = ConfigHelper.LoadTrainingConfig(PoseConfigFileName);
+                var config = ConfigHelper.LoadTrainingConfig(TrainingConfig);
+
+                if (config.ModelType != ConfigHelper.ModelType.SingleInstance)
+                {
+                    throw new UnexpectedModelTypeException(String.Format("Expected {0} model type.", "SingleInstance"));
+                }
 
                 return source.Select(value =>
-
                 {
                     var poseScale = 1.0;
                     var (input, roi) = roiSelector(value);
@@ -98,9 +102,7 @@ namespace Bonsai.Sleap
                     //Loop the available identifications
                     for (int i = 0; i < input.Length; i++)
                     {
-                        // Find the class with max score
                         var pose = new Pose(input[i]);
-
                         // Iterate on the body parts
                         for (int bodyPartIdx = 0; bodyPartIdx < poseArr.GetLength(1); bodyPartIdx++)
                         {
@@ -123,7 +125,6 @@ namespace Bonsai.Sleap
                     return PoseCollection;
                 });
             });
-
         }
 
         public override IObservable<PoseCollection> Process(IObservable<IplImage> source)
@@ -156,7 +157,6 @@ namespace Bonsai.Sleap
                     maxValue = array[instance, i];
                 }
             }
-
             return maxIndex;
         }
     }

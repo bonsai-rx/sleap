@@ -2,8 +2,8 @@
 <WorkflowBuilder Version="2.6.3"
                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                  xmlns:cv="clr-namespace:Bonsai.Vision;assembly=Bonsai.Vision"
-                 xmlns:sleap="clr-namespace:Bonsai.Sleap;assembly=Bonsai.Sleap"
                  xmlns:rx="clr-namespace:Bonsai.Reactive;assembly=Bonsai.Core"
+                 xmlns:sleap="clr-namespace:Bonsai.Sleap;assembly=Bonsai.Sleap"
                  xmlns="https://bonsai-rx.org/2018/workflow">
   <Workflow>
     <Nodes>
@@ -21,7 +21,7 @@
         <Combinator xsi:type="cv:Grayscale" />
       </Expression>
       <Expression xsi:type="Combinator">
-        <Combinator xsi:type="sleap:PredictCentroid">
+        <Combinator xsi:type="sleap:PredictCentroids">
           <sleap:ModelFileName>C:\Users\neurogears\Documents\git\bruno-f-cruz\SLEAPyBonsai\All models\bonsai_test\bonsai_graphs\centroid_only_model\frozen_graph.pb</sleap:ModelFileName>
           <sleap:PoseConfigFileName>C:\Users\neurogears\Documents\git\bruno-f-cruz\SLEAPyBonsai\All models\bonsai_test\Original\centroid_model\training_config.json</sleap:PoseConfigFileName>
           <sleap:CentroidMinConfidence xsi:nil="true" />
