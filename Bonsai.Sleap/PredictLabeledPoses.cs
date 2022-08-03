@@ -56,7 +56,7 @@ namespace Bonsai.Sleap
 
                 if (config.ModelType != ConfigHelper.ModelType.MultiClass)
                 {
-                    throw new UnexpectedModelTypeException(String.Format("Expected {0} model type.", "MultiClass"));
+                    throw new UnexpectedModelTypeException($"Expected {nameof(ConfigHelper.ModelType.MultiClass)} model type but found {config.ModelType} .");
                 }
 
                 return source.Select(value =>

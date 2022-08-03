@@ -10,7 +10,7 @@ namespace Bonsai.Sleap
 {
     [DefaultProperty(nameof(ModelFileName))]
     [Description("Performs multi- markerless pose estimation using a SLEAP model on the input image sequence.")]
-    public class PredictCentroids : Transform<IplImage, CentroidPoseCollection>
+    public class PredictCentroids : Transform<IplImage, InferedCentroidCollection>
     {
         [FileNameFilter("Protocol Buffer Files(*.pb)|*.pb")]
         [Editor("Bonsai.Design.OpenFileNameEditor, Bonsai.Design", DesignTypes.UITypeEditor)]
@@ -33,7 +33,7 @@ namespace Bonsai.Sleap
         [Description("The optional color conversion used to prepare RGB video frames for inference.")]
         public ColorConversion? ColorConversion { get; set; }
 
-        IObservable<CentroidPoseCollection> Process<TSource>(IObservable<TSource> source, Func<TSource, (IplImage[], Rect)> roiSelector)
+        IObservable<InferedCentroidCollection> Process<TSource>(IObservable<TSource> source, Func<TSource, (IplImage[], Rect)> roiSelector)
         {
             return Observable.Defer(() =>
             {
@@ -43,9 +43,10 @@ namespace Bonsai.Sleap
                 TFSession.Runner runner = null;
                 var graph = TensorHelper.ImportModel(ModelFileName, out TFSession session);
                 var config = ConfigHelper.LoadTrainingConfig(TrainingConfig);
-                
-                if (config.ModelType != ConfigHelper.ModelType.Centroid){
-                    throw new UnexpectedModelTypeException(String.Format("Expected {0} model type.", "Centroid"));
+
+                if (config.ModelType != ConfigHelper.ModelType.Centroid)
+                {
+                    throw new UnexpectedModelTypeException($"Expected {nameof(ConfigHelper.ModelType.Centroid)} model type but found {config.ModelType} .");
                 }
 
                 return source.Select(value =>
@@ -96,7 +97,7 @@ namespace Bonsai.Sleap
                     float[,] centroidArr = new float[centroidTensor.Shape[0], centroidTensor.Shape[1]];
                     centroidTensor.GetValue(centroidArr);
 
-                    var centroidPoseCollection = new CentroidPoseCollection();
+                    var centroidPoseCollection = new InferedCentroidCollection();
                     var confidenceThreshold = CentroidMinConfidence;
 
                     for (int i = 0; i < centroidConfArr.GetLength(0); i++)
@@ -123,17 +124,17 @@ namespace Bonsai.Sleap
             });
         }
 
-        public override IObservable<CentroidPoseCollection> Process(IObservable<IplImage> source)
+        public override IObservable<InferedCentroidCollection> Process(IObservable<IplImage> source)
         {
             return Process(source, frame => (new IplImage[] { frame }, new Rect(0, 0, 0, 0)));
         }
 
-        public IObservable<CentroidPoseCollection> Process(IObservable<IplImage[]> source)
+        public IObservable<InferedCentroidCollection> Process(IObservable<IplImage[]> source)
         {
             return Process(source, frame => (frame , new Rect(0, 0, 0, 0)));
         }
 
-        public IObservable<CentroidPoseCollection> Process(IObservable<Tuple<IplImage, Rect>> source)
+        public IObservable<InferedCentroidCollection> Process(IObservable<Tuple<IplImage, Rect>> source)
         {
             return Process(source, input => (new IplImage[] { input.Item1 }, input.Item2));
         }

@@ -51,7 +51,7 @@ namespace Bonsai.Sleap
 
                 if (config.ModelType != ConfigHelper.ModelType.CenteredInstance)
                 {
-                    throw new UnexpectedModelTypeException(String.Format("Expected {0} model type.", "CenteredInstance"));
+                    throw new UnexpectedModelTypeException($"Expected {nameof(ConfigHelper.ModelType.CenteredInstance)} model type but found {config.ModelType} .");
                 }
 
                 return source.Select(value =>

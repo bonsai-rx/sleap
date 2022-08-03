@@ -10,7 +10,7 @@ namespace Bonsai.Sleap
 {
     [DefaultProperty(nameof(ModelFileName))]
     [Description("Performs markerless, single instance, pose estimation using a SLEAP model on the input image sequence.")]
-    public class PredictPoseFromSingleInstance : Transform<IplImage, PoseCollection>
+    public class PredictSinglePose : Transform<IplImage, PoseCollection>
     {
         [FileNameFilter("Protocol Buffer Files(*.pb)|*.pb")]
         [Editor("Bonsai.Design.OpenFileNameEditor, Bonsai.Design", DesignTypes.UITypeEditor)]
@@ -46,7 +46,7 @@ namespace Bonsai.Sleap
 
                 if (config.ModelType != ConfigHelper.ModelType.SingleInstance)
                 {
-                    throw new UnexpectedModelTypeException(String.Format("Expected {0} model type.", "SingleInstance"));
+                    throw new UnexpectedModelTypeException($"Expected {nameof(ConfigHelper.ModelType.SingleInstance)} model type but found {config.ModelType} .");
                 }
 
                 return source.Select(value =>
