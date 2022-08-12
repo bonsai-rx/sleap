@@ -127,7 +127,9 @@ namespace Bonsai.Sleap
 
         public static void Parse_Centroid_Model(TrainingConfig config, YamlMappingNode mapping)
         {
-            AddSkeleton(config, mapping); //TODO: Not sure this is necessary for centroid model?
+            var anchor = (string)mapping["model"]["heads"]["centroid"]["anchor_part"];
+            config.PartNames.Add(anchor);
+            AddSkeleton(config, mapping);
         }
 
         public static void Parse_CenteredInstance_Model(TrainingConfig config, YamlMappingNode mapping)
