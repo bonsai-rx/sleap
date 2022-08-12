@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Collections.Generic;
 using OpenCV.Net;
 using TensorFlow;
 using System.ComponentModel;
@@ -10,7 +9,7 @@ namespace Bonsai.Sleap
 {
     [DefaultProperty(nameof(ModelFileName))]
     [Description("Performs markerless, single instance, pose estimation using a SLEAP model on the input image sequence.")]
-    public class PredictSinglePose : Transform<IplImage, PoseCollection>
+    public class PredictSinglePose : Transform<IplImage, Pose>
     {
         [FileNameFilter("Protocol Buffer Files(*.pb)|*.pb")]
         [Editor("Bonsai.Design.OpenFileNameEditor, Bonsai.Design", DesignTypes.UITypeEditor)]
@@ -127,9 +126,9 @@ namespace Bonsai.Sleap
             });
         }
 
-        public override IObservable<PoseCollection> Process(IObservable<IplImage> source)
+        public override IObservable<Pose> Process(IObservable<IplImage> source)
         {
-            return Process(source, frame => (new IplImage[] { frame }, new Rect(0, 0, 0, 0)));
+            return Process(source, frame => (new IplImage[] { frame }, new Rect(0, 0, 0, 0))).Select(result => result[0]);
         }
 
         public IObservable<PoseCollection> Process(IObservable<IplImage[]> source)
@@ -137,27 +136,9 @@ namespace Bonsai.Sleap
             return Process(source, frame => (frame , new Rect(0, 0, 0, 0)));
         }
 
-        public IObservable<PoseCollection> Process(IObservable<Tuple<IplImage, Rect>> source)
+        public IObservable<Pose> Process(IObservable<Tuple<IplImage, Rect>> source)
         {
-            return Process(source, input => (new IplImage[] { input.Item1 }, input.Item2));
-        }
-
-        static int ArgMax<TElement>(TElement[,] array, int instance, IComparer<TElement> comparer, out TElement maxValue)
-        {
-            if (array == null) throw new ArgumentNullException(nameof(array));
-            if (comparer == null) throw new ArgumentNullException(nameof(comparer));
-
-            int maxIndex = -1;
-            maxValue = default;
-            for (int i = 0; i < array.GetLength(1); i++)
-            {
-                if (i == 0 || comparer.Compare(array[instance, i], maxValue) > 0)
-                {
-                    maxIndex = i;
-                    maxValue = array[instance, i];
-                }
-            }
-            return maxIndex;
+            return Process(source, input => (new IplImage[] { input.Item1 }, input.Item2)).Select(result => result[0]);
         }
     }
 }
