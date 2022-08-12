@@ -13,13 +13,13 @@ using System.Drawing.Text;
 using System.Windows.Forms;
 using Font = System.Drawing.Font;
 
-[assembly: TypeVisualizer(typeof(InferedCentroidVisualizer), Target = typeof(InferedCentroid))]
+[assembly: TypeVisualizer(typeof(CentroidVisualizer), Target = typeof(Centroid))]
 
 namespace Bonsai.Sleap.Design
 {
-    public class InferedCentroidVisualizer : IplImageVisualizer
+    public class CentroidVisualizer : IplImageVisualizer
     {
-        InferedCentroid inferedCentroid;
+        Centroid centroid;
         IplImage labelImage;
         IplImageTexture labelTexture;
         ToolStripButton drawLabelsButton;
@@ -48,10 +48,10 @@ namespace Bonsai.Sleap.Design
 
         public override void Show(object value)
         {
-            inferedCentroid = (InferedCentroid)value;
-            if (inferedCentroid != null)
+            centroid = (Centroid)value;
+            if (centroid != null)
             {
-                base.Show(inferedCentroid.Image);
+                base.Show(centroid.Image);
             }
         }
 
@@ -68,23 +68,23 @@ namespace Bonsai.Sleap.Design
             GL.Color4(Color4.White);
             base.RenderFrame();
 
-            if (inferedCentroid != null)
+            if (centroid != null)
             {
                 GL.PointSize(5 * VisualizerCanvas.Height / 480f);
                 GL.Disable(EnableCap.Texture2D);
                 GL.Begin(PrimitiveType.Points);
 
                 GL.Color3(ColorPalette.GetColor(0));
-                GL.Vertex2(NormalizePoint(inferedCentroid.Centroid, inferedCentroid.Image.Size));
+                GL.Vertex2(NormalizePoint(centroid.Position, centroid.Image.Size));
                 
                 GL.End();
 
                 if (drawLabels)
                 {
-                    if (labelImage == null || labelImage.Size != inferedCentroid.Image.Size)
+                    if (labelImage == null || labelImage.Size != centroid.Image.Size)
                     {
                         const float LabelFontScale = 0.02f;
-                        labelImage = new IplImage(inferedCentroid.Image.Size, IplDepth.U8, 4);
+                        labelImage = new IplImage(centroid.Image.Size, IplDepth.U8, 4);
                         var emSize = VisualizerCanvas.Font.SizeInPoints * (labelImage.Height * LabelFontScale) / VisualizerCanvas.Font.Height;
                         labelFont = new Font(VisualizerCanvas.Font.FontFamily, emSize);
                     }
@@ -99,7 +99,7 @@ namespace Bonsai.Sleap.Design
                         format.Alignment = StringAlignment.Center;
                         format.LineAlignment = StringAlignment.Center;
                         
-                        graphics.DrawString(inferedCentroid.AnchorName, labelFont, Brushes.White, inferedCentroid.Centroid.X, inferedCentroid.Centroid.Y);
+                        graphics.DrawString(centroid.Name, labelFont, Brushes.White, centroid.Position.X, centroid.Position.Y);
                     }
 
                     GL.Color4(Color4.White);
