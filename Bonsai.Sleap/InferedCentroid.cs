@@ -15,6 +15,9 @@ namespace Bonsai.Sleap
         public Point2f Centroid { get; set; }
 
         public float Confidence { get; set; }
+
+        public string AnchorName { get; set; }
+
     }
 
 }

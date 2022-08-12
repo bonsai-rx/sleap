@@ -23,7 +23,7 @@
       <Expression xsi:type="Combinator">
         <Combinator xsi:type="sleap:PredictCentroids">
           <sleap:ModelFileName>C:\Users\neurogears\Documents\git\bruno-f-cruz\SLEAPyBonsai\All models\bonsai_test\bonsai_graphs\centroid_only_model\frozen_graph.pb</sleap:ModelFileName>
-          <sleap:TrainingConfig>C:\Users\neurogears\Documents\git\bruno-f-cruz\SLEAPyBonsai\PostFeedbackModels\td_id.fast.v2.210519_111253.multi_class_topdown.n=1800\training_config.json</sleap:TrainingConfig>
+          <sleap:TrainingConfig>C:\Users\neurogears\Documents\git\bruno-f-cruz\SLEAPyBonsai\PostFeedbackModels\centroid.fast.210504_182918.centroid.n=1800\training_config.json</sleap:TrainingConfig>
           <sleap:CentroidMinConfidence xsi:nil="true" />
           <sleap:ScaleFactor xsi:nil="true" />
           <sleap:ColorConversion xsi:nil="true" />
@@ -43,6 +43,9 @@
       <Expression xsi:type="MemberSelector">
         <Selector>Confidence</Selector>
       </Expression>
+      <Expression xsi:type="MemberSelector">
+        <Selector>AnchorName</Selector>
+      </Expression>
     </Nodes>
     <Edges>
       <Edge From="0" To="1" Label="Source1" />
@@ -50,6 +53,7 @@
       <Edge From="2" To="3" Label="Source1" />
       <Edge From="3" To="4" Label="Source1" />
       <Edge From="3" To="6" Label="Source1" />
+      <Edge From="3" To="7" Label="Source1" />
       <Edge From="4" To="5" Label="Source1" />
     </Edges>
   </Workflow>

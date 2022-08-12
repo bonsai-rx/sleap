@@ -104,6 +104,7 @@ namespace Bonsai.Sleap
                     {
                         //TODO not sure what to do here if multiple images are given....
                         var centroid = new InferedCentroid(input[0]);
+                        centroid.AnchorName = config.PartNames[0];
                         centroid.Confidence = centroidConfArr[i];
 
                         if (centroid.Confidence < confidenceThreshold)
