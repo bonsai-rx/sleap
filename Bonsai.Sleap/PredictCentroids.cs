@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Reactive.Linq;
@@ -138,24 +137,6 @@ namespace Bonsai.Sleap
         public IObservable<CentroidCollection> Process(IObservable<Tuple<IplImage, Rect>> source)
         {
             return Process(source, input => (new IplImage[] { input.Item1 }, input.Item2));
-        }
-
-        static int ArgMax<TElement>(TElement[,] array, int instance, IComparer<TElement> comparer, out TElement maxValue)
-        {
-            if (array == null) throw new ArgumentNullException(nameof(array));
-            if (comparer == null) throw new ArgumentNullException(nameof(comparer));
-
-            int maxIndex = -1;
-            maxValue = default;
-            for (int i = 0; i < array.GetLength(1); i++)
-            {
-                if (i == 0 || comparer.Compare(array[instance, i], maxValue) > 0)
-                {
-                    maxIndex = i;
-                    maxValue = array[instance, i];
-                }
-            }
-            return maxIndex;
         }
     }
 }
