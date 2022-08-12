@@ -10,7 +10,7 @@ namespace Bonsai.Sleap
 {
     [DefaultProperty(nameof(ModelFileName))]
     [Description("Performs multi- markerless pose estimation using a SLEAP model on the input image sequence.")]
-    public class PredictCentroids : Transform<IplImage, InferedCentroidCollection>
+    public class PredictCentroids : Transform<IplImage, CentroidCollection>
     {
         [FileNameFilter("Protocol Buffer Files(*.pb)|*.pb")]
         [Editor("Bonsai.Design.OpenFileNameEditor, Bonsai.Design", DesignTypes.UITypeEditor)]
@@ -33,7 +33,7 @@ namespace Bonsai.Sleap
         [Description("The optional color conversion used to prepare RGB video frames for inference.")]
         public ColorConversion? ColorConversion { get; set; }
 
-        IObservable<InferedCentroidCollection> Process<TSource>(IObservable<TSource> source, Func<TSource, (IplImage[], Rect)> roiSelector)
+        IObservable<CentroidCollection> Process<TSource>(IObservable<TSource> source, Func<TSource, (IplImage[], Rect)> roiSelector)
         {
             return Observable.Defer(() =>
             {
@@ -97,23 +97,23 @@ namespace Bonsai.Sleap
                     float[,] centroidArr = new float[centroidTensor.Shape[0], centroidTensor.Shape[1]];
                     centroidTensor.GetValue(centroidArr);
 
-                    var centroidPoseCollection = new InferedCentroidCollection();
+                    var centroidPoseCollection = new CentroidCollection();
                     var confidenceThreshold = CentroidMinConfidence;
 
                     for (int i = 0; i < centroidConfArr.GetLength(0); i++)
                     {
                         //TODO not sure what to do here if multiple images are given....
-                        var centroid = new InferedCentroid(input[0]);
-                        centroid.AnchorName = config.PartNames[0];
+                        var centroid = new Centroid(input[0]);
+                        centroid.Name = config.PartNames[0];
                         centroid.Confidence = centroidConfArr[i];
 
                         if (centroid.Confidence < confidenceThreshold)
                         {
-                            centroid.Centroid = new Point2f(float.NaN, float.NaN);
+                            centroid.Position = new Point2f(float.NaN, float.NaN);
                         }
                         else
                         {
-                            centroid.Centroid = new Point2f(
+                            centroid.Position = new Point2f(
                                  (float)(centroidArr[i, 0] * poseScale) + offset.X,
                                  (float)(centroidArr[i, 1] * poseScale) + offset.Y
                                 );
@@ -125,17 +125,17 @@ namespace Bonsai.Sleap
             });
         }
 
-        public override IObservable<InferedCentroidCollection> Process(IObservable<IplImage> source)
+        public override IObservable<CentroidCollection> Process(IObservable<IplImage> source)
         {
             return Process(source, frame => (new IplImage[] { frame }, new Rect(0, 0, 0, 0)));
         }
 
-        public IObservable<InferedCentroidCollection> Process(IObservable<IplImage[]> source)
+        public IObservable<CentroidCollection> Process(IObservable<IplImage[]> source)
         {
             return Process(source, frame => (frame , new Rect(0, 0, 0, 0)));
         }
 
-        public IObservable<InferedCentroidCollection> Process(IObservable<Tuple<IplImage, Rect>> source)
+        public IObservable<CentroidCollection> Process(IObservable<Tuple<IplImage, Rect>> source)
         {
             return Process(source, input => (new IplImage[] { input.Item1 }, input.Item2));
         }

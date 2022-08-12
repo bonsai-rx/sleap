@@ -139,21 +139,21 @@ namespace Bonsai.Sleap
                         }
                         else labeledPose.Label = config.ClassNames[maxIndex];
 
-                        var centroid = new InferedCentroid(input[0]);
+                        var centroid = new Centroid(input[0]);
 
                         centroid.Confidence = centroidConfArr[0];
                         if (centroid.Confidence < centroidTreshold)
                         {
-                            centroid.Centroid = new Point2f(float.NaN, float.NaN);
+                            centroid.Position = new Point2f(float.NaN, float.NaN);
                         }
                         else
                         {
-                            centroid.Centroid = new Point2f(
+                            centroid.Position = new Point2f(
                                     (float)(centroidArr[iid, 0] * poseScale) + offset.X,
                                     (float)(centroidArr[iid, 1] * poseScale) + offset.Y
                                 );
                         }
-                        labeledPose.InferedCentroid = centroid;
+                        labeledPose.Centroid = centroid;
 
                         // Iterate on the body parts
                         for (int bodyPartIdx = 0; bodyPartIdx < poseArr.GetLength(1); bodyPartIdx++)
