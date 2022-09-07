@@ -1,9 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<WorkflowBuilder Version="2.6.3"
+<WorkflowBuilder Version="2.7.0-rc1"
                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                  xmlns:cv="clr-namespace:Bonsai.Vision;assembly=Bonsai.Vision"
                  xmlns:sleap="clr-namespace:Bonsai.Sleap;assembly=Bonsai.Sleap"
-                 xmlns:rx="clr-namespace:Bonsai.Reactive;assembly=Bonsai.Core"
                  xmlns="https://bonsai-rx.org/2018/workflow">
   <Workflow>
     <Nodes>
@@ -35,16 +34,30 @@
         </Operand>
       </Expression>
       <Expression xsi:type="MemberSelector">
-        <Selector>Centroid</Selector>
+        <Selector>Image,Position</Selector>
       </Expression>
       <Expression xsi:type="Combinator">
-        <Combinator xsi:type="rx:TimeInterval" />
+        <Combinator xsi:type="cv:CropCenter">
+          <cv:Size>
+            <cv:Width>150</cv:Width>
+            <cv:Height>150</cv:Height>
+          </cv:Size>
+          <cv:FillValue>
+            <cv:Val0>0</cv:Val0>
+            <cv:Val1>0</cv:Val1>
+            <cv:Val2>0</cv:Val2>
+            <cv:Val3>0</cv:Val3>
+          </cv:FillValue>
+        </Combinator>
+      </Expression>
+      <Expression xsi:type="MemberSelector">
+        <Selector>Name</Selector>
+      </Expression>
+      <Expression xsi:type="MemberSelector">
+        <Selector>Position</Selector>
       </Expression>
       <Expression xsi:type="MemberSelector">
         <Selector>Confidence</Selector>
-      </Expression>
-      <Expression xsi:type="MemberSelector">
-        <Selector>AnchorName</Selector>
       </Expression>
     </Nodes>
     <Edges>
@@ -54,6 +67,7 @@
       <Edge From="3" To="4" Label="Source1" />
       <Edge From="3" To="6" Label="Source1" />
       <Edge From="3" To="7" Label="Source1" />
+      <Edge From="3" To="8" Label="Source1" />
       <Edge From="4" To="5" Label="Source1" />
     </Edges>
   </Workflow>
