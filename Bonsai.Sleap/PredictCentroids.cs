@@ -87,39 +87,43 @@ namespace Bonsai.Sleap
                     TensorHelper.UpdateTensor(tensor, colorChannels, frame);
                     var output = runner.Run();
 
-                    // Fetch the results from output
-                    var centroidConfidenceTensor = output[0];
-                    float[] centroidConfArr = new float[centroidConfidenceTensor.Shape[0]];
-                    centroidConfidenceTensor.GetValue(centroidConfArr);
-
-                    var centroidTensor = output[1];
-                    float[,] centroidArr = new float[centroidTensor.Shape[0], centroidTensor.Shape[1]];
-                    centroidTensor.GetValue(centroidArr);
-
-                    var centroidPoseCollection = new CentroidCollection();
-                    var confidenceThreshold = CentroidMinConfidence;
-
-                    for (int i = 0; i < centroidConfArr.GetLength(0); i++)
+                    if (output[0].Shape[0] == 0) {return new CentroidCollection();}
+                    else
                     {
-                        //TODO not sure what to do here if multiple images are given....
-                        var centroid = new Centroid(input[0]);
-                        centroid.Name = config.PartNames[0];
-                        centroid.Confidence = centroidConfArr[i];
+                        // Fetch the results from output
+                        var centroidConfidenceTensor = output[0];
+                        float[] centroidConfArr = new float[centroidConfidenceTensor.Shape[0]];
+                        centroidConfidenceTensor.GetValue(centroidConfArr);
 
-                        if (centroid.Confidence < confidenceThreshold)
+                        var centroidTensor = output[1];
+                        float[,] centroidArr = new float[centroidTensor.Shape[0], centroidTensor.Shape[1]];
+                        centroidTensor.GetValue(centroidArr);
+
+                        var centroidPoseCollection = new CentroidCollection();
+                        var confidenceThreshold = CentroidMinConfidence;
+
+                        for (int i = 0; i < centroidConfArr.GetLength(0); i++)
                         {
-                            centroid.Position = new Point2f(float.NaN, float.NaN);
-                        }
-                        else
-                        {
-                            centroid.Position = new Point2f(
-                                 (float)(centroidArr[i, 0] * poseScale) + offset.X,
-                                 (float)(centroidArr[i, 1] * poseScale) + offset.Y
-                                );
-                        }
-                        centroidPoseCollection.Add(centroid);
-                    };
-                    return centroidPoseCollection;
+                            //TODO not sure what to do here if multiple images are given....
+                            var centroid = new Centroid(input[0]);
+                            centroid.Name = config.PartNames[0];
+                            centroid.Confidence = centroidConfArr[i];
+
+                            if (centroid.Confidence < confidenceThreshold)
+                            {
+                                centroid.Position = new Point2f(float.NaN, float.NaN);
+                            }
+                            else
+                            {
+                                centroid.Position = new Point2f(
+                                     (float)(centroidArr[i, 0] * poseScale) + offset.X,
+                                     (float)(centroidArr[i, 1] * poseScale) + offset.Y
+                                    );
+                            }
+                            centroidPoseCollection.Add(centroid);
+                        };
+                        return centroidPoseCollection;
+                    }
                 });
             });
         }
