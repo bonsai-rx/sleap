@@ -103,7 +103,7 @@ namespace Bonsai.Sleap
                     {
                         var pose = new Pose(input[i]);
                         // Iterate on the body parts
-                        for (int bodyPartIdx = 0; bodyPartIdx < poseArr.GetLength(1); bodyPartIdx++)
+                        for (int bodyPartIdx = 0; bodyPartIdx < poseArr.GetLength(2); bodyPartIdx++)
                         {
                             BodyPart bodyPart;
                             bodyPart.Name = config.PartNames[bodyPartIdx];
