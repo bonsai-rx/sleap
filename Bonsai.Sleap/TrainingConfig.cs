@@ -5,7 +5,7 @@ namespace Bonsai.Sleap
 {
     public class TrainingConfig
     {
-        public ConfigHelper.ModelType ModelType = default(ConfigHelper.ModelType);
+        public ModelType ModelType { get; set; }
 
         public List<string> PartNames { get; } = new List<string>();
 

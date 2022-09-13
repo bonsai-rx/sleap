@@ -43,9 +43,9 @@ namespace Bonsai.Sleap
                 var graph = TensorHelper.ImportModel(ModelFileName, out TFSession session);
                 var config = ConfigHelper.LoadTrainingConfig(TrainingConfig);
 
-                if (config.ModelType != ConfigHelper.ModelType.SingleInstance)
+                if (config.ModelType != ModelType.SingleInstance)
                 {
-                    throw new UnexpectedModelTypeException($"Expected {nameof(ConfigHelper.ModelType.SingleInstance)} model type but found {config.ModelType} .");
+                    throw new UnexpectedModelTypeException($"Expected {nameof(ModelType.SingleInstance)} model type but found {config.ModelType} .");
                 }
 
                 return source.Select(value =>
