@@ -90,21 +90,20 @@ namespace Bonsai.Sleap
                     }
 
                     var _frame = TensorHelper.GetRegionOfInterest(input[0], roi, out Point offset);
-                    IplImage[] frame = input.Select(im => 
+                    var frames = Array.ConvertAll(input, im =>
                     {
                         var cFrame = TensorHelper.GetRegionOfInterest(im, roi, out Point _);
                         cFrame = TensorHelper.EnsureFrameSize(cFrame, tensorSize, ref resizeTemp);
                         cFrame = TensorHelper.EnsureColorFormat(cFrame, ColorConversion, ref colorTemp, colorChannels);
                         return cFrame;
+                    });
 
-                    }).ToArray();
-                    TensorHelper.UpdateTensor(tensor, colorChannels, frame);
+                    TensorHelper.UpdateTensor(tensor, colorChannels, frames);
                     var output = runner.Run();
 
-                    if (output[0].Shape[0] == 0) { return new LabeledPoseCollection(); }
+                    if (output[0].Shape[0] == 0) return new LabeledPoseCollection();
                     else
                     {
-
                         // Fetch the results from output
                         var centroidConfidenceTensor = output[0];
                         float[] centroidConfArr = new float[centroidConfidenceTensor.Shape[0]];

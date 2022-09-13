@@ -75,16 +75,15 @@ namespace Bonsai.Sleap
                     }
 
                     var _frame = TensorHelper.GetRegionOfInterest(input[0], roi, out Point offset);
-                    IplImage[] frame = input.Select(im => 
+                    var frames = Array.ConvertAll(input, im => 
                     {
                         var cFrame = TensorHelper.GetRegionOfInterest(im, roi, out Point _);
                         cFrame = TensorHelper.EnsureFrameSize(cFrame, tensorSize, ref resizeTemp);
                         cFrame = TensorHelper.EnsureColorFormat(cFrame, ColorConversion, ref colorTemp, colorChannels);
                         return cFrame;
+                    });
 
-                    }).ToArray();
-
-                    TensorHelper.UpdateTensor(tensor, colorChannels, frame);
+                    TensorHelper.UpdateTensor(tensor, colorChannels, frames);
                     var output = runner.Run();
 
                     var partConfTensor = output[0];
@@ -95,7 +94,7 @@ namespace Bonsai.Sleap
                     float[,,,] poseArr = new float[poseTensor.Shape[0], poseTensor.Shape[1], poseTensor.Shape[2], poseTensor.Shape[3]];
                     poseTensor.GetValue(poseArr);
 
-                    var PoseCollection = new PoseCollection();
+                    var poseCollection = new PoseCollection();
                     var partThreshold = PartMinConfidence;
 
                     //Loop the available identifications
@@ -119,9 +118,9 @@ namespace Bonsai.Sleap
                             }
                             pose.Add(bodyPart);
                         }
-                        PoseCollection.Add(pose);
+                        poseCollection.Add(pose);
                     };
-                    return PoseCollection;
+                    return poseCollection;
                 });
             });
         }
