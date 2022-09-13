@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Collections.Generic;
 using OpenCV.Net;
 using TensorFlow;
 using System.ComponentModel;
@@ -38,7 +37,7 @@ namespace Bonsai.Sleap
         [Description("The optional color conversion used to prepare RGB video frames for inference.")]
         public ColorConversion? ColorConversion { get; set; }
 
-        IObservable<PoseCollection> Process<TSource>(IObservable<TSource> source, Func<TSource, (IplImage[], Rect)> roiSelector)
+        public IObservable<PoseCollection> Process(IObservable<IplImage[]> source)
         {
             return Observable.Defer(() =>
             {
@@ -54,12 +53,11 @@ namespace Bonsai.Sleap
                     throw new UnexpectedModelTypeException($"Expected {nameof(ModelType.CenteredInstance)} model type but found {config.ModelType} .");
                 }
 
-                return source.Select(value =>
+                return source.Select(input =>
                 {
                     var poseScale = 1.0;
-                    var (input, roi) = roiSelector(value);
                     int colorChannels = (ColorConversion is null) ? input[0].Channels : ExtensionMethods.GetConversionNumChannels((ColorConversion)ColorConversion);
-                    var tensorSize = roi.Width > 0 && roi.Height > 0 ? new Size(roi.Width, roi.Height) : input[0].Size;
+                    var tensorSize = input[0].Size;
                     var batchSize = input.Length;
                     var scaleFactor = ScaleFactor;
                     
@@ -84,13 +82,11 @@ namespace Bonsai.Sleap
 
                     }
 
-                    var _frame = TensorHelper.GetRegionOfInterest(input[0], roi, out Point offset);
-                    var frames = Array.ConvertAll(input, im => 
+                    var frames = Array.ConvertAll(input, frame => 
                     {
-                        var cFrame = TensorHelper.GetRegionOfInterest(im, roi, out Point _);
-                        cFrame = TensorHelper.EnsureFrameSize(cFrame, tensorSize, ref resizeTemp);
-                        cFrame = TensorHelper.EnsureColorFormat(cFrame, ColorConversion, ref colorTemp, colorChannels);
-                        return cFrame;
+                        frame = TensorHelper.EnsureFrameSize(frame, tensorSize, ref resizeTemp);
+                        frame = TensorHelper.EnsureColorFormat(frame, ColorConversion, ref colorTemp, colorChannels);
+                        return frame;
 
                     });
                     TensorHelper.UpdateTensor(tensor, colorChannels, frames);
@@ -133,8 +129,8 @@ namespace Bonsai.Sleap
                             else
                             {
                                 centroid.Position = new Point2f(
-                                    (float)(centroidArr[i, 0] * poseScale) + offset.X,
-                                    (float)(centroidArr[i, 1] * poseScale) + offset.Y);
+                                    (float)(centroidArr[i, 0] * poseScale),
+                                    (float)(centroidArr[i, 1] * poseScale));
                             }
                             pose.Centroid = centroid;
 
@@ -150,8 +146,8 @@ namespace Bonsai.Sleap
                                 }
                                 else
                                 {
-                                    bodyPart.Position.X = (float)(poseArr[i, bodyPartIdx, 0] * poseScale) + offset.X;
-                                    bodyPart.Position.Y = (float)(poseArr[i, bodyPartIdx, 1] * poseScale) + offset.Y;
+                                    bodyPart.Position.X = (float)(poseArr[i, bodyPartIdx, 0] * poseScale);
+                                    bodyPart.Position.Y = (float)(poseArr[i, bodyPartIdx, 1] * poseScale);
                                 }
                                 pose.Add(bodyPart);
                             }
@@ -165,17 +161,7 @@ namespace Bonsai.Sleap
 
         public override IObservable<PoseCollection> Process(IObservable<IplImage> source)
         {
-            return Process(source, frame => (new IplImage[] { frame }, new Rect(0, 0, 0, 0)));
-        }
-
-        public IObservable<PoseCollection> Process(IObservable<IplImage[]> source)
-        {
-            return Process(source, frame => (frame , new Rect(0, 0, 0, 0)));
-        }
-
-        public IObservable<PoseCollection> Process(IObservable<Tuple<IplImage, Rect>> source)
-        {
-            return Process(source, input => (new IplImage[] { input.Item1 }, input.Item2));
+            return Process(source.Select(frame => new IplImage[] { frame }));
         }
     }
 }
