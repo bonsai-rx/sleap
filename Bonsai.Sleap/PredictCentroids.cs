@@ -116,9 +116,8 @@ namespace Bonsai.Sleap
                             else
                             {
                                 centroid.Position = new Point2f(
-                                     (float)(centroidArr[i, 0] * poseScale) + offset.X,
-                                     (float)(centroidArr[i, 1] * poseScale) + offset.Y
-                                    );
+                                    (float)(centroidArr[i, 0] * poseScale) + offset.X,
+                                    (float)(centroidArr[i, 1] * poseScale) + offset.Y);
                             }
                             centroidPoseCollection.Add(centroid);
                         };

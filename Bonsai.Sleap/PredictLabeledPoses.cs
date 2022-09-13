@@ -144,7 +144,6 @@ namespace Bonsai.Sleap
                             else labeledPose.Label = config.ClassNames[maxIndex];
 
                             var centroid = new Centroid(input[0]);
-
                             centroid.Confidence = centroidConfArr[0];
                             if (centroid.Confidence < centroidTreshold)
                             {
