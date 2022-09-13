@@ -183,16 +183,5 @@ namespace Bonsai.Sleap
             skeleton.Edges = edges;
             config.Skeleton = skeleton;
         }
-
-        public enum ModelType
-        {
-            InvalidModel = 0,
-            SingleInstance = 1,
-            Centroid = 2,
-            CenteredInstance = 3,
-            MultiInstance = 4,
-            MultiClass = 5
-        }
-
     }
 }
