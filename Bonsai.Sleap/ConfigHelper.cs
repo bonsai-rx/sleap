@@ -25,8 +25,6 @@ namespace Bonsai.Sleap
             return mapping;
         }
 
-
-
         public static TrainingConfig LoadTrainingConfig(string fileName)
         {
             var mapping = OpenFile(fileName);
@@ -35,7 +33,6 @@ namespace Bonsai.Sleap
 
         public static TrainingConfig LoadTrainingConfig(YamlMappingNode mapping)
         {
-
             var config = new TrainingConfig();
             config.ModelType = GetModelType(mapping);
             ParseModel(config, mapping);
@@ -50,45 +47,47 @@ namespace Bonsai.Sleap
 
         public static ModelType GetModelType(YamlMappingNode mapping)
         {
-            int Nfound = 0;
+            int modelCount = 0;
             var availableModels = mapping["model"]["heads"];
             var outArg = ModelType.InvalidModel;
 
             if (availableModels["single_instance"].AllNodes.Count() > 1)
             {
-                Nfound++;
+                modelCount++;
                 outArg = ModelType.SingleInstance;
             }
             if (availableModels["centroid"].AllNodes.Count() > 1)
             {
-                Nfound++;
+                modelCount++;
                 outArg = ModelType.Centroid;
             }
             if (availableModels["centered_instance"].AllNodes.Count() > 1)
             {
-                Nfound++;
+                modelCount++;
                 outArg = ModelType.CenteredInstance;
             }
             if (availableModels["multi_instance"].AllNodes.Count() > 1)
             {
-                Nfound++;
+                modelCount++;
                 outArg = ModelType.MultiInstance;
             }
-            if (Nfound == 0){ //TODO Sometime it does not appear in the json, might need a try/catch
+            if (modelCount == 0)
+            {
+                //TODO: Sometimes it does not appear in the json, might need a try/catch
                 if (availableModels["multi_class_topdown"].AllNodes.Count() > 1)
                 {
-                    Nfound++;
+                    modelCount++;
                     outArg = ModelType.MultiClass;
                 }
             }
 
-            if (Nfound == 0)
+            if (modelCount == 0)
             {
-                throw new KeyNotFoundException("No models found in training_config.json file.");
+                throw new InvalidDataException("No models found in training_config.json file.");
             }
-            if (Nfound > 1)
+            if (modelCount > 1)
             {
-                throw new KeyNotFoundException("Multiple models found in training_config.json file.");
+                throw new InvalidDataException("Multiple models found in training_config.json file.");
             }
             return outArg;
         }
@@ -183,16 +182,5 @@ namespace Bonsai.Sleap
             skeleton.Edges = edges;
             config.Skeleton = skeleton;
         }
-
-        public enum ModelType
-        {
-            InvalidModel = 0,
-            SingleInstance = 1,
-            Centroid = 2,
-            CenteredInstance = 3,
-            MultiInstance = 4,
-            MultiClass = 5
-        }
-
     }
 }

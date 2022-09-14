@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Collections.Generic;
 using OpenCV.Net;
 using TensorFlow;
 using System.ComponentModel;
@@ -38,7 +37,7 @@ namespace Bonsai.Sleap
         [Description("The optional color conversion used to prepare RGB video frames for inference.")]
         public ColorConversion? ColorConversion { get; set; }
 
-        IObservable<PoseCollection> Process<TSource>(IObservable<TSource> source, Func<TSource, (IplImage[], Rect)> roiSelector)
+        public IObservable<PoseCollection> Process(IObservable<IplImage[]> source)
         {
             return Observable.Defer(() =>
             {
@@ -49,17 +48,16 @@ namespace Bonsai.Sleap
                 var graph = TensorHelper.ImportModel(ModelFileName, out TFSession session);
                 var config = ConfigHelper.LoadTrainingConfig(TrainingConfig);
 
-                if (config.ModelType != ConfigHelper.ModelType.CenteredInstance)
+                if (config.ModelType != ModelType.CenteredInstance)
                 {
-                    throw new UnexpectedModelTypeException($"Expected {nameof(ConfigHelper.ModelType.CenteredInstance)} model type but found {config.ModelType} .");
+                    throw new UnexpectedModelTypeException($"Expected {nameof(ModelType.CenteredInstance)} model type but found {config.ModelType} .");
                 }
 
-                return source.Select(value =>
+                return source.Select(input =>
                 {
                     var poseScale = 1.0;
-                    var (input, roi) = roiSelector(value);
                     int colorChannels = (ColorConversion is null) ? input[0].Channels : ExtensionMethods.GetConversionNumChannels((ColorConversion)ColorConversion);
-                    var tensorSize = roi.Width > 0 && roi.Height > 0 ? new Size(roi.Width, roi.Height) : input[0].Size;
+                    var tensorSize = input[0].Size;
                     var batchSize = input.Length;
                     var scaleFactor = ScaleFactor;
                     
@@ -84,114 +82,86 @@ namespace Bonsai.Sleap
 
                     }
 
-                    var _frame = TensorHelper.GetRegionOfInterest(input[0], roi, out Point offset);
-                    IplImage[] frame = input.Select(im => 
+                    var frames = Array.ConvertAll(input, frame => 
                     {
-                        var cFrame = TensorHelper.GetRegionOfInterest(im, roi, out Point _);
-                        cFrame = TensorHelper.EnsureFrameSize(cFrame, tensorSize, ref resizeTemp);
-                        cFrame = TensorHelper.EnsureColorFormat(cFrame, ColorConversion, ref colorTemp, colorChannels);
-                        return cFrame;
+                        frame = TensorHelper.EnsureFrameSize(frame, tensorSize, ref resizeTemp);
+                        frame = TensorHelper.EnsureColorFormat(frame, ColorConversion, ref colorTemp, colorChannels);
+                        return frame;
 
-                    }).ToArray();
-
-                    TensorHelper.UpdateTensor(tensor, colorChannels, frame);
+                    });
+                    TensorHelper.UpdateTensor(tensor, colorChannels, frames);
                     var output = runner.Run();
 
-                    var centroidConfidenceTensor = output[0];
-                    float[] centroidConfArr = new float[centroidConfidenceTensor.Shape[0]];
-                    centroidConfidenceTensor.GetValue(centroidConfArr);
-
-                    var centroidTensor = output[1];
-                    float[,] centroidArr = new float[centroidTensor.Shape[0], centroidTensor.Shape[1]];
-                    centroidTensor.GetValue(centroidArr);
-
-                    var partConfTensor = output[2];
-                    float[,] partConfArr = new float[partConfTensor.Shape[0], partConfTensor.Shape[1]];
-                    partConfTensor.GetValue(partConfArr);
-
-                    var poseTensor = output[3];
-                    float[,,] poseArr = new float[poseTensor.Shape[0], poseTensor.Shape[1], poseTensor.Shape[2]];
-                    poseTensor.GetValue(poseArr);
-
-                    var PoseCollection = new PoseCollection();
-                    var partThreshold = PartMinConfidence;
-                    var centroidThreshold = CentroidMinConfidence;
-
-                    //Loop the available identifications
-                    for (int i = 0; i < input.Length; i++)
+                    if (output[0].Shape[0] == 0) return new PoseCollection();
+                    else
                     {
-                        var pose = new Pose(input[0]);
-                        var centroid = new Centroid(input[0]);
+                        var centroidConfidenceTensor = output[0];
+                        float[] centroidConfArr = new float[centroidConfidenceTensor.Shape[0]];
+                        centroidConfidenceTensor.GetValue(centroidConfArr);
 
-                        centroid.Confidence = centroidConfArr[0];
-                        if (centroid.Confidence < centroidThreshold)
-                        {
-                            centroid.Position = new Point2f(float.NaN, float.NaN);
-                        }
-                        else
-                        {
-                            centroid.Position = new Point2f(
-                                    (float)(centroidArr[i, 0] * poseScale) + offset.X,
-                                    (float)(centroidArr[i, 1] * poseScale) + offset.Y
-                                );
-                        }
-                        pose.Centroid = centroid;
+                        var centroidTensor = output[1];
+                        float[,] centroidArr = new float[centroidTensor.Shape[0], centroidTensor.Shape[1]];
+                        centroidTensor.GetValue(centroidArr);
 
-                        // Iterate on the body parts
-                        for (int bodyPartIdx = 0; bodyPartIdx < poseArr.GetLength(1); bodyPartIdx++)
+                        var partConfTensor = output[2];
+                        float[,] partConfArr = new float[partConfTensor.Shape[0], partConfTensor.Shape[1]];
+                        partConfTensor.GetValue(partConfArr);
+
+                        var poseTensor = output[3];
+                        float[,,] poseArr = new float[poseTensor.Shape[0], poseTensor.Shape[1], poseTensor.Shape[2]];
+                        poseTensor.GetValue(poseArr);
+
+                        var poseCollection = new PoseCollection();
+                        var partThreshold = PartMinConfidence;
+                        var centroidThreshold = CentroidMinConfidence;
+
+                        //Loop the available identifications
+                        for (int i = 0; i < input.Length; i++)
                         {
-                            BodyPart bodyPart;
-                            bodyPart.Name = config.PartNames[bodyPartIdx];
-                            bodyPart.Confidence = partConfArr[i, bodyPartIdx];
-                            if (bodyPart.Confidence < partThreshold)
+                            var pose = new Pose(input[0]);
+                            var centroid = new Centroid(input[0]);
+
+                            centroid.Confidence = centroidConfArr[0];
+                            if (centroid.Confidence < centroidThreshold)
                             {
-                                bodyPart.Position = new Point2f(float.NaN, float.NaN);
+                                centroid.Position = new Point2f(float.NaN, float.NaN);
                             }
                             else
                             {
-                                bodyPart.Position.X = (float)(poseArr[i, bodyPartIdx, 0] * poseScale) + offset.X;
-                                bodyPart.Position.Y = (float)(poseArr[i, bodyPartIdx, 1] * poseScale) + offset.Y;
+                                centroid.Position = new Point2f(
+                                    (float)(centroidArr[i, 0] * poseScale),
+                                    (float)(centroidArr[i, 1] * poseScale));
                             }
-                            pose.Add(bodyPart);
-                        }
-                        PoseCollection.Add(pose);
-                    };
-                    return PoseCollection;
+                            pose.Centroid = centroid;
+
+                            // Iterate on the body parts
+                            for (int bodyPartIdx = 0; bodyPartIdx < poseArr.GetLength(1); bodyPartIdx++)
+                            {
+                                BodyPart bodyPart;
+                                bodyPart.Name = config.PartNames[bodyPartIdx];
+                                bodyPart.Confidence = partConfArr[i, bodyPartIdx];
+                                if (bodyPart.Confidence < partThreshold)
+                                {
+                                    bodyPart.Position = new Point2f(float.NaN, float.NaN);
+                                }
+                                else
+                                {
+                                    bodyPart.Position.X = (float)(poseArr[i, bodyPartIdx, 0] * poseScale);
+                                    bodyPart.Position.Y = (float)(poseArr[i, bodyPartIdx, 1] * poseScale);
+                                }
+                                pose.Add(bodyPart);
+                            }
+                            poseCollection.Add(pose);
+                        };
+                        return poseCollection;
+                    }
                 });
             });
         }
 
         public override IObservable<PoseCollection> Process(IObservable<IplImage> source)
         {
-            return Process(source, frame => (new IplImage[] { frame }, new Rect(0, 0, 0, 0)));
-        }
-
-        public IObservable<PoseCollection> Process(IObservable<IplImage[]> source)
-        {
-            return Process(source, frame => (frame , new Rect(0, 0, 0, 0)));
-        }
-
-        public IObservable<PoseCollection> Process(IObservable<Tuple<IplImage, Rect>> source)
-        {
-            return Process(source, input => (new IplImage[] { input.Item1 }, input.Item2));
-        }
-
-        static int ArgMax<TElement>(TElement[,] array, int instance, IComparer<TElement> comparer, out TElement maxValue)
-        {
-            if (array == null) throw new ArgumentNullException(nameof(array));
-            if (comparer == null) throw new ArgumentNullException(nameof(comparer));
-
-            int maxIndex = -1;
-            maxValue = default;
-            for (int i = 0; i < array.GetLength(1); i++)
-            {
-                if (i == 0 || comparer.Compare(array[instance, i], maxValue) > 0)
-                {
-                    maxIndex = i;
-                    maxValue = array[instance, i];
-                }
-            }
-            return maxIndex;
+            return Process(source.Select(frame => new IplImage[] { frame }));
         }
     }
 }

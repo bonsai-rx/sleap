@@ -32,7 +32,7 @@ namespace Bonsai.Sleap
         [Description("The optional color conversion used to prepare RGB video frames for inference.")]
         public ColorConversion? ColorConversion { get; set; }
 
-        IObservable<CentroidCollection> Process<TSource>(IObservable<TSource> source, Func<TSource, (IplImage[], Rect)> roiSelector)
+        public IObservable<CentroidCollection> Process(IObservable<IplImage[]> source)
         {
             return Observable.Defer(() =>
             {
@@ -43,17 +43,16 @@ namespace Bonsai.Sleap
                 var graph = TensorHelper.ImportModel(ModelFileName, out TFSession session);
                 var config = ConfigHelper.LoadTrainingConfig(TrainingConfig);
 
-                if (config.ModelType != ConfigHelper.ModelType.Centroid)
+                if (config.ModelType != ModelType.Centroid)
                 {
-                    throw new UnexpectedModelTypeException($"Expected {nameof(ConfigHelper.ModelType.Centroid)} model type but found {config.ModelType} .");
+                    throw new UnexpectedModelTypeException($"Expected {nameof(ModelType.Centroid)} model type but found {config.ModelType} .");
                 }
 
-                return source.Select(value =>
+                return source.Select(input =>
                 {
                     var poseScale = 1.0;
-                    var (input, roi) = roiSelector(value);
                     int colorChannels = (ColorConversion is null) ? input[0].Channels : ExtensionMethods.GetConversionNumChannels((ColorConversion)ColorConversion);
-                    var tensorSize = roi.Width > 0 && roi.Height > 0 ? new Size(roi.Width, roi.Height) : input[0].Size;
+                    var tensorSize = input[0].Size;
                     var batchSize = input.Length;
                     var scaleFactor = ScaleFactor;
                     
@@ -75,68 +74,58 @@ namespace Bonsai.Sleap
                         runner.Fetch(graph["Identity_2"][0]);
                     }
 
-                    var _frame = TensorHelper.GetRegionOfInterest(input[0], roi, out Point offset);
-                    IplImage[] frame = input.Select(im => 
+                    var frames = Array.ConvertAll(input, frame => 
                     {
-                        var cFrame = TensorHelper.GetRegionOfInterest(im, roi, out Point _);
-                        cFrame = TensorHelper.EnsureFrameSize(cFrame, tensorSize, ref resizeTemp);
-                        cFrame = TensorHelper.EnsureColorFormat(cFrame, ColorConversion, ref colorTemp, colorChannels);
-                        return cFrame;
-
-                    }).ToArray();
-                    TensorHelper.UpdateTensor(tensor, colorChannels, frame);
+                        frame = TensorHelper.EnsureFrameSize(frame, tensorSize, ref resizeTemp);
+                        frame = TensorHelper.EnsureColorFormat(frame, ColorConversion, ref colorTemp, colorChannels);
+                        return frame;
+                    });
+                    TensorHelper.UpdateTensor(tensor, colorChannels, frames);
                     var output = runner.Run();
 
-                    // Fetch the results from output
-                    var centroidConfidenceTensor = output[0];
-                    float[] centroidConfArr = new float[centroidConfidenceTensor.Shape[0]];
-                    centroidConfidenceTensor.GetValue(centroidConfArr);
-
-                    var centroidTensor = output[1];
-                    float[,] centroidArr = new float[centroidTensor.Shape[0], centroidTensor.Shape[1]];
-                    centroidTensor.GetValue(centroidArr);
-
-                    var centroidPoseCollection = new CentroidCollection();
-                    var confidenceThreshold = CentroidMinConfidence;
-
-                    for (int i = 0; i < centroidConfArr.GetLength(0); i++)
+                    if (output[0].Shape[0] == 0) return new CentroidCollection();
+                    else
                     {
-                        //TODO not sure what to do here if multiple images are given....
-                        var centroid = new Centroid(input[0]);
-                        centroid.Name = config.PartNames[0];
-                        centroid.Confidence = centroidConfArr[i];
+                        // Fetch the results from output
+                        var centroidConfidenceTensor = output[0];
+                        float[] centroidConfArr = new float[centroidConfidenceTensor.Shape[0]];
+                        centroidConfidenceTensor.GetValue(centroidConfArr);
 
-                        if (centroid.Confidence < confidenceThreshold)
+                        var centroidTensor = output[1];
+                        float[,] centroidArr = new float[centroidTensor.Shape[0], centroidTensor.Shape[1]];
+                        centroidTensor.GetValue(centroidArr);
+
+                        var centroidPoseCollection = new CentroidCollection();
+                        var confidenceThreshold = CentroidMinConfidence;
+
+                        for (int i = 0; i < centroidConfArr.GetLength(0); i++)
                         {
-                            centroid.Position = new Point2f(float.NaN, float.NaN);
-                        }
-                        else
-                        {
-                            centroid.Position = new Point2f(
-                                 (float)(centroidArr[i, 0] * poseScale) + offset.X,
-                                 (float)(centroidArr[i, 1] * poseScale) + offset.Y
-                                );
-                        }
-                        centroidPoseCollection.Add(centroid);
-                    };
-                    return centroidPoseCollection;
+                            //TODO not sure what to do here if multiple images are given....
+                            var centroid = new Centroid(input[0]);
+                            centroid.Name = config.PartNames[0];
+                            centroid.Confidence = centroidConfArr[i];
+
+                            if (centroid.Confidence < confidenceThreshold)
+                            {
+                                centroid.Position = new Point2f(float.NaN, float.NaN);
+                            }
+                            else
+                            {
+                                centroid.Position = new Point2f(
+                                    (float)(centroidArr[i, 0] * poseScale),
+                                    (float)(centroidArr[i, 1] * poseScale));
+                            }
+                            centroidPoseCollection.Add(centroid);
+                        };
+                        return centroidPoseCollection;
+                    }
                 });
             });
         }
 
         public override IObservable<CentroidCollection> Process(IObservable<IplImage> source)
         {
-            return Process(source, frame => (new IplImage[] { frame }, new Rect(0, 0, 0, 0)));
-        }
-
-        public IObservable<CentroidCollection> Process(IObservable<IplImage[]> source)
-        {
-            return Process(source, frame => (frame , new Rect(0, 0, 0, 0)));
-        }
-
-        public IObservable<CentroidCollection> Process(IObservable<Tuple<IplImage, Rect>> source)
-        {
-            return Process(source, input => (new IplImage[] { input.Item1 }, input.Item2));
+            return Process(source.Select(frame => new IplImage[] { frame }));
         }
     }
 }

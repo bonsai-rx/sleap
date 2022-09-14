@@ -32,7 +32,7 @@ namespace Bonsai.Sleap
         [Description("The optional color conversion used to prepare RGB video frames for inference.")]
         public ColorConversion? ColorConversion { get; set; }
 
-        IObservable<PoseCollection> Process<TSource>(IObservable<TSource> source, Func<TSource, (IplImage[], Rect)> roiSelector)
+        public IObservable<PoseCollection> Process(IObservable<IplImage[]> source)
         {
             return Observable.Defer(() =>
             {
@@ -43,17 +43,16 @@ namespace Bonsai.Sleap
                 var graph = TensorHelper.ImportModel(ModelFileName, out TFSession session);
                 var config = ConfigHelper.LoadTrainingConfig(TrainingConfig);
 
-                if (config.ModelType != ConfigHelper.ModelType.SingleInstance)
+                if (config.ModelType != ModelType.SingleInstance)
                 {
-                    throw new UnexpectedModelTypeException($"Expected {nameof(ConfigHelper.ModelType.SingleInstance)} model type but found {config.ModelType} .");
+                    throw new UnexpectedModelTypeException($"Expected {nameof(ModelType.SingleInstance)} model type but found {config.ModelType} .");
                 }
 
-                return source.Select(value =>
+                return source.Select(input =>
                 {
                     var poseScale = 1.0;
-                    var (input, roi) = roiSelector(value);
                     int colorChannels = (ColorConversion is null) ? input[0].Channels : ExtensionMethods.GetConversionNumChannels((ColorConversion)ColorConversion);
-                    var tensorSize = roi.Width > 0 && roi.Height > 0 ? new Size(roi.Width, roi.Height) : input[0].Size;
+                    var tensorSize = input[0].Size;
                     var batchSize = input.Length;
                     var scaleFactor = ScaleFactor;
                     
@@ -74,17 +73,13 @@ namespace Bonsai.Sleap
                         runner.Fetch(graph["Identity_1"][0]);
                     }
 
-                    var _frame = TensorHelper.GetRegionOfInterest(input[0], roi, out Point offset);
-                    IplImage[] frame = input.Select(im => 
+                    var frames = Array.ConvertAll(input, frame => 
                     {
-                        var cFrame = TensorHelper.GetRegionOfInterest(im, roi, out Point _);
-                        cFrame = TensorHelper.EnsureFrameSize(cFrame, tensorSize, ref resizeTemp);
-                        cFrame = TensorHelper.EnsureColorFormat(cFrame, ColorConversion, ref colorTemp, colorChannels);
-                        return cFrame;
-
-                    }).ToArray();
-
-                    TensorHelper.UpdateTensor(tensor, colorChannels, frame);
+                        frame = TensorHelper.EnsureFrameSize(frame, tensorSize, ref resizeTemp);
+                        frame = TensorHelper.EnsureColorFormat(frame, ColorConversion, ref colorTemp, colorChannels);
+                        return frame;
+                    });
+                    TensorHelper.UpdateTensor(tensor, colorChannels, frames);
                     var output = runner.Run();
 
                     var partConfTensor = output[0];
@@ -95,7 +90,7 @@ namespace Bonsai.Sleap
                     float[,,,] poseArr = new float[poseTensor.Shape[0], poseTensor.Shape[1], poseTensor.Shape[2], poseTensor.Shape[3]];
                     poseTensor.GetValue(poseArr);
 
-                    var PoseCollection = new PoseCollection();
+                    var poseCollection = new PoseCollection();
                     var partThreshold = PartMinConfidence;
 
                     //Loop the available identifications
@@ -103,7 +98,7 @@ namespace Bonsai.Sleap
                     {
                         var pose = new Pose(input[i]);
                         // Iterate on the body parts
-                        for (int bodyPartIdx = 0; bodyPartIdx < poseArr.GetLength(1); bodyPartIdx++)
+                        for (int bodyPartIdx = 0; bodyPartIdx < poseArr.GetLength(2); bodyPartIdx++)
                         {
                             BodyPart bodyPart;
                             bodyPart.Name = config.PartNames[bodyPartIdx];
@@ -114,31 +109,21 @@ namespace Bonsai.Sleap
                             }
                             else
                             {
-                                bodyPart.Position.X = (float)(poseArr[i,0, bodyPartIdx, 0] * poseScale) + offset.X;
-                                bodyPart.Position.Y = (float)(poseArr[i,0, bodyPartIdx, 1] * poseScale) + offset.Y;
+                                bodyPart.Position.X = (float)(poseArr[i,0, bodyPartIdx, 0] * poseScale);
+                                bodyPart.Position.Y = (float)(poseArr[i,0, bodyPartIdx, 1] * poseScale);
                             }
                             pose.Add(bodyPart);
                         }
-                        PoseCollection.Add(pose);
+                        poseCollection.Add(pose);
                     };
-                    return PoseCollection;
+                    return poseCollection;
                 });
             });
         }
 
         public override IObservable<Pose> Process(IObservable<IplImage> source)
         {
-            return Process(source, frame => (new IplImage[] { frame }, new Rect(0, 0, 0, 0))).Select(result => result[0]);
-        }
-
-        public IObservable<PoseCollection> Process(IObservable<IplImage[]> source)
-        {
-            return Process(source, frame => (frame , new Rect(0, 0, 0, 0)));
-        }
-
-        public IObservable<Pose> Process(IObservable<Tuple<IplImage, Rect>> source)
-        {
-            return Process(source, input => (new IplImage[] { input.Item1 }, input.Item2)).Select(result => result[0]);
+            return Process(source.Select(frame => new IplImage[] { frame })).Select(result => result[0]);
         }
     }
 }

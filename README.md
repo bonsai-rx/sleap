@@ -44,9 +44,9 @@ The general Bonsai workflow will thus be:
 
 ![Bonsai_Pipeline](Resources/sleap_operator.svg)
 
-Additional information can be extracted by selecting the relevant structure fields. E.g.:
+Additional information can be extracted by selecting the relevant structure fields.
 
-![Bonsai_Pipeline_expanded](Resources/sleap_operator_expanded.svg)
+![Bonsai_Pipeline_expanded](Resources/demo.gif)
 
 In order to use the `Predict` operators, you will need to provide the `ModelFileName` to the exported .pb file folder containing your pretrained SLEAP model, along with the corresponding `PoseConfigFileName` to the `training_config.json` file.
 
