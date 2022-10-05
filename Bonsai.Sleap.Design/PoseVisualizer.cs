@@ -5,7 +5,6 @@ using Bonsai.Sleap.Design;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using System;
-using System.Drawing;
 using System.Windows.Forms;
 using System.Collections.Generic;
 
@@ -53,12 +52,7 @@ namespace Bonsai.Sleap.Design
                 {
                     if (DrawLabels)
                     {
-                        for (int i = 0; i < pose.Count; i++)
-                        {
-                            var bodyPart = pose[i];
-                            var position = bodyPart.Position;
-                            graphics.DrawString(bodyPart.Name, labelFont, Brushes.White, position.X, position.Y);
-                        }
+                        DrawingHelper.DrawLabels(graphics, labelFont, pose);
                     }
                 });
             }

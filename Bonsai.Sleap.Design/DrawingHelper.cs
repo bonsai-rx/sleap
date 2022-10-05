@@ -2,6 +2,9 @@
 using OpenCV.Net;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
+using Font = System.Drawing.Font;
+using Graphics = System.Drawing.Graphics;
+using Brushes = System.Drawing.Brushes;
 
 namespace Bonsai.Sleap.Design
 {
@@ -84,6 +87,16 @@ namespace Bonsai.Sleap.Design
                 GL.Vertex2(NormalizePoint(roiLimits[i], imageSize));
             }
             GL.End();
+        }
+
+        public static void DrawLabels(Graphics graphics, Font font, Pose pose)
+        {
+            for (int i = 0; i < pose.Count; i++)
+            {
+                var bodyPart = pose[i];
+                var position = bodyPart.Position;
+                graphics.DrawString(bodyPart.Name, font, Brushes.White, position.X, position.Y);
+            }
         }
     }
 }

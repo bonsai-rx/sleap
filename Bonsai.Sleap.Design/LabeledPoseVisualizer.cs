@@ -64,20 +64,14 @@ namespace Bonsai.Sleap.Design
             {
                 labeledImage.UpdateLabels(labeledPose.Image.Size, VisualizerCanvas.Font, (graphics, labelFont) =>
                 {
-                    var pose = labeledPose;
                     if (DrawLabels)
                     {
-                        for (int i = 0; i < pose.Count; i++)
-                        {
-                            var bodyPart = pose[i];
-                            var position = bodyPart.Position;
-                            graphics.DrawString(bodyPart.Name, labelFont, Brushes.White, position.X, position.Y);
-                        }
+                        DrawingHelper.DrawLabels(graphics, labelFont, labeledPose);
                     }
 
-                    if (DrawIdentity && pose.Count > 0)
+                    if (DrawIdentity && labeledPose.Count > 0)
                     {
-                        var position = pose[0].Position;
+                        var position = labeledPose[0].Position;
                         graphics.DrawString(labeledPose.Label, labelFont, Brushes.White, position.X, position.Y);
                     }
                 });
