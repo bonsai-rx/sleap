@@ -1,4 +1,4 @@
-using Bonsai;
+﻿using Bonsai;
 using Bonsai.Vision.Design;
 using Bonsai.Sleap;
 using Bonsai.Sleap.Design;
@@ -32,10 +32,7 @@ namespace Bonsai.Sleap.Design
         public override void Show(object value)
         {
             labeledPoses = (LabeledPoseCollection)value;
-            if (labeledPoses != null && labeledPoses.Count > 0)
-            {
-                base.Show(labeledPoses[0].Image);
-            }
+            base.Show(labeledPoses?.Image);
         }
 
         protected override void ShowMashup(IList<object> values)

@@ -18,7 +18,7 @@ namespace Bonsai.Sleap
             {
                 var label = Label;
                 return !string.IsNullOrEmpty(label)
-                    ? new LabeledPoseCollection(poses.Where(x => x.Label == label).ToList())
+                    ? new LabeledPoseCollection(poses.Where(x => x.Label == label).ToList(), poses.Image)
                     : poses;
             });
         }

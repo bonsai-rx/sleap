@@ -97,7 +97,8 @@ namespace Bonsai.Sleap
                     TensorHelper.UpdateTensor(tensor, colorChannels, frames);
                     var output = runner.Run();
 
-                    if (output[0].Shape[0] == 0) return new LabeledPoseCollection();
+                    var identityCollection = new LabeledPoseCollection(input[0]);
+                    if (output[0].Shape[0] == 0) return identityCollection;
                     else
                     {
                         // Fetch the results from output
@@ -121,7 +122,6 @@ namespace Bonsai.Sleap
                         float[,] idArr = new float[idTensor.Shape[0], idTensor.Shape[1]];
                         idTensor.GetValue(idArr);
 
-                        var identityCollection = new LabeledPoseCollection();
                         var partThreshold = PartMinConfidence;
                         var idThreshold = IdentityMinConfidence;
                         var centroidTreshold = CentroidMinConfidence;
