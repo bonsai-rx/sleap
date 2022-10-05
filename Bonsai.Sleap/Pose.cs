@@ -10,7 +10,7 @@ namespace Bonsai.Sleap
             Image = image;
         }
 
-        public IplImage Image { get; private set; }
+        public IplImage Image { get; }
 
         public Centroid Centroid { get; set; }
 
