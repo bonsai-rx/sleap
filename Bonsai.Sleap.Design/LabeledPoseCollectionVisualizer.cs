@@ -1,4 +1,4 @@
-﻿using Bonsai;
+using Bonsai;
 using Bonsai.Vision.Design;
 using Bonsai.Sleap;
 using Bonsai.Sleap.Design;
@@ -14,7 +14,6 @@ namespace Bonsai.Sleap.Design
 {
     public class LabeledPoseCollectionVisualizer : IplImageVisualizer
     {
-        const float BoundingBoxLineWidth = 3;
         const float BoundingBoxOffset = 0.02f;
         readonly Dictionary<string, int> uniqueLabels = new Dictionary<string, int>();
         LabeledPoseCollection labeledPoses;
@@ -27,7 +26,6 @@ namespace Bonsai.Sleap.Design
             {
                 labeledImage = new LabeledImageLayer();
                 GL.Enable(EnableCap.PointSmooth);
-                GL.LineWidth(BoundingBoxLineWidth);
             };
         }
 
@@ -44,7 +42,7 @@ namespace Bonsai.Sleap.Design
         {
             base.ShowMashup(values);
             var image = VisualizerImage;
-            if (image != null && labeledPoses != null && labeledPoses.Count > 0)
+            if (image != null && labeledPoses != null)
             {
                 labeledImage.UpdateLabels(image.Size, VisualizerCanvas.Font, (graphics, labelFont) =>
                 {
@@ -68,32 +66,13 @@ namespace Bonsai.Sleap.Design
             GL.Color4(Color4.White);
             base.RenderFrame();
 
-            if (labeledPoses != null && labeledPoses.Count > 0)
+            if (labeledPoses != null)
             {
-                var image = VisualizerImage;
-                GL.PointSize(5 * VisualizerCanvas.Height / 480f);
-                GL.Disable(EnableCap.Texture2D);
+                DrawingHelper.SetDrawState(VisualizerCanvas);
                 foreach (var labeledPose in labeledPoses)
                 {
-                    // Draw all body parts
-                    GL.Begin(PrimitiveType.Points);
-                    for (int i = 0; i < labeledPose.Count; i++)
-                    {
-                        var position = labeledPose[i].Position;
-                        GL.Color3(ColorPalette.GetColor(i));
-                        GL.Vertex2(DrawingHelper.NormalizePoint(position, image.Size));
-                    }
-                    GL.End();
-
-                    // Draw bounding box
-                    var roiLimits = DrawingHelper.GetBoundingBox(labeledPose, image.Size, BoundingBoxOffset);
-                    GL.Color3(ColorPalette.GetColor(uniqueLabels[labeledPose.Label]));
-                    GL.Begin(PrimitiveType.LineLoop);
-                    for (int i = 0; i < roiLimits.Length; i++)
-                    {
-                        GL.Vertex2(DrawingHelper.NormalizePoint(roiLimits[i], image.Size));
-                    }
-                    GL.End();
+                    DrawingHelper.DrawPose(labeledPose);
+                    DrawingHelper.DrawBoundingBox(labeledPose, uniqueLabels[labeledPose.Label]);
                 }
                 labeledImage.Draw();
             }

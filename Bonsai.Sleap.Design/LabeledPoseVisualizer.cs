@@ -1,4 +1,4 @@
-﻿using Bonsai;
+using Bonsai;
 using Bonsai.Vision.Design;
 using Bonsai.Sleap;
 using Bonsai.Sleap.Design;
@@ -91,18 +91,8 @@ namespace Bonsai.Sleap.Design
 
             if (labeledPose != null)
             {
-                var pose = labeledPose;
-                GL.PointSize(5 * VisualizerCanvas.Height / 480f);
-                GL.Disable(EnableCap.Texture2D);
-                GL.Begin(PrimitiveType.Points);
-                for (int i = 0; i < pose.Count; i++)
-                {
-                    var bodyPart = pose[i];
-                    var position = bodyPart.Position;
-                    GL.Color3(ColorPalette.GetColor(i));
-                    GL.Vertex2(DrawingHelper.NormalizePoint(position, pose.Image.Size));
-                }
-                GL.End();
+                DrawingHelper.SetDrawState(VisualizerCanvas);
+                DrawingHelper.DrawPose(labeledPose);
                 labeledImage.Draw();
             }
         }

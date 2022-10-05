@@ -1,5 +1,7 @@
-﻿using OpenCV.Net;
+﻿using Bonsai.Vision.Design;
+using OpenCV.Net;
 using OpenTK;
+using OpenTK.Graphics.OpenGL;
 
 namespace Bonsai.Sleap.Design
 {
@@ -48,6 +50,40 @@ namespace Bonsai.Sleap.Design
                 new Point2f(minX, maxY)
             };
             return points;
+        }
+
+        public static void SetDrawState(VisualizerCanvas canvas)
+        {
+            const float BoundingBoxLineWidth = 3;
+            GL.PointSize(5 * canvas.Height / 480f);
+            GL.LineWidth(BoundingBoxLineWidth);
+            GL.Disable(EnableCap.Texture2D);
+        }
+
+        public static void DrawPose(Pose pose)
+        {
+            GL.Begin(PrimitiveType.Points);
+            for (int i = 0; i < pose.Count; i++)
+            {
+                var position = pose[i].Position;
+                GL.Color3(ColorPalette.GetColor(i));
+                GL.Vertex2(NormalizePoint(position, pose.Image.Size));
+            }
+            GL.End();
+        }
+
+        public static void DrawBoundingBox(Pose pose, int colorIndex = 0)
+        {
+            const float BoundingBoxOffset = 0.02f;
+            var imageSize = pose.Image.Size;
+            var roiLimits = GetBoundingBox(pose, imageSize, BoundingBoxOffset);
+            GL.Color3(ColorPalette.GetColor(colorIndex));
+            GL.Begin(PrimitiveType.LineLoop);
+            for (int i = 0; i < roiLimits.Length; i++)
+            {
+                GL.Vertex2(NormalizePoint(roiLimits[i], imageSize));
+            }
+            GL.End();
         }
     }
 }
