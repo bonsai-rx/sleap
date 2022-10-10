@@ -1,4 +1,4 @@
-﻿using Bonsai;
+using Bonsai;
 using Bonsai.Vision.Design;
 using Bonsai.Sleap;
 using Bonsai.Sleap.Design;
@@ -79,7 +79,7 @@ namespace Bonsai.Sleap.Design
                 
                 GL.End();
 
-                if (drawLabels)
+                if (drawLabels && !string.IsNullOrEmpty(centroid.Name))
                 {
                     if (labelImage == null || labelImage.Size != centroid.Image.Size)
                     {
