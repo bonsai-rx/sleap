@@ -75,6 +75,14 @@ namespace Bonsai.Sleap.Design
             GL.End();
         }
 
+        public static void DrawCentroid(Centroid centroid)
+        {
+            GL.Begin(PrimitiveType.Points);
+            GL.Color3(ColorPalette.GetColor(0));
+            GL.Vertex2(NormalizePoint(centroid.Position, centroid.Image.Size));
+            GL.End();
+        }
+
         public static void DrawBoundingBox(Pose pose, int colorIndex = 0)
         {
             const float BoundingBoxOffset = 0.02f;
@@ -96,6 +104,15 @@ namespace Bonsai.Sleap.Design
                 var bodyPart = pose[i];
                 var position = bodyPart.Position;
                 graphics.DrawString(bodyPart.Name, font, Brushes.White, position.X, position.Y);
+            }
+        }
+
+        public static void DrawLabels(Graphics graphics, Font font, Centroid centroid)
+        {
+            if (!string.IsNullOrEmpty(centroid.Name))
+            {
+                var position = centroid.Position;
+                graphics.DrawString(centroid.Name, font, Brushes.White, position.X, position.Y);
             }
         }
     }
