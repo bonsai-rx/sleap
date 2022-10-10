@@ -48,13 +48,14 @@ namespace Bonsai.Sleap.Design
             base.ShowMashup(values);
             if (pose != null)
             {
-                labeledImage.UpdateLabels(pose.Image.Size, VisualizerCanvas.Font, (graphics, labelFont) =>
+                if (DrawLabels)
                 {
-                    if (DrawLabels)
+                    labeledImage.UpdateLabels(pose.Image.Size, VisualizerCanvas.Font, (graphics, labelFont) =>
                     {
                         DrawingHelper.DrawLabels(graphics, labelFont, pose);
-                    }
-                });
+                    });
+                }
+                else labeledImage.ClearLabels();
             }
         }
 

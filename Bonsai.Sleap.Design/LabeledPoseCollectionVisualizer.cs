@@ -7,6 +7,7 @@ using OpenTK.Graphics.OpenGL;
 using System;
 using System.Drawing;
 using System.Collections.Generic;
+using System.Windows.Forms;
 
 [assembly: TypeVisualizer(typeof(LabeledPoseCollectionVisualizer), Target = typeof(LabeledPoseCollection))]
 
@@ -18,10 +19,20 @@ namespace Bonsai.Sleap.Design
         readonly Dictionary<string, int> uniqueLabels = new Dictionary<string, int>();
         LabeledPoseCollection labeledPoses;
         LabeledImageLayer labeledImage;
+        ToolStripButton drawLabelsButton;
+
+        public bool DrawLabels { get; set; }
 
         public override void Load(IServiceProvider provider)
         {
             base.Load(provider);
+            drawLabelsButton = new ToolStripButton("Draw Labels");
+            drawLabelsButton.CheckState = CheckState.Checked;
+            drawLabelsButton.Checked = DrawLabels;
+            drawLabelsButton.CheckOnClick = true;
+            drawLabelsButton.CheckedChanged += (sender, e) => DrawLabels = drawLabelsButton.Checked;
+            StatusStrip.Items.Add(drawLabelsButton);
+
             VisualizerCanvas.Load += (sender, e) =>
             {
                 labeledImage = new LabeledImageLayer();
@@ -41,20 +52,27 @@ namespace Bonsai.Sleap.Design
             var image = VisualizerImage;
             if (image != null && labeledPoses != null)
             {
-                labeledImage.UpdateLabels(image.Size, VisualizerCanvas.Font, (graphics, labelFont) =>
+                foreach (var labeledPose in labeledPoses)
                 {
-                    foreach (var labeledPose in labeledPoses)
+                    if (!uniqueLabels.TryGetValue(labeledPose.Label, out int index))
                     {
-                        if (!uniqueLabels.TryGetValue(labeledPose.Label, out int index))
-                        {
-                            index = uniqueLabels.Count;
-                            uniqueLabels.Add(labeledPose.Label, index);
-                        }
-
-                        var position = DrawingHelper.GetBoundingBox(labeledPose, image.Size, BoundingBoxOffset)[2];
-                        graphics.DrawString(labeledPose.Label, labelFont, Brushes.White, position.X, position.Y);
+                        index = uniqueLabels.Count;
+                        uniqueLabels.Add(labeledPose.Label, index);
                     }
-                });
+                }
+
+                if (DrawLabels)
+                {
+                    labeledImage.UpdateLabels(image.Size, VisualizerCanvas.Font, (graphics, labelFont) =>
+                    {
+                        foreach (var labeledPose in labeledPoses)
+                        {
+                            var position = DrawingHelper.GetBoundingBox(labeledPose, image.Size, BoundingBoxOffset)[2];
+                            graphics.DrawString(labeledPose.Label, labelFont, Brushes.White, position.X, position.Y);
+                        }
+                    });
+                }
+                else labeledImage.ClearLabels();
             }
         }
 

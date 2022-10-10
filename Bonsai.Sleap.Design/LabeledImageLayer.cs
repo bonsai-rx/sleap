@@ -17,6 +17,7 @@ namespace Bonsai.Sleap.Design
         readonly IplImageTexture labelTexture;
         IplImage labelImage;
         Font labelFont;
+        bool hasLabels;
         bool disposed;
 
         public LabeledImageLayer()
@@ -24,6 +25,11 @@ namespace Bonsai.Sleap.Design
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
             labelTexture = new IplImageTexture();
+        }
+
+        public void ClearLabels()
+        {
+            hasLabels = false;
         }
 
         public void UpdateLabels(Size size, Font font, Action<Graphics, Font> draw)
@@ -48,13 +54,17 @@ namespace Bonsai.Sleap.Design
             }
 
             labelTexture.Update(labelImage);
+            hasLabels = true;
         }
 
         public void Draw()
         {
-            GL.Color4(Color4.White);
-            GL.Enable(EnableCap.Texture2D);
-            labelTexture.Draw();
+            if (hasLabels)
+            {
+                GL.Color4(Color4.White);
+                GL.Enable(EnableCap.Texture2D);
+                labelTexture.Draw();
+            }
         }
 
         protected virtual void Dispose(bool disposing)
@@ -68,6 +78,7 @@ namespace Bonsai.Sleap.Design
                     labelFont?.Dispose();
                     labelImage = null;
                     labelFont = null;
+                    hasLabels = false;
                 }
 
                 disposed = true;

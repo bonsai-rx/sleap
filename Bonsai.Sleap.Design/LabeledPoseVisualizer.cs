@@ -59,19 +59,23 @@ namespace Bonsai.Sleap.Design
             base.ShowMashup(values);
             if (labeledPose != null)
             {
-                labeledImage.UpdateLabels(labeledPose.Image.Size, VisualizerCanvas.Font, (graphics, labelFont) =>
+                if (DrawLabels || DrawIdentity)
                 {
-                    if (DrawLabels)
+                    labeledImage.UpdateLabels(labeledPose.Image.Size, VisualizerCanvas.Font, (graphics, labelFont) =>
                     {
-                        DrawingHelper.DrawLabels(graphics, labelFont, labeledPose);
-                    }
+                        if (DrawLabels)
+                        {
+                            DrawingHelper.DrawLabels(graphics, labelFont, labeledPose);
+                        }
 
-                    if (DrawIdentity && labeledPose.Count > 0)
-                    {
-                        var position = labeledPose[0].Position;
-                        graphics.DrawString(labeledPose.Label, labelFont, Brushes.White, position.X, position.Y);
-                    }
-                });
+                        if (DrawIdentity && labeledPose.Count > 0)
+                        {
+                            var position = labeledPose[0].Position;
+                            graphics.DrawString(labeledPose.Label, labelFont, Brushes.White, position.X, position.Y);
+                        }
+                    });
+                }
+                else labeledImage.ClearLabels();
             }
         }
 
