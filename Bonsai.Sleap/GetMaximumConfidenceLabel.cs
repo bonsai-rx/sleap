@@ -2,7 +2,6 @@
 using System.ComponentModel;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Collections.Generic;
 using OpenCV.Net;
 
 namespace Bonsai.Sleap
@@ -19,53 +18,35 @@ namespace Bonsai.Sleap
             return source.Select(poses =>
             {
                 var label = Label;
-                if (string.IsNullOrEmpty(label))
+                int maxIndex = -1;
+                for (int i = 0; i < poses.Count; i++)
                 {
-                    var topConfIdx = ArgMax(poses.Select(x => x.Confidence).ToArray(), Comparer<float>.Default, out float maxScore);
-                    return topConfIdx >= 0 ? poses[topConfIdx] : DefaultPose(poses.Image, string.Empty);
-                }
-                else // do a search for the label
-                {
-                    var filtposes = poses.Where(x => x.Label == label).ToList();
-                    if (!filtposes.Any()){return DefaultPose(poses.Image, label);}
-                    else
+                    var pose = poses[i];
+                    if (!string.IsNullOrEmpty(label) && pose.Label != label)
                     {
-                        var topConfIdx = ArgMax(filtposes.Select(x => x.Confidence).ToArray(), Comparer<float>.Default, out float _);
-                        return topConfIdx >= 0 ? filtposes[topConfIdx] : DefaultPose(poses.Image, label);
+                        continue;
+                    }
+
+                    if (maxIndex < 0 || pose.Confidence > poses[maxIndex].Confidence)
+                    {
+                        maxIndex = i;
                     }
                 }
+
+                return maxIndex < 0 ? DefaultPose(poses.Image, label) : poses[maxIndex];
             });
         }
 
-        static int ArgMax<TElement>(TElement[] array, IComparer<TElement> comparer, out TElement maxValue)
-        {
-            if (array == null) throw new ArgumentNullException(nameof(array));
-            if (comparer == null) throw new ArgumentNullException(nameof(comparer));
-
-            int maxIndex = -1;
-            maxValue = default;
-            for (int i = 0; i < array.Count(); i++)
-            {
-                if (i == 0 || comparer.Compare(array[i], maxValue) > 0)
-                {
-                    maxIndex = i;
-                    maxValue = array[i];
-                }
-            }
-            return maxIndex;
-        }
-
-        private static LabeledPose DefaultPose(IplImage image, String label)
+        static LabeledPose DefaultPose(IplImage image, string label)
         {
             var pose = new LabeledPose(image)
             {
-                Confidence = float.NaN,
                 Label = label,
+                Confidence = float.NaN,
                 Centroid = new Centroid(image)
                 {
                     Position = new Point2f(float.NaN, float.NaN),
-                    Confidence = float.NaN,
-                    Name = null
+                    Confidence = float.NaN
                 }
             };
             return pose;
