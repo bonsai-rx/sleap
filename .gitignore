@@ -1,5 +1,8 @@
+.vs
 bin
 obj
 *.user
 *.suo
-.vs
+*.layout
+movies
+models

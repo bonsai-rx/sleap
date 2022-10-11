@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<WorkflowBuilder Version="2.7.0-rc1"
+<WorkflowBuilder Version="2.7.0-rc4"
                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                  xmlns:cv="clr-namespace:Bonsai.Vision;assembly=Bonsai.Vision"
                  xmlns:sleap="clr-namespace:Bonsai.Sleap;assembly=Bonsai.Sleap"
@@ -8,8 +8,8 @@
     <Nodes>
       <Expression xsi:type="Combinator">
         <Combinator xsi:type="cv:FileCapture">
-          <cv:FileName>C:\Users\neurogears\Documents\git\bruno-f-cruz\SLEAPyBonsai\All models\bonsai_test\Original\video.mp4</cv:FileName>
-          <cv:PlaybackRate>99999</cv:PlaybackRate>
+          <cv:FileName>movies\video.mp4</cv:FileName>
+          <cv:PlaybackRate>9999</cv:PlaybackRate>
           <cv:StartPosition>0.5</cv:StartPosition>
           <cv:PositionUnits>Frames</cv:PositionUnits>
           <cv:Loop>true</cv:Loop>
@@ -20,44 +20,34 @@
         <Combinator xsi:type="cv:Grayscale" />
       </Expression>
       <Expression xsi:type="Combinator">
-        <Combinator xsi:type="sleap:PredictCentroids">
-          <sleap:ModelFileName>C:\Users\neurogears\Documents\git\bruno-f-cruz\SLEAPyBonsai\All models\bonsai_test\bonsai_graphs\centroid_only_model\frozen_graph.pb</sleap:ModelFileName>
-          <sleap:TrainingConfig>C:\Users\neurogears\Documents\git\bruno-f-cruz\SLEAPyBonsai\PostFeedbackModels\centroid.fast.210504_182918.centroid.n=1800\training_config.json</sleap:TrainingConfig>
+        <Combinator xsi:type="sleap:PredictLabeledPoses">
+          <sleap:ModelFileName>models\top_down_id_model\frozen_graph.pb</sleap:ModelFileName>
+          <sleap:TrainingConfig>models\top_down_id_model\training_config.json</sleap:TrainingConfig>
           <sleap:CentroidMinConfidence xsi:nil="true" />
+          <sleap:IdentityMinConfidence xsi:nil="true" />
+          <sleap:PartMinConfidence xsi:nil="true" />
           <sleap:ScaleFactor xsi:nil="true" />
           <sleap:ColorConversion xsi:nil="true" />
         </Combinator>
       </Expression>
-      <Expression xsi:type="Index">
-        <Operand xsi:type="IntProperty">
-          <Value>0</Value>
-        </Operand>
-      </Expression>
-      <Expression xsi:type="MemberSelector">
-        <Selector>Image,Position</Selector>
-      </Expression>
       <Expression xsi:type="Combinator">
-        <Combinator xsi:type="cv:CropCenter">
-          <cv:Size>
-            <cv:Width>150</cv:Width>
-            <cv:Height>150</cv:Height>
-          </cv:Size>
-          <cv:FillValue>
-            <cv:Val0>0</cv:Val0>
-            <cv:Val1>0</cv:Val1>
-            <cv:Val2>0</cv:Val2>
-            <cv:Val3>0</cv:Val3>
-          </cv:FillValue>
+        <Combinator xsi:type="sleap:GetMaximumConfidenceLabel">
+          <sleap:Label />
         </Combinator>
       </Expression>
-      <Expression xsi:type="MemberSelector">
-        <Selector>Name</Selector>
+      <Expression xsi:type="Combinator">
+        <Combinator xsi:type="sleap:GetBodyPart">
+          <sleap:Name>head</sleap:Name>
+        </Combinator>
       </Expression>
       <Expression xsi:type="MemberSelector">
         <Selector>Position</Selector>
       </Expression>
       <Expression xsi:type="MemberSelector">
-        <Selector>Confidence</Selector>
+        <Selector>Label</Selector>
+      </Expression>
+      <Expression xsi:type="MemberSelector">
+        <Selector>Centroid</Selector>
       </Expression>
     </Nodes>
     <Edges>
@@ -67,7 +57,6 @@
       <Edge From="3" To="4" Label="Source1" />
       <Edge From="3" To="6" Label="Source1" />
       <Edge From="3" To="7" Label="Source1" />
-      <Edge From="3" To="8" Label="Source1" />
       <Edge From="4" To="5" Label="Source1" />
     </Edges>
   </Workflow>

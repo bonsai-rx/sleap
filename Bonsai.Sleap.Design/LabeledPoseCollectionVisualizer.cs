@@ -5,16 +5,19 @@ using Bonsai.Sleap.Design;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using System;
-using System.Windows.Forms;
+using System.Drawing;
 using System.Collections.Generic;
+using System.Windows.Forms;
 
-[assembly: TypeVisualizer(typeof(PoseVisualizer), Target = typeof(Pose))]
+[assembly: TypeVisualizer(typeof(LabeledPoseCollectionVisualizer), Target = typeof(LabeledPoseCollection))]
 
 namespace Bonsai.Sleap.Design
 {
-    public class PoseVisualizer : IplImageVisualizer
+    public class LabeledPoseCollectionVisualizer : IplImageVisualizer
     {
-        Pose pose;
+        const float BoundingBoxOffset = 0.02f;
+        readonly Dictionary<string, int> uniqueLabels = new Dictionary<string, int>();
+        LabeledPoseCollection labeledPoses;
         LabeledImageLayer labeledImage;
         ToolStripButton drawLabelsButton;
 
@@ -39,20 +42,34 @@ namespace Bonsai.Sleap.Design
 
         public override void Show(object value)
         {
-            pose = (Pose)value;
-            base.Show(pose?.Image);
+            labeledPoses = (LabeledPoseCollection)value;
+            base.Show(labeledPoses?.Image);
         }
 
         protected override void ShowMashup(IList<object> values)
         {
             base.ShowMashup(values);
-            if (pose != null)
+            var image = VisualizerImage;
+            if (image != null && labeledPoses != null)
             {
+                foreach (var labeledPose in labeledPoses)
+                {
+                    if (!uniqueLabels.TryGetValue(labeledPose.Label, out int index))
+                    {
+                        index = uniqueLabels.Count;
+                        uniqueLabels.Add(labeledPose.Label, index);
+                    }
+                }
+
                 if (DrawLabels)
                 {
-                    labeledImage.UpdateLabels(pose.Image.Size, VisualizerCanvas.Font, (graphics, labelFont) =>
+                    labeledImage.UpdateLabels(image.Size, VisualizerCanvas.Font, (graphics, labelFont) =>
                     {
-                        DrawingHelper.DrawLabels(graphics, labelFont, pose);
+                        foreach (var labeledPose in labeledPoses)
+                        {
+                            var position = DrawingHelper.GetBoundingBox(labeledPose, image.Size, BoundingBoxOffset)[2];
+                            graphics.DrawString(labeledPose.Label, labelFont, Brushes.White, position.X, position.Y);
+                        }
                     });
                 }
                 else labeledImage.ClearLabels();
@@ -64,17 +81,21 @@ namespace Bonsai.Sleap.Design
             GL.Color4(Color4.White);
             base.RenderFrame();
 
-            if (pose != null)
+            if (labeledPoses != null)
             {
                 DrawingHelper.SetDrawState(VisualizerCanvas);
-                DrawingHelper.DrawPose(pose);
+                foreach (var labeledPose in labeledPoses)
+                {
+                    DrawingHelper.DrawPose(labeledPose);
+                    DrawingHelper.DrawBoundingBox(labeledPose, uniqueLabels[labeledPose.Label]);
+                }
                 labeledImage.Draw();
             }
         }
-
         public override void Unload()
         {
             base.Unload();
+            uniqueLabels.Clear();
             labeledImage?.Dispose();
             labeledImage = null;
         }

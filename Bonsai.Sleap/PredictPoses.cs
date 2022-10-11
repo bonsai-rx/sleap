@@ -37,7 +37,7 @@ namespace Bonsai.Sleap
         [Description("The optional color conversion used to prepare RGB video frames for inference.")]
         public ColorConversion? ColorConversion { get; set; }
 
-        public IObservable<PoseCollection> Process(IObservable<IplImage[]> source)
+        private IObservable<PoseCollection> Process(IObservable<IplImage[]> source)
         {
             return Observable.Defer(() =>
             {
@@ -92,7 +92,8 @@ namespace Bonsai.Sleap
                     TensorHelper.UpdateTensor(tensor, colorChannels, frames);
                     var output = runner.Run();
 
-                    if (output[0].Shape[0] == 0) return new PoseCollection();
+                    var poseCollection = new PoseCollection(input[0]);
+                    if (output[0].Shape[0] == 0) return poseCollection;
                     else
                     {
                         var centroidConfidenceTensor = output[0];
@@ -111,16 +112,15 @@ namespace Bonsai.Sleap
                         float[,,] poseArr = new float[poseTensor.Shape[0], poseTensor.Shape[1], poseTensor.Shape[2]];
                         poseTensor.GetValue(poseArr);
 
-                        var poseCollection = new PoseCollection();
                         var partThreshold = PartMinConfidence;
                         var centroidThreshold = CentroidMinConfidence;
 
                         //Loop the available identifications
-                        for (int i = 0; i < input.Length; i++)
+                        for (int i = 0; i < centroidArr.GetLength(0); i++)
                         {
                             var pose = new Pose(input[0]);
-                            var centroid = new Centroid(input[0]);
-
+                            var centroid = new BodyPart();
+                            centroid.Name = string.Empty;
                             centroid.Confidence = centroidConfArr[0];
                             if (centroid.Confidence < centroidThreshold)
                             {
@@ -137,7 +137,7 @@ namespace Bonsai.Sleap
                             // Iterate on the body parts
                             for (int bodyPartIdx = 0; bodyPartIdx < poseArr.GetLength(1); bodyPartIdx++)
                             {
-                                BodyPart bodyPart;
+                                var bodyPart = new BodyPart();
                                 bodyPart.Name = config.PartNames[bodyPartIdx];
                                 bodyPart.Confidence = partConfArr[i, bodyPartIdx];
                                 if (bodyPart.Confidence < partThreshold)

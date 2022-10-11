@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<WorkflowBuilder Version="2.7.0-rc1"
+<WorkflowBuilder Version="2.7.0-rc4"
                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                  xmlns:cv="clr-namespace:Bonsai.Vision;assembly=Bonsai.Vision"
                  xmlns:rx="clr-namespace:Bonsai.Reactive;assembly=Bonsai.Core"
@@ -9,8 +9,8 @@
     <Nodes>
       <Expression xsi:type="Combinator">
         <Combinator xsi:type="cv:FileCapture">
-          <cv:FileName>C:\Users\neurogears\Documents\git\bruno-f-cruz\SLEAPyBonsai\All models\bonsai_test\BermanFlies\072212_163153@10000-13200@0-3199.mp4</cv:FileName>
-          <cv:PlaybackRate>10</cv:PlaybackRate>
+          <cv:FileName>movies\video.mp4</cv:FileName>
+          <cv:PlaybackRate>9999</cv:PlaybackRate>
           <cv:StartPosition>0.5</cv:StartPosition>
           <cv:PositionUnits>Frames</cv:PositionUnits>
           <cv:Loop>true</cv:Loop>
@@ -58,19 +58,6 @@
         <Combinator xsi:type="cv:BinaryRegionAnalysis" />
       </Expression>
       <Expression xsi:type="Combinator">
-        <Combinator xsi:type="cv:TakeBinaryRegions">
-          <cv:Count>1</cv:Count>
-        </Combinator>
-      </Expression>
-      <Expression xsi:type="Index">
-        <Operand xsi:type="IntProperty">
-          <Value>0</Value>
-        </Operand>
-      </Expression>
-      <Expression xsi:type="MemberSelector">
-        <Selector>Centroid</Selector>
-      </Expression>
-      <Expression xsi:type="Combinator">
         <Combinator xsi:type="rx:Zip" />
       </Expression>
       <Expression xsi:type="Combinator">
@@ -89,12 +76,17 @@
       </Expression>
       <Expression xsi:type="Combinator">
         <Combinator xsi:type="sleap:PredictSinglePose">
-          <sleap:ModelFileName>C:\Users\neurogears\Documents\git\bruno-f-cruz\SLEAPyBonsai\All models\bonsai_test\bonsai_graphs\single_instance_model\frozen_graph.pb</sleap:ModelFileName>
-          <sleap:TrainingConfig>C:\Users\neurogears\Documents\git\bruno-f-cruz\SLEAPyBonsai\All models\bonsai_test\BermanFlies\single_instance_model_fast_unet\training_config.json</sleap:TrainingConfig>
+          <sleap:ModelFileName>models\single_instance_model\frozen_graph.pb</sleap:ModelFileName>
+          <sleap:TrainingConfig>models\single_instance_model\training_config.json</sleap:TrainingConfig>
           <sleap:PartMinConfidence xsi:nil="true" />
           <sleap:ScaleFactor xsi:nil="true" />
           <sleap:ColorConversion xsi:nil="true" />
         </Combinator>
+      </Expression>
+      <Expression xsi:type="Index">
+        <Operand xsi:type="IntProperty">
+          <Value>0</Value>
+        </Operand>
       </Expression>
       <Expression xsi:type="Combinator">
         <Combinator xsi:type="sleap:GetBodyPart">
@@ -105,25 +97,23 @@
         <Selector>Position</Selector>
       </Expression>
       <Expression xsi:type="MemberSelector">
-        <Selector>Count</Selector>
+        <Selector>Centroid</Selector>
       </Expression>
     </Nodes>
     <Edges>
       <Edge From="0" To="1" Label="Source1" />
       <Edge From="1" To="2" Label="Source1" />
-      <Edge From="1" To="9" Label="Source1" />
+      <Edge From="1" To="6" Label="Source1" />
       <Edge From="2" To="3" Label="Source1" />
       <Edge From="3" To="4" Label="Source1" />
       <Edge From="4" To="5" Label="Source1" />
-      <Edge From="5" To="6" Label="Source1" />
+      <Edge From="5" To="6" Label="Source2" />
       <Edge From="6" To="7" Label="Source1" />
       <Edge From="7" To="8" Label="Source1" />
-      <Edge From="8" To="9" Label="Source2" />
+      <Edge From="8" To="9" Label="Source1" />
       <Edge From="9" To="10" Label="Source1" />
+      <Edge From="9" To="12" Label="Source1" />
       <Edge From="10" To="11" Label="Source1" />
-      <Edge From="11" To="12" Label="Source1" />
-      <Edge From="11" To="14" Label="Source1" />
-      <Edge From="12" To="13" Label="Source1" />
     </Edges>
   </Workflow>
 </WorkflowBuilder>

@@ -1,17 +1,15 @@
-﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
+using OpenCV.Net;
 
 namespace Bonsai.Sleap
 {
     public class PoseCollection : Collection<Pose>
     {
-        public PoseCollection()
+        public PoseCollection(IplImage image)
         {
+            Image = image;
         }
-         
-        public PoseCollection(IList<Pose> list)
-            : base(list)
-        {
-        }
+
+        public IplImage Image { get; }
     }
 }

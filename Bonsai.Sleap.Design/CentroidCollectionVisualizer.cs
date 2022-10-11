@@ -8,13 +8,13 @@ using System;
 using System.Windows.Forms;
 using System.Collections.Generic;
 
-[assembly: TypeVisualizer(typeof(CentroidVisualizer), Target = typeof(Centroid))]
+[assembly: TypeVisualizer(typeof(CentroidCollectionVisualizer), Target = typeof(CentroidCollection))]
 
 namespace Bonsai.Sleap.Design
 {
-    public class CentroidVisualizer : IplImageVisualizer
+    public class CentroidCollectionVisualizer : IplImageVisualizer
     {
-        Centroid centroid;
+        CentroidCollection centroids;
         LabeledImageLayer labeledImage;
         ToolStripButton drawLabelsButton;
 
@@ -23,7 +23,7 @@ namespace Bonsai.Sleap.Design
         public override void Load(IServiceProvider provider)
         {
             base.Load(provider);
-            drawLabelsButton = new ToolStripButton("Draw Label");
+            drawLabelsButton = new ToolStripButton("Draw Labels");
             drawLabelsButton.CheckState = CheckState.Checked;
             drawLabelsButton.Checked = DrawLabels;
             drawLabelsButton.CheckOnClick = true;
@@ -39,20 +39,20 @@ namespace Bonsai.Sleap.Design
 
         public override void Show(object value)
         {
-            centroid = (Centroid)value;
-            base.Show(centroid?.Image);
+            centroids = (CentroidCollection)value;
+            base.Show(centroids?.Image);
         }
 
         protected override void ShowMashup(IList<object> values)
         {
             base.ShowMashup(values);
-            if (centroid != null)
+            if (centroids != null)
             {
                 if (DrawLabels)
                 {
-                    labeledImage.UpdateLabels(centroid.Image.Size, VisualizerCanvas.Font, (graphics, labelFont) =>
+                    labeledImage.UpdateLabels(centroids.Image.Size, VisualizerCanvas.Font, (graphics, labelFont) =>
                     {
-                        DrawingHelper.DrawLabels(graphics, labelFont, centroid);
+                        DrawingHelper.DrawLabels(graphics, labelFont, centroids);
                     });
                 }
                 else labeledImage.ClearLabels();
@@ -64,10 +64,10 @@ namespace Bonsai.Sleap.Design
             GL.Color4(Color4.White);
             base.RenderFrame();
 
-            if (centroid != null)
+            if (centroids != null)
             {
                 DrawingHelper.SetDrawState(VisualizerCanvas);
-                DrawingHelper.DrawCentroid(centroid);
+                DrawingHelper.DrawCentroids(centroids);
                 labeledImage.Draw();
             }
         }
