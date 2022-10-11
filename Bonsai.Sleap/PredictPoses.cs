@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using System.Reactive.Linq;
 using OpenCV.Net;
@@ -37,7 +37,7 @@ namespace Bonsai.Sleap
         [Description("The optional color conversion used to prepare RGB video frames for inference.")]
         public ColorConversion? ColorConversion { get; set; }
 
-        public IObservable<PoseCollection> Process(IObservable<IplImage[]> source)
+        private IObservable<PoseCollection> Process(IObservable<IplImage[]> source)
         {
             return Observable.Defer(() =>
             {

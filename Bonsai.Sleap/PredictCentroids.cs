@@ -32,7 +32,7 @@ namespace Bonsai.Sleap
         [Description("The optional color conversion used to prepare RGB video frames for inference.")]
         public ColorConversion? ColorConversion { get; set; }
 
-        public IObservable<CentroidCollection> Process(IObservable<IplImage[]> source)
+        private IObservable<CentroidCollection> Process(IObservable<IplImage[]> source)
         {
             return Observable.Defer(() =>
             {
