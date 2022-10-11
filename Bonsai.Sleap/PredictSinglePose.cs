@@ -4,6 +4,7 @@ using System.Reactive.Linq;
 using OpenCV.Net;
 using TensorFlow;
 using System.ComponentModel;
+using System.Collections.Generic;
 
 namespace Bonsai.Sleap
 {
@@ -32,7 +33,7 @@ namespace Bonsai.Sleap
         [Description("The optional color conversion used to prepare RGB video frames for inference.")]
         public ColorConversion? ColorConversion { get; set; }
 
-        public IObservable<PoseCollection> Process(IObservable<IplImage[]> source)
+        public IObservable<IList<Pose>> Process(IObservable<IplImage[]> source)
         {
             return Observable.Defer(() =>
             {
@@ -90,7 +91,7 @@ namespace Bonsai.Sleap
                     float[,,,] poseArr = new float[poseTensor.Shape[0], poseTensor.Shape[1], poseTensor.Shape[2], poseTensor.Shape[3]];
                     poseTensor.GetValue(poseArr);
 
-                    var poseCollection = new PoseCollection();
+                    var poseCollection = new List<Pose>();
                     var partThreshold = PartMinConfidence;
 
                     //Loop the available identifications

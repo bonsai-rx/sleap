@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Reactive.Linq;
 using OpenCV.Net;
@@ -92,7 +92,8 @@ namespace Bonsai.Sleap
                     TensorHelper.UpdateTensor(tensor, colorChannels, frames);
                     var output = runner.Run();
 
-                    if (output[0].Shape[0] == 0) return new PoseCollection();
+                    var poseCollection = new PoseCollection(input[0]);
+                    if (output[0].Shape[0] == 0) return poseCollection;
                     else
                     {
                         var centroidConfidenceTensor = output[0];
@@ -111,7 +112,6 @@ namespace Bonsai.Sleap
                         float[,,] poseArr = new float[poseTensor.Shape[0], poseTensor.Shape[1], poseTensor.Shape[2]];
                         poseTensor.GetValue(poseArr);
 
-                        var poseCollection = new PoseCollection();
                         var partThreshold = PartMinConfidence;
                         var centroidThreshold = CentroidMinConfidence;
 
