@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<WorkflowBuilder Version="2.7.0-rc1"
+<WorkflowBuilder Version="2.7.0-rc4"
                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                  xmlns:cv="clr-namespace:Bonsai.Vision;assembly=Bonsai.Vision"
                  xmlns:sleap="clr-namespace:Bonsai.Sleap;assembly=Bonsai.Sleap"
@@ -8,8 +8,8 @@
     <Nodes>
       <Expression xsi:type="Combinator">
         <Combinator xsi:type="cv:FileCapture">
-          <cv:FileName>C:\Users\neurogears\Documents\git\bruno-f-cruz\SLEAPyBonsai\All models\bonsai_test\Original\video.mp4</cv:FileName>
-          <cv:PlaybackRate>99999</cv:PlaybackRate>
+          <cv:FileName>movies\video.mp4</cv:FileName>
+          <cv:PlaybackRate>9999</cv:PlaybackRate>
           <cv:StartPosition>0.5</cv:StartPosition>
           <cv:PositionUnits>Frames</cv:PositionUnits>
           <cv:Loop>true</cv:Loop>
@@ -21,8 +21,8 @@
       </Expression>
       <Expression xsi:type="Combinator">
         <Combinator xsi:type="sleap:PredictCentroids">
-          <sleap:ModelFileName>C:\Users\neurogears\Documents\git\bruno-f-cruz\SLEAPyBonsai\All models\bonsai_test\bonsai_graphs\centroid_only_model\frozen_graph.pb</sleap:ModelFileName>
-          <sleap:TrainingConfig>C:\Users\neurogears\Documents\git\bruno-f-cruz\SLEAPyBonsai\PostFeedbackModels\centroid.fast.210504_182918.centroid.n=1800\training_config.json</sleap:TrainingConfig>
+          <sleap:ModelFileName>models\centroid_only_model\frozen_graph.pb</sleap:ModelFileName>
+          <sleap:TrainingConfig>models\centroid.fast.210504_182918.centroid.n=1800\training_config.json</sleap:TrainingConfig>
           <sleap:CentroidMinConfidence xsi:nil="true" />
           <sleap:ScaleFactor xsi:nil="true" />
           <sleap:ColorConversion xsi:nil="true" />
