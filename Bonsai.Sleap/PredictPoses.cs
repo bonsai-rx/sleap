@@ -116,7 +116,7 @@ namespace Bonsai.Sleap
                         var centroidThreshold = CentroidMinConfidence;
 
                         //Loop the available identifications
-                        for (int i = 0; i < input.Length; i++)
+                        for (int i = 0; i < centroidArr.GetLength(0); i++)
                         {
                             var pose = new Pose(input[0]);
                             var centroid = new BodyPart();
