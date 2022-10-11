@@ -97,7 +97,7 @@
         <Selector>Position</Selector>
       </Expression>
       <Expression xsi:type="MemberSelector">
-        <Selector>Count</Selector>
+        <Selector>Centroid</Selector>
       </Expression>
     </Nodes>
     <Edges>
