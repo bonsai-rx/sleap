@@ -119,8 +119,8 @@ namespace Bonsai.Sleap
                         for (int i = 0; i < input.Length; i++)
                         {
                             var pose = new Pose(input[0]);
-                            var centroid = new Centroid(input[0]);
-
+                            var centroid = new BodyPart();
+                            centroid.Name = string.Empty;
                             centroid.Confidence = centroidConfArr[0];
                             if (centroid.Confidence < centroidThreshold)
                             {
@@ -137,7 +137,7 @@ namespace Bonsai.Sleap
                             // Iterate on the body parts
                             for (int bodyPartIdx = 0; bodyPartIdx < poseArr.GetLength(1); bodyPartIdx++)
                             {
-                                BodyPart bodyPart;
+                                var bodyPart = new BodyPart();
                                 bodyPart.Name = config.PartNames[bodyPartIdx];
                                 bodyPart.Confidence = partConfArr[i, bodyPartIdx];
                                 if (bodyPart.Confidence < partThreshold)

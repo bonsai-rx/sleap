@@ -124,7 +124,7 @@ namespace Bonsai.Sleap
 
                         var partThreshold = PartMinConfidence;
                         var idThreshold = IdentityMinConfidence;
-                        var centroidTreshold = CentroidMinConfidence;
+                        var centroidThreshold = CentroidMinConfidence;
 
                         for (int iid = 0; iid < idArr.GetLength(0); iid++)
                         {
@@ -138,9 +138,10 @@ namespace Bonsai.Sleap
                             }
                             else labeledPose.Label = config.ClassNames[maxIndex];
 
-                            var centroid = new Centroid(input[0]);
+                            var centroid = new BodyPart();
+                            centroid.Name = labeledPose.Label;
                             centroid.Confidence = centroidConfArr[0];
-                            if (centroid.Confidence < centroidTreshold)
+                            if (centroid.Confidence < centroidThreshold)
                             {
                                 centroid.Position = new Point2f(float.NaN, float.NaN);
                             }
@@ -155,7 +156,7 @@ namespace Bonsai.Sleap
                             // Iterate on the body parts
                             for (int bodyPartIdx = 0; bodyPartIdx < poseArr.GetLength(1); bodyPartIdx++)
                             {
-                                BodyPart bodyPart;
+                                var bodyPart = new BodyPart();
                                 bodyPart.Name = config.PartNames[bodyPartIdx];
                                 bodyPart.Confidence = partConfArr[iid, bodyPartIdx];
                                 if (bodyPart.Confidence < partThreshold)

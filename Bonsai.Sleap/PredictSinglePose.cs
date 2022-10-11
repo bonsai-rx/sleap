@@ -100,7 +100,7 @@ namespace Bonsai.Sleap
                         // Iterate on the body parts
                         for (int bodyPartIdx = 0; bodyPartIdx < poseArr.GetLength(2); bodyPartIdx++)
                         {
-                            BodyPart bodyPart;
+                            var bodyPart = new BodyPart();
                             bodyPart.Name = config.PartNames[bodyPartIdx];
                             bodyPart.Confidence = partConfArr[i,0, bodyPartIdx];
                             if (bodyPart.Confidence < partThreshold)

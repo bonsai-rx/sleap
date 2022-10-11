@@ -75,6 +75,17 @@ namespace Bonsai.Sleap.Design
             GL.End();
         }
 
+        public static void DrawCentroids(CentroidCollection centroids)
+        {
+            GL.Begin(PrimitiveType.Points);
+            for (int i = 0; i < centroids.Count; i++)
+            {
+                GL.Color3(ColorPalette.GetColor(i));
+                GL.Vertex2(NormalizePoint(centroids[i].Position, centroids.Image.Size));
+            }
+            GL.End();
+        }
+
         public static void DrawCentroid(Centroid centroid)
         {
             GL.Begin(PrimitiveType.Points);
@@ -101,18 +112,23 @@ namespace Bonsai.Sleap.Design
         {
             for (int i = 0; i < pose.Count; i++)
             {
-                var bodyPart = pose[i];
-                var position = bodyPart.Position;
-                graphics.DrawString(bodyPart.Name, font, Brushes.White, position.X, position.Y);
+                DrawLabels(graphics, font, pose[i]);
             }
         }
 
-        public static void DrawLabels(Graphics graphics, Font font, Centroid centroid)
+        public static void DrawLabels(Graphics graphics, Font font, CentroidCollection centroids)
+        {
+            for (int i = 0; i < centroids.Count; i++)
+            {
+                DrawLabels(graphics, font, centroids[i]);
+            }
+        }
+
+        public static void DrawLabels(Graphics graphics, Font font, BodyPart centroid)
         {
             if (!string.IsNullOrEmpty(centroid.Name))
             {
-                var position = centroid.Position;
-                graphics.DrawString(centroid.Name, font, Brushes.White, position.X, position.Y);
+                graphics.DrawString(centroid.Name, font, Brushes.White, centroid.Position.X, centroid.Position.Y);
             }
         }
     }

@@ -39,17 +39,17 @@ namespace Bonsai.Sleap
 
         static LabeledPose DefaultPose(IplImage image, string label)
         {
-            var pose = new LabeledPose(image)
+            return new LabeledPose(image)
             {
                 Label = label,
                 Confidence = float.NaN,
-                Centroid = new Centroid(image)
+                Centroid = new BodyPart
                 {
+                    Name = label,
                     Position = new Point2f(float.NaN, float.NaN),
-                    Confidence = float.NaN
+                    Confidence = 0
                 }
             };
-            return pose;
         }
     }
 }

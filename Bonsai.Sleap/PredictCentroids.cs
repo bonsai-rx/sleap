@@ -82,8 +82,9 @@ namespace Bonsai.Sleap
                     });
                     TensorHelper.UpdateTensor(tensor, colorChannels, frames);
                     var output = runner.Run();
-
-                    if (output[0].Shape[0] == 0) return new CentroidCollection();
+                    
+                    var centroidCollection = new CentroidCollection(input[0]);
+                    if (output[0].Shape[0] == 0) return centroidCollection;
                     else
                     {
                         // Fetch the results from output
@@ -95,9 +96,7 @@ namespace Bonsai.Sleap
                         float[,] centroidArr = new float[centroidTensor.Shape[0], centroidTensor.Shape[1]];
                         centroidTensor.GetValue(centroidArr);
 
-                        var centroidPoseCollection = new CentroidCollection();
                         var confidenceThreshold = CentroidMinConfidence;
-
                         for (int i = 0; i < centroidConfArr.GetLength(0); i++)
                         {
                             //TODO not sure what to do here if multiple images are given....
@@ -115,9 +114,9 @@ namespace Bonsai.Sleap
                                     (float)(centroidArr[i, 0] * poseScale),
                                     (float)(centroidArr[i, 1] * poseScale));
                             }
-                            centroidPoseCollection.Add(centroid);
+                            centroidCollection.Add(centroid);
                         };
-                        return centroidPoseCollection;
+                        return centroidCollection;
                     }
                 });
             });

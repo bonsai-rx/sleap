@@ -12,7 +12,7 @@ namespace Bonsai.Sleap
 
         public IplImage Image { get; }
 
-        public Centroid Centroid { get; set; }
+        public BodyPart Centroid { get; set; }
 
         protected override string GetKeyForItem(BodyPart item)
         {
@@ -20,7 +20,7 @@ namespace Bonsai.Sleap
         }
     }
 
-    public struct BodyPart
+    public class BodyPart
     {
         public string Name;
         public Point2f Position;

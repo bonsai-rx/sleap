@@ -1,17 +1,15 @@
-﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
+using OpenCV.Net;
 
 namespace Bonsai.Sleap
 {
     public class CentroidCollection : Collection<Centroid>
     {
-        public CentroidCollection()
+        public CentroidCollection(IplImage image)
         {
+            Image = image;
         }
 
-        public CentroidCollection(IList<Centroid> list)
-            : base(list)
-        {
-        }
+        public IplImage Image { get; }
     }
 }
