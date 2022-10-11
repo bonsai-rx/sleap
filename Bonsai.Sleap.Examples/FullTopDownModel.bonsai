@@ -30,10 +30,10 @@
           <sleap:ColorConversion xsi:nil="true" />
         </Combinator>
       </Expression>
-      <Expression xsi:type="Index">
-        <Operand xsi:type="IntProperty">
-          <Value>0</Value>
-        </Operand>
+      <Expression xsi:type="Combinator">
+        <Combinator xsi:type="sleap:GetMaximumConfidenceLabel">
+          <sleap:Label />
+        </Combinator>
       </Expression>
       <Expression xsi:type="Combinator">
         <Combinator xsi:type="sleap:GetBodyPart">

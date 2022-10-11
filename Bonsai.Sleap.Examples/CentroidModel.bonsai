@@ -22,7 +22,7 @@
       <Expression xsi:type="Combinator">
         <Combinator xsi:type="sleap:PredictCentroids">
           <sleap:ModelFileName>models\centroid_only_model\frozen_graph.pb</sleap:ModelFileName>
-          <sleap:TrainingConfig>models\centroid.fast.210504_182918.centroid.n=1800\training_config.json</sleap:TrainingConfig>
+          <sleap:TrainingConfig>models\centroid_only_model\training_config.json</sleap:TrainingConfig>
           <sleap:CentroidMinConfidence xsi:nil="true" />
           <sleap:ScaleFactor xsi:nil="true" />
           <sleap:ColorConversion xsi:nil="true" />
