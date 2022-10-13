@@ -8,7 +8,7 @@ using System.ComponentModel;
 namespace Bonsai.Sleap
 {
     [DefaultProperty(nameof(ModelFileName))]
-    [Description("Performs markerless, single instance, pose estimation using a SLEAP model on the input image sequence.")]
+    [Description("Performs markerless multi-pose estimation using a SLEAP model on the input image sequence.")]
     public class PredictPoses : Transform<IplImage, PoseCollection>
     {
         [FileNameFilter("Protocol Buffer Files(*.pb)|*.pb")]

@@ -8,7 +8,7 @@ using TensorFlow;
 namespace Bonsai.Sleap
 {
     [DefaultProperty(nameof(ModelFileName))]
-    [Description("Performs multi- markerless pose estimation using a SLEAP model on the input image sequence.")]
+    [Description("Performs multi-instance centroid detection using a SLEAP model on the input image sequence.")]
     public class PredictCentroids : Transform<IplImage, CentroidCollection>
     {
         [FileNameFilter("Protocol Buffer Files(*.pb)|*.pb")]
