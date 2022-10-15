@@ -43,12 +43,7 @@ namespace Bonsai.Sleap
             {
                 Label = label,
                 Confidence = float.NaN,
-                Centroid = new BodyPart
-                {
-                    Name = string.Empty,
-                    Position = new Point2f(float.NaN, float.NaN),
-                    Confidence = 0
-                }
+                Centroid = GetBodyPart.DefaultBodyPart(string.Empty)
             };
         }
     }
