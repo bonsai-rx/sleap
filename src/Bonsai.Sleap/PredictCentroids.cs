@@ -11,6 +11,10 @@ namespace Bonsai.Sleap
     /// Represents an operator that performs multi-instance centroid detection for each
     /// image in the sequence using a SLEAP model.
     /// </summary>
+    /// <seealso cref="PredictPoses"/>
+    /// <seealso cref="PredictPoseIdentities"/>
+    /// <seealso cref="PredictSinglePose"/>
+    /// <seealso cref="GetBodyPart"/>
     [DefaultProperty(nameof(ModelFileName))]
     [Description("Performs multi-instance centroid detection for each image in the sequence using a SLEAP model.")]
     public class PredictCentroids : Transform<IplImage, CentroidCollection>

@@ -12,6 +12,11 @@ namespace Bonsai.Sleap
     /// Represents an operator that performs markerless multi-pose and identity
     /// estimation for each image in the sequence using a SLEAP model.
     /// </summary>
+    /// <seealso cref="PredictCentroids"/>
+    /// <seealso cref="PredictPoses"/>
+    /// <seealso cref="PredictSinglePose"/>
+    /// <seealso cref="GetBodyPart"/>
+    /// <seealso cref="GetMaximumConfidencePoseIdentity"/>
     [DefaultProperty(nameof(ModelFileName))]
     [Description("Performs markerless multi-pose and identity estimation for each image in the sequence using a SLEAP model.")]
     public class PredictPoseIdentities : Transform<IplImage, PoseIdentityCollection>
