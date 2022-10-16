@@ -1,4 +1,4 @@
-﻿using Bonsai;
+using Bonsai;
 using Bonsai.Vision.Design;
 using Bonsai.Sleap;
 using Bonsai.Sleap.Design;
@@ -21,16 +21,16 @@ namespace Bonsai.Sleap.Design
         ToolStripButton drawIdentitiesButton;
         LabeledImageLayer labeledImage;
 
-        public bool DrawIdentities { get; set; }
+        public bool DrawIdentity { get; set; }
 
         public override void Load(IServiceProvider provider)
         {
             base.Load(provider);
             drawIdentitiesButton = new ToolStripButton("Draw Identities");
             drawIdentitiesButton.CheckState = CheckState.Checked;
-            drawIdentitiesButton.Checked = DrawIdentities;
+            drawIdentitiesButton.Checked = DrawIdentity;
             drawIdentitiesButton.CheckOnClick = true;
-            drawIdentitiesButton.CheckedChanged += (sender, e) => DrawIdentities = drawIdentitiesButton.Checked;
+            drawIdentitiesButton.CheckedChanged += (sender, e) => DrawIdentity = drawIdentitiesButton.Checked;
             StatusStrip.Items.Add(drawIdentitiesButton);
 
             VisualizerCanvas.Load += (sender, e) =>
@@ -61,7 +61,7 @@ namespace Bonsai.Sleap.Design
                     }
                 }
 
-                if (DrawIdentities)
+                if (DrawIdentity)
                 {
                     labeledImage.UpdateLabels(image.Size, VisualizerCanvas.Font, (graphics, labelFont) =>
                     {
