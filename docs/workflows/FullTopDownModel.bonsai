@@ -20,7 +20,7 @@
         <Combinator xsi:type="cv:Grayscale" />
       </Expression>
       <Expression xsi:type="Combinator">
-        <Combinator xsi:type="sleap:PredictLabeledPoses">
+        <Combinator xsi:type="sleap:PredictPoseIdentities">
           <sleap:ModelFileName>models\top_down_id_model\frozen_graph.pb</sleap:ModelFileName>
           <sleap:TrainingConfig>models\top_down_id_model\training_config.json</sleap:TrainingConfig>
           <sleap:CentroidMinConfidence xsi:nil="true" />
@@ -31,7 +31,7 @@
         </Combinator>
       </Expression>
       <Expression xsi:type="Combinator">
-        <Combinator xsi:type="sleap:GetMaximumConfidenceLabel">
+        <Combinator xsi:type="sleap:GetMaximumConfidencePoseIdentity">
           <sleap:Label />
         </Combinator>
       </Expression>
@@ -44,7 +44,7 @@
         <Selector>Position</Selector>
       </Expression>
       <Expression xsi:type="MemberSelector">
-        <Selector>Label</Selector>
+        <Selector>Identity</Selector>
       </Expression>
       <Expression xsi:type="MemberSelector">
         <Selector>Centroid</Selector>
