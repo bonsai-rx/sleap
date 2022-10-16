@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <WorkflowBuilder Version="2.7.0-rc4"
                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                  xmlns:cv="clr-namespace:Bonsai.Vision;assembly=Bonsai.Vision"
@@ -44,10 +44,10 @@
         <Selector>Position</Selector>
       </Expression>
       <Expression xsi:type="MemberSelector">
-        <Selector>Identity</Selector>
+        <Selector>Centroid</Selector>
       </Expression>
       <Expression xsi:type="MemberSelector">
-        <Selector>Centroid</Selector>
+        <Selector>Identity</Selector>
       </Expression>
     </Nodes>
     <Edges>
