@@ -1,33 +1,32 @@
 How to use
 ==========
 
-`Bonsai.SLEAP` currently implements the following SLEAP networks through the correspondent Bonsai operator:
+`Bonsai.SLEAP` currently implements real-time inference on four distinct SLEAP networks through their corresponding Bonsai `Predict` operators.
 
- - `centroid`:
-   - Input : full frame with potentially multiple objects
-   - Output : collection of multiple detected centroids in the input image
-   - Operator : `PredictCentroid`
- - `top-down-model`:
-   - Input : full frame with potentially multiple objects
-   - Output : collection of detected poses (centroid + body parts) from multiple objects in the image
-   - Operator : `PredictPoses`
- - `top-down-id-model`:
-   - Input : full frame with potentially multiple objects
-   - Output : collection of detected poses (centroid + body parts) plus labeled identities from multiple objects in the image
-   - Operator : `PredictLabeledPoses`
- - `single_instance`:
-   - Input : croped instance with a single object in the input image
-   - Output : returns a single pose (body parts)
-   - Operator : `PredictSinglePose`
+![SleapOperators](~/images/SleapSchematic.svg)
 
-The general Bonsai workflow will thus be:
+In order to use the `Predict` operators, you will need to provide the `ModelFileName` to the exported .pb file folder containing your pre-trained SLEAP model, along with the corresponding `PoseConfigFileName` to the `training_config.json` file.
 
-![Bonsai_Pipeline](~/images/sleap_operator.svg)
+The simplest Bonsai workflow for running the complete model will thus be:
 
-Additional information can be extracted by selecting the relevant structure fields.
+:::workflow
+![PredictPoseIdentities](~/workflows/PredictPoseIdentities.bonsai)
+:::
+
+If everything works out, you should see some indication in the Bonsai command line window that the GPU was successfully detected and enabled. The first frame will cold start the inference graph and this may take a bit of time, but after that, your poses should start streaming through!
 
 ![Bonsai_Pipeline_expanded](~/images/demo.gif)
 
-In order to use the `Predict` operators, you will need to provide the `ModelFileName` to the exported .pb file folder containing your pretrained SLEAP model, along with the corresponding `PoseConfigFileName` to the `training_config.json` file.
+Working examples for each of these operators can be found in the extended description for each operator, which we cover below.
 
-If everything works out, you should see some indications in the Bonsai command line window about whether the GPU was successfully detected and enabled. The first frame will cold start the inference graph which may take a bit of time, but after that your poses should start streaming through!
+## PredictCentroids
+[!include[PredictCentroids](~/articles/sleap-predictcentroids.md)]
+
+## PredictPoses
+[!include[PredictPoses](~/articles/sleap-predictposes.md)]
+
+## PredictPoseIdentities
+[!include[PredictPoseIdentities](~/articles/sleap-predictposeidentities.md)]
+
+## PredictSinglePose
+[!include[PredictSinglePose](~/articles/sleap-predictsinglepose.md)]
