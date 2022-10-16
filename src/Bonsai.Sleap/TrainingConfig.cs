@@ -3,7 +3,7 @@ using OpenCV.Net;
 
 namespace Bonsai.Sleap
 {
-    public class TrainingConfig
+    internal class TrainingConfig
     {
         public ModelType ModelType { get; set; }
 
@@ -19,14 +19,14 @@ namespace Bonsai.Sleap
 
     }
 
-    public class Skeleton
+    internal class Skeleton
     {
         public string Name;
         public bool DirectedEdges;
         public List<Link> Edges;
     }
 
-    public struct Link
+    internal struct Link
     {
         public int Source;
         public int Target;

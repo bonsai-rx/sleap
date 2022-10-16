@@ -1,6 +1,6 @@
 ﻿namespace Bonsai.Sleap
 {
-    public enum ModelType
+    internal enum ModelType
     {
         InvalidModel = 0,
         SingleInstance = 1,

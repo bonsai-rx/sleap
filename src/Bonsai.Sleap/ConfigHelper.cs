@@ -7,7 +7,7 @@ using YamlDotNet.RepresentationModel;
 
 namespace Bonsai.Sleap
 {
-    public static class ConfigHelper
+    internal static class ConfigHelper
     {
         public static YamlMappingNode OpenFile(string fileName)
         {
