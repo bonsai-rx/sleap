@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Bonsai.Vision.Design" Version="2.6.1" />
+    <PackageReference Include="Bonsai.Vision.Design" Version="2.7.0" />
   </ItemGroup>
 
   <ItemGroup>
