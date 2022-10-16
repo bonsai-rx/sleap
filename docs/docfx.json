@@ -66,6 +66,9 @@
     "cleanupCacheHistory": false,
     "disableGitFeatures": false,
     "xrefService": [ "https://xref.docs.microsoft.com/query?uid={uid}" ],
-    "xref": [ "https://bonsai-rx.org/docs/xrefmap.yml" ]
+    "xref": [
+      "https://horizongir.github.io/opencv.net/xrefmap.yml",
+      "https://bonsai-rx.org/docs/xrefmap.yml"
+    ]
   }
 }
