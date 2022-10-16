@@ -52,6 +52,13 @@
         ]
       }
     ],
+    "globalMetadata": {
+      "_enableNewTab": true,
+      "_gitContribute": {
+        "branch": "main",
+        "apiSpecFolder": "docs/apidoc"
+      }
+    },
     "dest": "_site",
     "globalMetadataFiles": [],
     "fileMetadataFiles": [],
@@ -61,6 +68,12 @@
     ],
     "postProcessors": [ "ExtractSearchIndex" ],
     "markdownEngineName": "markdig",
+    "markdownEngineProperties": {
+      "markdigExtensions": [
+        "attributes",
+        "customcontainers"
+      ]
+    },
     "noLangKeyword": false,
     "keepFileLink": false,
     "cleanupCacheHistory": false,
