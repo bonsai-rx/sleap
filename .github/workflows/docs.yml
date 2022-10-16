@@ -22,8 +22,13 @@ jobs:
           ref: gh-pages
           path: gh-pages
       - name: Publish to github pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: _site
-          force_orphan: true
+        run: |
+          cd gh-pages
+          rm -rf *
+          touch .nojekyll
+          cp -a ../docs/_site/. .
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add .
+          git commit --reset-author --amend -m "Deploy docs website"
+          git push --force origin gh-pages
