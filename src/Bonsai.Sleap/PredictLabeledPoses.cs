@@ -148,8 +148,8 @@ namespace Bonsai.Sleap
                             else
                             {
                                 centroid.Position = new Point2f(
-                                    (float)(centroidArr[iid, 0] * poseScale),
-                                    (float)(centroidArr[iid, 1] * poseScale));
+                                    x: (float)(centroidArr[iid, 0] * poseScale),
+                                    y: (float)(centroidArr[iid, 1] * poseScale));
                             }
                             labeledPose.Centroid = centroid;
 
@@ -165,8 +165,9 @@ namespace Bonsai.Sleap
                                 }
                                 else
                                 {
-                                    bodyPart.Position.X = (float)(poseArr[iid, bodyPartIdx, 0] * poseScale);
-                                    bodyPart.Position.Y = (float)(poseArr[iid, bodyPartIdx, 1] * poseScale);
+                                    bodyPart.Position = new Point2f(
+                                        x: (float)(poseArr[iid, bodyPartIdx, 0] * poseScale),
+                                        y: (float)(poseArr[iid, bodyPartIdx, 1] * poseScale));
                                 }
                                 labeledPose.Add(bodyPart);
                             }

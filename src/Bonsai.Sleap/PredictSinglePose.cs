@@ -110,8 +110,9 @@ namespace Bonsai.Sleap
                             }
                             else
                             {
-                                bodyPart.Position.X = (float)(poseArr[i,0, bodyPartIdx, 0] * poseScale);
-                                bodyPart.Position.Y = (float)(poseArr[i,0, bodyPartIdx, 1] * poseScale);
+                                bodyPart.Position = new Point2f(
+                                    x: (float)(poseArr[i, 0, bodyPartIdx, 0] * poseScale),
+                                    y: (float)(poseArr[i, 0, bodyPartIdx, 1] * poseScale));
                             }
                             pose.Add(bodyPart);
                         }

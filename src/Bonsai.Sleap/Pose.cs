@@ -22,8 +22,8 @@ namespace Bonsai.Sleap
 
     public class BodyPart
     {
-        public string Name;
-        public Point2f Position;
-        public float Confidence;
+        public string Name { get; set; }
+        public Point2f Position { get; set; }
+        public float Confidence { get; set; }
     }
 }
