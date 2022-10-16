@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Collections.Generic;
@@ -8,39 +8,73 @@ using System.ComponentModel;
 
 namespace Bonsai.Sleap
 {
+    /// <summary>
+    /// Represents an operator that performs markerless multi-pose and identity
+    /// estimation for each image in the sequence using a SLEAP model.
+    /// </summary>
     [DefaultProperty(nameof(ModelFileName))]
-    [Description("Performs markerless multi-pose and identity estimation using a SLEAP model on the input image sequence.")]
+    [Description("Performs markerless multi-pose and identity estimation for each image in the sequence using a SLEAP model.")]
     public class PredictPoseIdentities : Transform<IplImage, PoseIdentityCollection>
     {
+        /// <summary>
+        /// Gets or sets a value specifying the path to the exported Protocol Buffer
+        /// file containing the pretrained SLEAP model.
+        /// </summary>
         [FileNameFilter("Protocol Buffer Files(*.pb)|*.pb")]
         [Editor("Bonsai.Design.OpenFileNameEditor, Bonsai.Design", DesignTypes.UITypeEditor)]
-        [Description("The path to the exported Protocol Buffer file containing the pretrained SLEAP model.")]
+        [Description("Specifies the path to the exported Protocol Buffer file containing the pretrained SLEAP model.")]
         public string ModelFileName { get; set; }
 
+        /// <summary>
+        /// Gets or sets a value specifying the path to the configuration JSON file
+        /// containing training metadata.
+        /// </summary>
         [FileNameFilter("Config Files(*.json)|*.json|All Files|*.*")]
         [Editor("Bonsai.Design.OpenFileNameEditor, Bonsai.Design", DesignTypes.UITypeEditor)]
-        [Description("The path to the configuration json file containing joint labels.")]
+        [Description("Specifies the path to the configuration JSON file containing training metadata.")]
         public string TrainingConfig { get; set; }
 
+        /// <summary>
+        /// Gets or sets a value specifying the confidence threshold used to discard centroid
+        /// predictions. If no value is specified, all estimated centroid positions are returned.
+        /// </summary>
         [Range(0, 1)]
         [Editor(DesignTypes.SliderEditor, DesignTypes.UITypeEditor)]
-        [Description("The optional confidence threshold used to discard position values.")]
+        [Description("Specifies the confidence threshold used to discard centroid predictions. If no value is specified, all estimated centroid positions are returned.")]
         public float? CentroidMinConfidence { get; set; }
 
+        /// <summary>
+        /// Gets or sets a value specifying the confidence threshold used to assign an identity
+        /// class. If no value is specified, the identity with highest confidence will be
+        /// assigned to each pose.
+        /// </summary>
         [Range(0, 1)]
         [Editor(DesignTypes.SliderEditor, DesignTypes.UITypeEditor)]
-        [Description("The optional confidence threshold used to assign an identity.")]
+        [Description("Specifies the confidence threshold used to assign an identity class. If no value is specified, the identity with highest confidence will be assigned to each pose.")]
         public float? IdentityMinConfidence { get; set; }
 
+        /// <summary>
+        /// Gets or sets a value specifying the confidence threshold used to discard predicted
+        /// body part positions. If no value is specified, all estimated positions are returned.
+        /// </summary>
         [Range(0, 1)]
         [Editor(DesignTypes.SliderEditor, DesignTypes.UITypeEditor)]
-        [Description("The optional confidence threshold used to discard position values.")]
+        [Description("Specifies the confidence threshold used to discard predicted body part positions. If no value is specified, all estimated positions are returned.")]
         public float? PartMinConfidence { get; set; }
 
-        [Description("The optional scale factor used to resize video frames for inference.")]
+        /// <summary>
+        /// Gets or sets a value specifying the scale factor used to resize video frames
+        /// for inference. If no value is specified, no resizing is performed.
+        /// </summary>
+        [Description("Specifies the scale factor used to resize video frames for inference. If no value is specified, no resizing is performed.")]
         public float? ScaleFactor { get; set; }
 
-        [Description("The optional color conversion used to prepare RGB video frames for inference.")]
+        /// <summary>
+        /// Gets or sets a value specifying the optional color conversion used to prepare
+        /// RGB video frames for inference. If no value is specified, no color conversion
+        /// is performed.
+        /// </summary>
+        [Description("Specifies the optional color conversion used to prepare RGB video frames for inference. If no value is specified, no color conversion is performed.")]
         public ColorConversion? ColorConversion { get; set; }
 
         private IObservable<PoseIdentityCollection> Process(IObservable<IplImage[]> source)
@@ -179,6 +213,18 @@ namespace Bonsai.Sleap
             });
         }
 
+        /// <summary>
+        /// Performs markerless multi-pose and identity estimation for each image in
+        /// an observable sequence using a SLEAP model.
+        /// </summary>
+        /// <param name="source">
+        /// The sequence of images from which to extract the pose identities.
+        /// </param>
+        /// <returns>
+        /// A sequence of <see cref="PoseIdentityCollection"/> objects representing
+        /// the pose identities extracted from each image in the <paramref name="source"/>
+        /// sequence.
+        /// </returns>
         public override IObservable<PoseIdentityCollection> Process(IObservable<IplImage> source)
         {
             return Process(source.Select(frame => new IplImage[] { frame }));

@@ -4,6 +4,7 @@
     <Authors>Bonsai</Authors>
     <Copyright>Copyright © Bonsai Foundation CIC 2022</Copyright>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageProjectUrl>https://github.com/bonsai-rx/sleap</PackageProjectUrl>
     <PackageLicenseUrl>https://bonsai-rx.org/license</PackageLicenseUrl>
     <PackageIconUrl>https://bonsai-rx.org/assets/images/bonsai.png</PackageIconUrl>

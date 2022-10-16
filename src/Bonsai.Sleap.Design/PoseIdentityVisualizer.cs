@@ -13,6 +13,10 @@ using System.Collections.Generic;
 
 namespace Bonsai.Sleap.Design
 {
+    /// <summary>
+    /// Provides a type visualizer that draws a visual representation of the
+    /// estimated pose and identity extracted from each image in the sequence.
+    /// </summary>
     public class PoseIdentityVisualizer : IplImageVisualizer
     {
         PoseIdentity pose;
@@ -20,10 +24,17 @@ namespace Bonsai.Sleap.Design
         ToolStripButton drawLabelsButton;
         ToolStripButton drawIdentityButton;
 
+        /// <summary>
+        /// Gets or sets a value indicating whether to show the names of body parts.
+        /// </summary>
         public bool DrawLabels { get; set; }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether to show the pose identity.
+        /// </summary>
         public bool DrawIdentity { get; set; }
 
+        /// <inheritdoc/>
         public override void Load(IServiceProvider provider)
         {
             base.Load(provider);
@@ -48,12 +59,14 @@ namespace Bonsai.Sleap.Design
             };
         }
 
+        /// <inheritdoc/>
         public override void Show(object value)
         {
             pose = (PoseIdentity)value;
             base.Show(pose?.Image);
         }
 
+        /// <inheritdoc/>
         protected override void ShowMashup(IList<object> values)
         {
             base.ShowMashup(values);
@@ -79,6 +92,7 @@ namespace Bonsai.Sleap.Design
             }
         }
 
+        /// <inheritdoc/>
         protected override void RenderFrame()
         {
             GL.Color4(Color4.White);
@@ -92,6 +106,7 @@ namespace Bonsai.Sleap.Design
             }
         }
 
+        /// <inheritdoc/>
         public override void Unload()
         {
             base.Unload();

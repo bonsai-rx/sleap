@@ -8,31 +8,66 @@ using System.Collections.Generic;
 
 namespace Bonsai.Sleap
 {
+    /// <summary>
+    /// Represents an operator that performs markerless, single instance, pose
+    /// estimation for each image in the sequence using a SLEAP model.
+    /// </summary>
     [DefaultProperty(nameof(ModelFileName))]
-    [Description("Performs markerless, single instance, pose estimation using a SLEAP model on the input image sequence.")]
+    [Description("Performs markerless, single instance, pose estimation for each image in the sequence using a SLEAP model.")]
     public class PredictSinglePose : Transform<IplImage, Pose>
     {
+        /// <summary>
+        /// Gets or sets a value specifying the path to the exported Protocol Buffer
+        /// file containing the pretrained SLEAP model.
+        /// </summary>
         [FileNameFilter("Protocol Buffer Files(*.pb)|*.pb")]
         [Editor("Bonsai.Design.OpenFileNameEditor, Bonsai.Design", DesignTypes.UITypeEditor)]
-        [Description("The path to the exported Protocol Buffer file containing the pretrained SLEAP model.")]
+        [Description("Specifies the path to the exported Protocol Buffer file containing the pretrained SLEAP model.")]
         public string ModelFileName { get; set; }
 
+        /// <summary>
+        /// Gets or sets a value specifying the path to the configuration JSON file
+        /// containing training metadata.
+        /// </summary>
         [FileNameFilter("Config Files(*.json)|*.json|All Files|*.*")]
         [Editor("Bonsai.Design.OpenFileNameEditor, Bonsai.Design", DesignTypes.UITypeEditor)]
-        [Description("The path to the configuration json file containing joint labels.")]
+        [Description("Specifies the path to the configuration JSON file containing training metadata.")]
         public string TrainingConfig { get; set; }
 
+        /// <summary>
+        /// Gets or sets a value specifying the confidence threshold used to discard predicted
+        /// body part positions. If no value is specified, all estimated positions are returned.
+        /// </summary>
         [Range(0, 1)]
         [Editor(DesignTypes.SliderEditor, DesignTypes.UITypeEditor)]
-        [Description("The optional confidence threshold used to discard position values.")]
+        [Description("Specifies the confidence threshold used to discard predicted body part positions. If no value is specified, all estimated positions are returned.")]
         public float? PartMinConfidence { get; set; }
 
-        [Description("The optional scale factor used to resize video frames for inference.")]
+        /// <summary>
+        /// Gets or sets a value specifying the scale factor used to resize video frames
+        /// for inference. If no value is specified, no resizing is performed.
+        /// </summary>
+        [Description("Specifies the scale factor used to resize video frames for inference. If no value is specified, no resizing is performed.")]
         public float? ScaleFactor { get; set; }
 
-        [Description("The optional color conversion used to prepare RGB video frames for inference.")]
+        /// <summary>
+        /// Gets or sets a value specifying the optional color conversion used to prepare
+        /// RGB video frames for inference. If no value is specified, no color conversion
+        /// is performed.
+        /// </summary>
+        [Description("Specifies the optional color conversion used to prepare RGB video frames for inference. If no value is specified, no color conversion is performed.")]
         public ColorConversion? ColorConversion { get; set; }
 
+        /// <summary>
+        /// Performs markerless, single instance, batched pose estimation for each array
+        /// of images in an observable sequence using a SLEAP model.
+        /// </summary>
+        /// <param name="source">The sequence of image batches from which to extract the poses.</param>
+        /// <returns>
+        /// A sequence of <see cref="Pose"/> collection objects representing the results
+        /// of pose estimation for each image batch in the <paramref name="source"/>
+        /// sequence.
+        /// </returns>
         public IObservable<IList<Pose>> Process(IObservable<IplImage[]> source)
         {
             return Observable.Defer(() =>
@@ -123,6 +158,15 @@ namespace Bonsai.Sleap
             });
         }
 
+        /// <summary>
+        /// Performs markerless, single instance, pose estimation for each image in
+        /// an observable sequence using a SLEAP model.
+        /// </summary>
+        /// <param name="source">The sequence of images from which to extract the pose.</param>
+        /// <returns>
+        /// A sequence of <see cref="Pose"/> objects representing the result of pose
+        /// estimation for each image in the <paramref name="source"/> sequence.
+        /// </returns>
         public override IObservable<Pose> Process(IObservable<IplImage> source)
         {
             return Process(source.Select(frame => new IplImage[] { frame })).Select(result => result[0]);

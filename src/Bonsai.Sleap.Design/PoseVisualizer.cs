@@ -12,14 +12,22 @@ using System.Collections.Generic;
 
 namespace Bonsai.Sleap.Design
 {
+    /// <summary>
+    /// Provides a type visualizer that draws a visual representation of a
+    /// single pose extracted from each image in the sequence.
+    /// </summary>
     public class PoseVisualizer : IplImageVisualizer
     {
         Pose pose;
         LabeledImageLayer labeledImage;
         ToolStripButton drawLabelsButton;
 
+        /// <summary>
+        /// Gets or sets a value indicating whether to show the names of body parts.
+        /// </summary>
         public bool DrawLabels { get; set; }
 
+        /// <inheritdoc/>
         public override void Load(IServiceProvider provider)
         {
             base.Load(provider);
@@ -37,12 +45,14 @@ namespace Bonsai.Sleap.Design
             };
         }
 
+        /// <inheritdoc/>
         public override void Show(object value)
         {
             pose = (Pose)value;
             base.Show(pose?.Image);
         }
 
+        /// <inheritdoc/>
         protected override void ShowMashup(IList<object> values)
         {
             base.ShowMashup(values);
@@ -59,6 +69,7 @@ namespace Bonsai.Sleap.Design
             }
         }
 
+        /// <inheritdoc/>
         protected override void RenderFrame()
         {
             GL.Color4(Color4.White);
@@ -72,6 +83,7 @@ namespace Bonsai.Sleap.Design
             }
         }
 
+        /// <inheritdoc/>
         public override void Unload()
         {
             base.Unload();
