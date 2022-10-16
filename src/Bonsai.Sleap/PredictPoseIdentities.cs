@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Collections.Generic;
@@ -139,7 +139,7 @@ namespace Bonsai.Sleap
                             else pose.Identity = config.ClassNames[maxIndex];
 
                             var centroid = new BodyPart();
-                            centroid.Name = pose.Identity;
+                            centroid.Name = config.AnchorName;
                             centroid.Confidence = centroidConfArr[0];
                             if (centroid.Confidence < centroidThreshold)
                             {

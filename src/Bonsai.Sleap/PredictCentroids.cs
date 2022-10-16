@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel;
 using System.Linq;
 using System.Reactive.Linq;
@@ -99,9 +99,9 @@ namespace Bonsai.Sleap
                         var confidenceThreshold = CentroidMinConfidence;
                         for (int i = 0; i < centroidConfArr.GetLength(0); i++)
                         {
-                            //TODO not sure what to do here if multiple images are given....
+                            //TODO: batch centroid estimation is not currently supported
                             var centroid = new Centroid(input[0]);
-                            centroid.Name = config.PartNames[0];
+                            centroid.Name = config.AnchorName;
                             centroid.Confidence = centroidConfArr[i];
 
                             if (centroid.Confidence < confidenceThreshold)

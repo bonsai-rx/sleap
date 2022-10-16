@@ -120,7 +120,7 @@ namespace Bonsai.Sleap
                         {
                             var pose = new Pose(input[0]);
                             var centroid = new BodyPart();
-                            centroid.Name = string.Empty;
+                            centroid.Name = config.AnchorName;
                             centroid.Confidence = centroidConfArr[0];
                             if (centroid.Confidence < centroidThreshold)
                             {

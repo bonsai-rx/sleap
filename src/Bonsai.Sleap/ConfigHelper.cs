@@ -97,24 +97,24 @@ namespace Bonsai.Sleap
             switch (config.ModelType)
             {
                 case ModelType.SingleInstance:
-                    Parse_SingleInstance_Model(config, mapping);
+                    ParseSingleInstanceModel(config, mapping);
                     break;
                 case ModelType.Centroid:
-                    Parse_Centroid_Model(config, mapping);
+                    ParseCentroidModel(config, mapping);
                     break;
                 case ModelType.CenteredInstance:
-                    Parse_CenteredInstance_Model(config, mapping);
+                    ParseCenteredInstanceModel(config, mapping);
                     break;
                 case ModelType.MultiInstance:
-                    Parse_MultiInstance_Model(config, mapping);
+                    ParseMultiInstanceModel(config, mapping);
                     break;
                 case ModelType.MultiClass:
-                    Parse_MultiClass_Model(config, mapping);
+                    ParseMultiClassModel(config, mapping);
                     break;
             }
         }
 
-        public static void Parse_SingleInstance_Model(TrainingConfig config, YamlMappingNode mapping)
+        public static void ParseSingleInstanceModel(TrainingConfig config, YamlMappingNode mapping)
         {
             var partNames = (YamlSequenceNode)mapping["model"]["heads"]["single_instance"]["part_names"];
             foreach (var part in partNames.Children)
@@ -124,15 +124,15 @@ namespace Bonsai.Sleap
             AddSkeleton(config, mapping);
         }
 
-        public static void Parse_Centroid_Model(TrainingConfig config, YamlMappingNode mapping)
+        public static void ParseCentroidModel(TrainingConfig config, YamlMappingNode mapping)
         {
-            var anchor = (string)mapping["model"]["heads"]["centroid"]["anchor_part"];
-            config.PartNames.Add(anchor);
+            config.AnchorName = (string)mapping["model"]["heads"]["centroid"]["anchor_part"];
             AddSkeleton(config, mapping);
         }
 
-        public static void Parse_CenteredInstance_Model(TrainingConfig config, YamlMappingNode mapping)
+        public static void ParseCenteredInstanceModel(TrainingConfig config, YamlMappingNode mapping)
         {
+            config.AnchorName = (string)mapping["model"]["heads"]["centered_instance"]["anchor_part"];
             var partNames = (YamlSequenceNode)mapping["model"]["heads"]["centered_instance"]["part_names"];
             foreach (var part in partNames.Children)
             {
@@ -141,9 +141,10 @@ namespace Bonsai.Sleap
             AddSkeleton(config, mapping);
         }
 
-        public static void Parse_MultiClass_Model(TrainingConfig config, YamlMappingNode mapping)
+        public static void ParseMultiClassModel(TrainingConfig config, YamlMappingNode mapping)
         {
-            var partNames = (YamlSequenceNode) mapping["model"]["heads"]["multi_class_topdown"]["confmaps"]["part_names"];
+            config.AnchorName = (string)mapping["model"]["heads"]["multi_class_topdown"]["confmaps"]["anchor_part"];
+            var partNames = (YamlSequenceNode)mapping["model"]["heads"]["multi_class_topdown"]["confmaps"]["part_names"];
             foreach (var part in partNames.Children)
             {
                 config.PartNames.Add((string) part);
@@ -156,8 +157,9 @@ namespace Bonsai.Sleap
             AddSkeleton(config, mapping);
         }
 
-        public static void Parse_MultiInstance_Model(TrainingConfig config, YamlMappingNode mapping)
+        public static void ParseMultiInstanceModel(TrainingConfig config, YamlMappingNode mapping)
         {
+            config.AnchorName = (string)mapping["model"]["heads"]["multi_instance"]["confmaps"]["anchor_part"];
             var partNames = (YamlSequenceNode)mapping["model"]["heads"]["multi_instance"]["confmaps"]["part_names"];
             foreach (var part in partNames.Children)
             {

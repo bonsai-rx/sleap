@@ -7,6 +7,8 @@ namespace Bonsai.Sleap
     {
         public ModelType ModelType { get; set; }
 
+        public string AnchorName { get; set; }
+
         public List<string> PartNames { get; } = new List<string>();
 
         public List<string> ClassNames { get; } = new List<string>();
