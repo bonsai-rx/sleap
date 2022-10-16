@@ -1,0 +1,61 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<WorkflowBuilder Version="2.7.0-rc4"
+                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 xmlns:cv="clr-namespace:Bonsai.Vision;assembly=Bonsai.Vision"
+                 xmlns:sleap="clr-namespace:Bonsai.Sleap;assembly=Bonsai.Sleap"
+                 xmlns="https://bonsai-rx.org/2018/workflow">
+  <Workflow>
+    <Nodes>
+      <Expression xsi:type="Combinator">
+        <Combinator xsi:type="cv:FileCapture">
+          <cv:FileName>movie.mp4</cv:FileName>
+          <cv:PlaybackRate>9999</cv:PlaybackRate>
+          <cv:StartPosition>0.5</cv:StartPosition>
+          <cv:PositionUnits>Frames</cv:PositionUnits>
+          <cv:Loop>true</cv:Loop>
+          <cv:Playing>true</cv:Playing>
+        </Combinator>
+      </Expression>
+      <Expression xsi:type="Combinator">
+        <Combinator xsi:type="cv:Grayscale" />
+      </Expression>
+      <Expression xsi:type="Combinator">
+        <Combinator xsi:type="sleap:PredictPoseIdentities">
+          <sleap:ModelFileName>\models\frozen_graph.pb</sleap:ModelFileName>
+          <sleap:TrainingConfig>\models\training_config.json</sleap:TrainingConfig>
+          <sleap:CentroidMinConfidence xsi:nil="true" />
+          <sleap:IdentityMinConfidence xsi:nil="true" />
+          <sleap:PartMinConfidence xsi:nil="true" />
+          <sleap:ScaleFactor xsi:nil="true" />
+          <sleap:ColorConversion xsi:nil="true" />
+        </Combinator>
+      </Expression>
+      <Expression xsi:type="Combinator">
+        <Combinator xsi:type="sleap:GetMaximumConfidencePoseIdentity" />
+      </Expression>
+      <Expression xsi:type="Combinator">
+        <Combinator xsi:type="sleap:GetBodyPart">
+          <sleap:Name>head</sleap:Name>
+        </Combinator>
+      </Expression>
+      <Expression xsi:type="MemberSelector">
+        <Selector>Position</Selector>
+      </Expression>
+      <Expression xsi:type="MemberSelector">
+        <Selector>Centroid</Selector>
+      </Expression>
+      <Expression xsi:type="MemberSelector">
+        <Selector>Identity</Selector>
+      </Expression>
+    </Nodes>
+    <Edges>
+      <Edge From="0" To="1" Label="Source1" />
+      <Edge From="1" To="2" Label="Source1" />
+      <Edge From="2" To="3" Label="Source1" />
+      <Edge From="3" To="4" Label="Source1" />
+      <Edge From="3" To="6" Label="Source1" />
+      <Edge From="3" To="7" Label="Source1" />
+      <Edge From="4" To="5" Label="Source1" />
+    </Edges>
+  </Workflow>
+</WorkflowBuilder>
