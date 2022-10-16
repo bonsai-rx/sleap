@@ -4,14 +4,14 @@ using OpenCV.Net;
 
 namespace Bonsai.Sleap
 {
-    public class LabeledPoseCollection : Collection<LabeledPose>
+    public class PoseIdentityCollection : Collection<PoseIdentity>
     {
-        public LabeledPoseCollection(IplImage image)
+        public PoseIdentityCollection(IplImage image)
         {
             Image = image;
         }
 
-        public LabeledPoseCollection(IList<LabeledPose> list, IplImage image)
+        public PoseIdentityCollection(IList<PoseIdentity> list, IplImage image)
             : base(list)
         {
             Image = image;

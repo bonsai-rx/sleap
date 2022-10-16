@@ -9,13 +9,13 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.Collections.Generic;
 
-[assembly: TypeVisualizer(typeof(LabeledPoseVisualizer), Target = typeof(LabeledPose))]
+[assembly: TypeVisualizer(typeof(PoseIdentityVisualizer), Target = typeof(PoseIdentity))]
 
 namespace Bonsai.Sleap.Design
 {
-    public class LabeledPoseVisualizer : IplImageVisualizer
+    public class PoseIdentityVisualizer : IplImageVisualizer
     {
-        LabeledPose labeledPose;
+        PoseIdentity pose;
         LabeledImageLayer labeledImage;
         ToolStripButton drawLabelsButton;
         ToolStripButton drawIdentityButton;
@@ -34,7 +34,7 @@ namespace Bonsai.Sleap.Design
             drawLabelsButton.CheckedChanged += (sender, e) => DrawLabels = drawLabelsButton.Checked;
             StatusStrip.Items.Add(drawLabelsButton);
 
-            drawIdentityButton = new ToolStripButton("Label Identity");
+            drawIdentityButton = new ToolStripButton("Draw Identity");
             drawIdentityButton.CheckState = CheckState.Checked;
             drawIdentityButton.Checked = DrawIdentity;
             drawIdentityButton.CheckOnClick = true;
@@ -50,28 +50,28 @@ namespace Bonsai.Sleap.Design
 
         public override void Show(object value)
         {
-            labeledPose = (LabeledPose)value;
-            base.Show(labeledPose?.Image);
+            pose = (PoseIdentity)value;
+            base.Show(pose?.Image);
         }
 
         protected override void ShowMashup(IList<object> values)
         {
             base.ShowMashup(values);
-            if (labeledPose != null)
+            if (pose != null)
             {
                 if (DrawLabels || DrawIdentity)
                 {
-                    labeledImage.UpdateLabels(labeledPose.Image.Size, VisualizerCanvas.Font, (graphics, labelFont) =>
+                    labeledImage.UpdateLabels(pose.Image.Size, VisualizerCanvas.Font, (graphics, labelFont) =>
                     {
                         if (DrawLabels)
                         {
-                            DrawingHelper.DrawLabels(graphics, labelFont, labeledPose);
+                            DrawingHelper.DrawLabels(graphics, labelFont, pose);
                         }
 
-                        if (DrawIdentity && labeledPose.Count > 0)
+                        if (DrawIdentity && pose.Count > 0)
                         {
-                            var position = labeledPose[0].Position;
-                            graphics.DrawString(labeledPose.Label, labelFont, Brushes.White, position.X, position.Y);
+                            var position = pose[0].Position;
+                            graphics.DrawString(pose.Identity, labelFont, Brushes.White, position.X, position.Y);
                         }
                     });
                 }
@@ -84,10 +84,10 @@ namespace Bonsai.Sleap.Design
             GL.Color4(Color4.White);
             base.RenderFrame();
 
-            if (labeledPose != null)
+            if (pose != null)
             {
                 DrawingHelper.SetDrawState(VisualizerCanvas);
-                DrawingHelper.DrawPose(labeledPose);
+                DrawingHelper.DrawPose(pose);
                 labeledImage.Draw();
             }
         }

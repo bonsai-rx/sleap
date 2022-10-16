@@ -2,14 +2,14 @@
 
 namespace Bonsai.Sleap
 {
-    public class LabeledPose : Pose
+    public class PoseIdentity : Pose
     {
-        public LabeledPose(IplImage image)
+        public PoseIdentity(IplImage image)
             : base(image)
         {
         }
 
-        public string Label { get; set; }
+        public string Identity { get; set; }
 
         public float Confidence { get; set; }
     }

@@ -10,7 +10,7 @@ namespace Bonsai.Sleap
 {
     [DefaultProperty(nameof(ModelFileName))]
     [Description("Performs markerless multi-pose and identity estimation using a SLEAP model on the input image sequence.")]
-    public class PredictLabeledPoses : Transform<IplImage, LabeledPoseCollection>
+    public class PredictPoseIdentities : Transform<IplImage, PoseIdentityCollection>
     {
         [FileNameFilter("Protocol Buffer Files(*.pb)|*.pb")]
         [Editor("Bonsai.Design.OpenFileNameEditor, Bonsai.Design", DesignTypes.UITypeEditor)]
@@ -43,7 +43,7 @@ namespace Bonsai.Sleap
         [Description("The optional color conversion used to prepare RGB video frames for inference.")]
         public ColorConversion? ColorConversion { get; set; }
 
-        private IObservable<LabeledPoseCollection> Process(IObservable<IplImage[]> source)
+        private IObservable<PoseIdentityCollection> Process(IObservable<IplImage[]> source)
         {
             return Observable.Defer(() =>
             {
@@ -97,7 +97,7 @@ namespace Bonsai.Sleap
                     TensorHelper.UpdateTensor(tensor, colorChannels, frames);
                     var output = runner.Run();
 
-                    var identityCollection = new LabeledPoseCollection(input[0]);
+                    var identityCollection = new PoseIdentityCollection(input[0]);
                     if (output[0].Shape[0] == 0) return identityCollection;
                     else
                     {
@@ -129,17 +129,17 @@ namespace Bonsai.Sleap
                         for (int iid = 0; iid < idArr.GetLength(0); iid++)
                         {
                             // Find the class with max score
-                            var labeledPose = new LabeledPose(input.Length == 1 ? input[0] : input[iid]);
+                            var pose = new PoseIdentity(input.Length == 1 ? input[0] : input[iid]);
                             var maxIndex = ArgMax(idArr, iid, Comparer<float>.Default, out float maxScore);
-                            labeledPose.Confidence = maxScore;
+                            pose.Confidence = maxScore;
                             if (maxScore < idThreshold || maxIndex < 0)
                             {
-                                labeledPose.Label = string.Empty;
+                                pose.Identity = string.Empty;
                             }
-                            else labeledPose.Label = config.ClassNames[maxIndex];
+                            else pose.Identity = config.ClassNames[maxIndex];
 
                             var centroid = new BodyPart();
-                            centroid.Name = labeledPose.Label;
+                            centroid.Name = pose.Identity;
                             centroid.Confidence = centroidConfArr[0];
                             if (centroid.Confidence < centroidThreshold)
                             {
@@ -151,7 +151,7 @@ namespace Bonsai.Sleap
                                     x: (float)(centroidArr[iid, 0] * poseScale),
                                     y: (float)(centroidArr[iid, 1] * poseScale));
                             }
-                            labeledPose.Centroid = centroid;
+                            pose.Centroid = centroid;
 
                             // Iterate on the body parts
                             for (int bodyPartIdx = 0; bodyPartIdx < poseArr.GetLength(1); bodyPartIdx++)
@@ -169,9 +169,9 @@ namespace Bonsai.Sleap
                                         x: (float)(poseArr[iid, bodyPartIdx, 0] * poseScale),
                                         y: (float)(poseArr[iid, bodyPartIdx, 1] * poseScale));
                                 }
-                                labeledPose.Add(bodyPart);
+                                pose.Add(bodyPart);
                             }
-                            identityCollection.Add(labeledPose);
+                            identityCollection.Add(pose);
                         };
                         return identityCollection;
                     }
@@ -179,7 +179,7 @@ namespace Bonsai.Sleap
             });
         }
 
-        public override IObservable<LabeledPoseCollection> Process(IObservable<IplImage> source)
+        public override IObservable<PoseIdentityCollection> Process(IObservable<IplImage> source)
         {
             return Process(source.Select(frame => new IplImage[] { frame }));
         }

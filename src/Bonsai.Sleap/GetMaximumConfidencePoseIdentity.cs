@@ -7,22 +7,22 @@ using OpenCV.Net;
 namespace Bonsai.Sleap
 {
     [WorkflowElementCategory(ElementCategory.Transform)]
-    [Description("Returns the labeled pose with the highest identity confidence, using the optional class label.")]
-    public class GetMaximumConfidenceLabel : Transform<LabeledPoseCollection, LabeledPose>
+    [Description("Returns the pose with the highest identity confidence, using the optional class label.")]
+    public class GetMaximumConfidencePoseIdentity : Transform<PoseIdentityCollection, PoseIdentity>
     {
-        [Description("The class label used to filter the labeled pose collection.")]
-        public string Label { get; set; }
+        [Description("The class label used to filter the pose collection.")]
+        public string Identity { get; set; }
 
-        public override IObservable<LabeledPose> Process(IObservable<LabeledPoseCollection> source)
+        public override IObservable<PoseIdentity> Process(IObservable<PoseIdentityCollection> source)
         {
             return source.Select(poses =>
             {
-                var label = Label;
+                var identity = Identity;
                 int maxIndex = -1;
                 for (int i = 0; i < poses.Count; i++)
                 {
                     var pose = poses[i];
-                    if (!string.IsNullOrEmpty(label) && pose.Label != label)
+                    if (!string.IsNullOrEmpty(identity) && pose.Identity != identity)
                     {
                         continue;
                     }
@@ -33,15 +33,15 @@ namespace Bonsai.Sleap
                     }
                 }
 
-                return maxIndex < 0 ? DefaultPose(poses.Image, label) : poses[maxIndex];
+                return maxIndex < 0 ? DefaultPose(poses.Image, identity) : poses[maxIndex];
             });
         }
 
-        static LabeledPose DefaultPose(IplImage image, string label)
+        static PoseIdentity DefaultPose(IplImage image, string identity)
         {
-            return new LabeledPose(image)
+            return new PoseIdentity(image)
             {
-                Label = label,
+                Identity = identity,
                 Confidence = float.NaN,
                 Centroid = GetBodyPart.DefaultBodyPart(string.Empty)
             };

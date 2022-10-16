@@ -9,29 +9,29 @@ using System.Drawing;
 using System.Collections.Generic;
 using System.Windows.Forms;
 
-[assembly: TypeVisualizer(typeof(LabeledPoseCollectionVisualizer), Target = typeof(LabeledPoseCollection))]
+[assembly: TypeVisualizer(typeof(PoseIdentityCollectionVisualizer), Target = typeof(PoseIdentityCollection))]
 
 namespace Bonsai.Sleap.Design
 {
-    public class LabeledPoseCollectionVisualizer : IplImageVisualizer
+    public class PoseIdentityCollectionVisualizer : IplImageVisualizer
     {
         const float BoundingBoxOffset = 0.02f;
         readonly Dictionary<string, int> uniqueLabels = new Dictionary<string, int>();
-        LabeledPoseCollection labeledPoses;
+        PoseIdentityCollection poseIdentities;
+        ToolStripButton drawIdentitiesButton;
         LabeledImageLayer labeledImage;
-        ToolStripButton drawLabelsButton;
 
-        public bool DrawLabels { get; set; }
+        public bool DrawIdentities { get; set; }
 
         public override void Load(IServiceProvider provider)
         {
             base.Load(provider);
-            drawLabelsButton = new ToolStripButton("Draw Labels");
-            drawLabelsButton.CheckState = CheckState.Checked;
-            drawLabelsButton.Checked = DrawLabels;
-            drawLabelsButton.CheckOnClick = true;
-            drawLabelsButton.CheckedChanged += (sender, e) => DrawLabels = drawLabelsButton.Checked;
-            StatusStrip.Items.Add(drawLabelsButton);
+            drawIdentitiesButton = new ToolStripButton("Draw Identities");
+            drawIdentitiesButton.CheckState = CheckState.Checked;
+            drawIdentitiesButton.Checked = DrawIdentities;
+            drawIdentitiesButton.CheckOnClick = true;
+            drawIdentitiesButton.CheckedChanged += (sender, e) => DrawIdentities = drawIdentitiesButton.Checked;
+            StatusStrip.Items.Add(drawIdentitiesButton);
 
             VisualizerCanvas.Load += (sender, e) =>
             {
@@ -42,33 +42,33 @@ namespace Bonsai.Sleap.Design
 
         public override void Show(object value)
         {
-            labeledPoses = (LabeledPoseCollection)value;
-            base.Show(labeledPoses?.Image);
+            poseIdentities = (PoseIdentityCollection)value;
+            base.Show(poseIdentities?.Image);
         }
 
         protected override void ShowMashup(IList<object> values)
         {
             base.ShowMashup(values);
             var image = VisualizerImage;
-            if (image != null && labeledPoses != null)
+            if (image != null && poseIdentities != null)
             {
-                foreach (var labeledPose in labeledPoses)
+                foreach (var pose in poseIdentities)
                 {
-                    if (!uniqueLabels.TryGetValue(labeledPose.Label, out int index))
+                    if (!uniqueLabels.TryGetValue(pose.Identity, out int index))
                     {
                         index = uniqueLabels.Count;
-                        uniqueLabels.Add(labeledPose.Label, index);
+                        uniqueLabels.Add(pose.Identity, index);
                     }
                 }
 
-                if (DrawLabels)
+                if (DrawIdentities)
                 {
                     labeledImage.UpdateLabels(image.Size, VisualizerCanvas.Font, (graphics, labelFont) =>
                     {
-                        foreach (var labeledPose in labeledPoses)
+                        foreach (var pose in poseIdentities)
                         {
-                            var position = DrawingHelper.GetBoundingBox(labeledPose, image.Size, BoundingBoxOffset)[2];
-                            graphics.DrawString(labeledPose.Label, labelFont, Brushes.White, position.X, position.Y);
+                            var position = DrawingHelper.GetBoundingBox(pose, image.Size, BoundingBoxOffset)[2];
+                            graphics.DrawString(pose.Identity, labelFont, Brushes.White, position.X, position.Y);
                         }
                     });
                 }
@@ -81,13 +81,13 @@ namespace Bonsai.Sleap.Design
             GL.Color4(Color4.White);
             base.RenderFrame();
 
-            if (labeledPoses != null)
+            if (poseIdentities != null)
             {
                 DrawingHelper.SetDrawState(VisualizerCanvas);
-                foreach (var labeledPose in labeledPoses)
+                foreach (var pose in poseIdentities)
                 {
-                    DrawingHelper.DrawPose(labeledPose);
-                    DrawingHelper.DrawBoundingBox(labeledPose, uniqueLabels[labeledPose.Label]);
+                    DrawingHelper.DrawPose(pose);
+                    DrawingHelper.DrawBoundingBox(pose, uniqueLabels[pose.Identity]);
                 }
                 labeledImage.Draw();
             }
