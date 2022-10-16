@@ -33,8 +33,8 @@ After downloading the native TensorFlow binary and cuDNN, you can follow these s
    - Operator : `PredictPoses`
  - `top-down-id-model`:
    - Input : full frame with potentially multiple objects
-   - Output : collection of detected poses (centroid + body parts) plus labeled identities from multiple objects in the image
-   - Operator : `PredictLabeledPoses`
+   - Output : collection of detected poses (centroid + body parts) plus identities from multiple objects in the image
+   - Operator : `PredictPoseIdentities`
  - `single_instance`:
    - Input : croped instance with a single object in the input image
    - Output : returns a single pose (body parts)
