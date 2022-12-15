@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Globalization;
 using OpenCV.Net;
 using System.Collections.Generic;
 using YamlDotNet.RepresentationModel;
@@ -38,9 +39,9 @@ namespace Bonsai.Sleap
             ParseModel(config, mapping);
 
             config.TargetSize = new Size(
-                int.Parse((string)mapping["data"]["preprocessing"]["target_width"]),
-                int.Parse((string)mapping["data"]["preprocessing"]["target_height"]));
-            config.InputScaling = float.Parse((string)mapping["data"]["preprocessing"]["input_scaling"]);
+                int.Parse((string)mapping["data"]["preprocessing"]["target_width"], CultureInfo.InvariantCulture),
+                int.Parse((string)mapping["data"]["preprocessing"]["target_height"], CultureInfo.InvariantCulture));
+            config.InputScaling = float.Parse((string)mapping["data"]["preprocessing"]["input_scaling"], CultureInfo.InvariantCulture);
             return config;
 
         }
