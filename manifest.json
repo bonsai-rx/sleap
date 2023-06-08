@@ -1,0 +1,621 @@
+{
+  "homepages": [],
+  "source_base_path": "D:/a/sleap/sleap/docs",
+  "xrefmap": "xrefmap.yml",
+  "files": [
+    {
+      "type": "Resource",
+      "output": {
+        "resource": {
+          "relative_path": "index.json"
+        }
+      },
+      "is_incremental": false
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Bonsai.Sleap.BodyPart.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Bonsai.Sleap.BodyPart.html",
+          "hash": "XWBAKQQ4GpKT372EMFVqDY2vanqVEtQOnJjg7u9L/yI="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Bonsai.Sleap.Centroid.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Bonsai.Sleap.Centroid.html",
+          "hash": "4yftOl7Pk6V3HzGVfxrBucSkMywMvMFglZy1T6yWbN8="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Bonsai.Sleap.CentroidCollection.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Bonsai.Sleap.CentroidCollection.html",
+          "hash": "Q79bSYrA09rGGSPg3zVvFPJ3u+CtGHe+3Z7M2Acm28I="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Bonsai.Sleap.Design.CentroidCollectionVisualizer.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Bonsai.Sleap.Design.CentroidCollectionVisualizer.html",
+          "hash": "q3f8rXSgLwvfEO2yiPy2wtcP01WWLskaS7ETFEFa5EM="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Bonsai.Sleap.Design.CentroidVisualizer.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Bonsai.Sleap.Design.CentroidVisualizer.html",
+          "hash": "iEBZduCVLyCCLq3Bnz528v5BnGNJlyNX7a91rU3VD7c="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Bonsai.Sleap.Design.PoseCollectionVisualizer.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Bonsai.Sleap.Design.PoseCollectionVisualizer.html",
+          "hash": "cv1P3dF9mpOSw1qAGNUya2RYEtIaR4AqZe9qEKoMFe8="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Bonsai.Sleap.Design.PoseIdentityCollectionVisualizer.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Bonsai.Sleap.Design.PoseIdentityCollectionVisualizer.html",
+          "hash": "dU7d/M5y1gYSYTZ/3IOPm7xwBs0dLZYPlliFUlayxvg="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Bonsai.Sleap.Design.PoseIdentityVisualizer.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Bonsai.Sleap.Design.PoseIdentityVisualizer.html",
+          "hash": "KyRvkFYFDXyrJCd/QZ1gWmVU/8H6La+Fn8RQoWVbntI="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Bonsai.Sleap.Design.PoseVisualizer.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Bonsai.Sleap.Design.PoseVisualizer.html",
+          "hash": "t4nDJmL/W13OAPk+9PYKgGsktN4ObQZHwVOZfrALm60="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Bonsai.Sleap.Design.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Bonsai.Sleap.Design.html",
+          "hash": "rWYOKEV74zVO8SMcMZciHgoukPpBAMtMWAIiz0wCozE="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Bonsai.Sleap.GetBodyPart.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Bonsai.Sleap.GetBodyPart.html",
+          "hash": "ljDlcYo1AQtoh+I5u/riO6Tb+0XPM/owdwPX5sbbjts="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Bonsai.Sleap.GetMaximumConfidencePoseIdentity.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Bonsai.Sleap.GetMaximumConfidencePoseIdentity.html",
+          "hash": "TDVPmCjUCFll8orWr4NUb6Cw2Dwbzq1i0PP1uZWVqjc="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Bonsai.Sleap.Pose.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Bonsai.Sleap.Pose.html",
+          "hash": "1DyeFKoxgh6O3Nf0zDfY8Qw0xflgDphdXt8Sg356dtY="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Bonsai.Sleap.PoseCollection.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Bonsai.Sleap.PoseCollection.html",
+          "hash": "RAkHE57PYBbiHudnRQ9Psk11iLCNGrYd5Lt1cwjmjAw="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Bonsai.Sleap.PoseIdentity.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Bonsai.Sleap.PoseIdentity.html",
+          "hash": "4m/9JSOijllc/JmmeXniQT9700+RvP9v0RubvSxEiOA="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Bonsai.Sleap.PoseIdentityCollection.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Bonsai.Sleap.PoseIdentityCollection.html",
+          "hash": "tzYWDRk/23s1exHsPC03oCcExEKsJ/aySKh9PMcX5CQ="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Bonsai.Sleap.PredictCentroids.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Bonsai.Sleap.PredictCentroids.html",
+          "hash": "9hwe7wxaXH6ivIzbvLPlhBI5YIR1+MApu26USyJ04Bs="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Bonsai.Sleap.PredictPoseIdentities.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Bonsai.Sleap.PredictPoseIdentities.html",
+          "hash": "vLpXRXBnPPXch71e0nwwHUV9gMeYRICcsxNaoTZ1eRE="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Bonsai.Sleap.PredictPoses.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Bonsai.Sleap.PredictPoses.html",
+          "hash": "vTiktDo6K9frchi5H03/tZlr609K8pRKJY9Oh4C0kkk="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Bonsai.Sleap.PredictSinglePose.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Bonsai.Sleap.PredictSinglePose.html",
+          "hash": "Z5HnlMrRO5OQ7fQHk7q7KvvP35tG2+3mRb6i58qYyVM="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Bonsai.Sleap.UnexpectedModelTypeException.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Bonsai.Sleap.UnexpectedModelTypeException.html",
+          "hash": "PKVbsIvg0rzmFRCNENWrmahwRkaKpc8qv705t2Tqz3Q="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Bonsai.Sleap.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Bonsai.Sleap.html",
+          "hash": "YLIcdZkXq/hJpgfuXDnu0dEluTvnxDDF8DyxKIkPqwE="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "api/toc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/toc.html",
+          "hash": "vxlxiODrVmv/yIahdUgi3sJQtqFkG5ZucWRw4u/HqMk="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/intro.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/intro.html",
+          "hash": "8k/BP/PFNpa92MWl3wb4dnMlahQla/e8ZU+jkiNA3nk="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/manual.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/manual.html",
+          "hash": "jqgZSq27ey1CrHd98S1vPwOPwAE16AmMEDH5rfMLX1s="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/sleap-predictcentroids.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/sleap-predictcentroids.html",
+          "hash": "q7bIbw2Ft3uL4ruW3d1/dMgM1dhgkAqp4b3v/0GlhyI="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/sleap-predictposeidentities.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/sleap-predictposeidentities.html",
+          "hash": "Myqo2flEvHt/SPj9h+HUAKXxn4nE08uKV65meef1ylw="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/sleap-predictposes.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/sleap-predictposes.html",
+          "hash": "FKnTlr6UIifnD0uX0vkSTYVyllT0mcpiY7mDCM5Nvzc="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/sleap-predictsinglepose.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/sleap-predictsinglepose.html",
+          "hash": "S+cg20BqZwMWxuRj9fd9wMiiPRZbKKtoPLAq0UKTD5A="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "articles/toc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "articles/toc.html",
+          "hash": "5LzovH3Z9xxZXAL/5azf2Id4OVt9SOYml+QyC6IZQug="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "favicon.ico",
+      "output": {
+        "resource": {
+          "relative_path": "favicon.ico"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "images/SleapSchematic.svg",
+      "output": {
+        "resource": {
+          "relative_path": "images/SleapSchematic.svg"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "images/demo.gif",
+      "output": {
+        "resource": {
+          "relative_path": "images/demo.gif"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "images/sleap-Bonsai-icon.svg",
+      "output": {
+        "resource": {
+          "relative_path": "images/sleap-Bonsai-icon.svg"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "index.md",
+      "output": {
+        ".html": {
+          "relative_path": "index.html",
+          "hash": "NNO3gANqpBF2728fjgbkHpPMubgGENw+ZsQvKr0gExI="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "logo.svg",
+      "output": {
+        "resource": {
+          "relative_path": "logo.svg"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "toc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "toc.html",
+          "hash": "i4ABonNGsuIY6QWuaCuRgr673YjIqyBZAz7g+yoDniQ="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "workflows/CentroidModel.bonsai",
+      "output": {
+        "resource": {
+          "relative_path": "workflows/CentroidModel.bonsai"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "workflows/CentroidModel.svg",
+      "output": {
+        "resource": {
+          "relative_path": "workflows/CentroidModel.svg"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "workflows/FullTopDownModel.bonsai",
+      "output": {
+        "resource": {
+          "relative_path": "workflows/FullTopDownModel.bonsai"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "workflows/FullTopDownModel.svg",
+      "output": {
+        "resource": {
+          "relative_path": "workflows/FullTopDownModel.svg"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "workflows/PredictPoseIdentities.bonsai",
+      "output": {
+        "resource": {
+          "relative_path": "workflows/PredictPoseIdentities.bonsai"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "workflows/PredictPoseIdentities.svg",
+      "output": {
+        "resource": {
+          "relative_path": "workflows/PredictPoseIdentities.svg"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "workflows/SingleInstanceModel.bonsai",
+      "output": {
+        "resource": {
+          "relative_path": "workflows/SingleInstanceModel.bonsai"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "workflows/SingleInstanceModel.svg",
+      "output": {
+        "resource": {
+          "relative_path": "workflows/SingleInstanceModel.svg"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "workflows/TopDownNoIDModel.bonsai",
+      "output": {
+        "resource": {
+          "relative_path": "workflows/TopDownNoIDModel.bonsai"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "workflows/TopDownNoIDModel.svg",
+      "output": {
+        "resource": {
+          "relative_path": "workflows/TopDownNoIDModel.svg"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    }
+  ],
+  "incremental_info": [
+    {
+      "status": {
+        "can_incremental": false,
+        "details": "Cannot build incrementally because last build info is missing.",
+        "incrementalPhase": "build",
+        "total_file_count": 0,
+        "skipped_file_count": 0,
+        "full_build_reason_code": "NoAvailableBuildCache"
+      },
+      "processors": {
+        "ConceptualDocumentProcessor": {
+          "can_incremental": false,
+          "incrementalPhase": "build",
+          "total_file_count": 7,
+          "skipped_file_count": 0
+        },
+        "ManagedReferenceDocumentProcessor": {
+          "can_incremental": false,
+          "incrementalPhase": "build",
+          "total_file_count": 26,
+          "skipped_file_count": 0
+        },
+        "ResourceDocumentProcessor": {
+          "can_incremental": false,
+          "details": "Processor ResourceDocumentProcessor cannot support incremental build because the processor doesn't implement ISupportIncrementalDocumentProcessor interface.",
+          "incrementalPhase": "build",
+          "total_file_count": 0,
+          "skipped_file_count": 0
+        },
+        "TocDocumentProcessor": {
+          "can_incremental": false,
+          "details": "Processor TocDocumentProcessor cannot support incremental build because the processor doesn't implement ISupportIncrementalDocumentProcessor interface.",
+          "incrementalPhase": "build",
+          "total_file_count": 0,
+          "skipped_file_count": 0
+        }
+      }
+    },
+    {
+      "status": {
+        "can_incremental": false,
+        "details": "Cannot support incremental post processing, the reason is: should not trace intermediate info.",
+        "incrementalPhase": "postProcessing",
+        "total_file_count": 0,
+        "skipped_file_count": 0
+      },
+      "processors": {}
+    }
+  ],
+  "version_info": {},
+  "groups": [
+    {
+      "xrefmap": "xrefmap.yml"
+    }
+  ]
+}

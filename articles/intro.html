@@ -1,0 +1,137 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Getting Started with Bonsai - SLEAP </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Getting Started with Bonsai - SLEAP ">
+    <meta name="generator" content="docfx 2.59.4.0">
+    
+    <link rel="shortcut icon" href="../favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    <meta property="docfx:rel" content="../">
+    <meta property="docfx:newtab" content="true">
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div class="container body-content">
+        
+        <div id="search-results">
+          <div class="search-list">Search Results for <span></span></div>
+          <div class="sr-items">
+            <p><i class="glyphicon glyphicon-refresh index-loading"></i></p>
+          </div>
+          <ul id="pagination" data-first="First" data-prev="Previous" data-next="Next" data-last="Last"></ul>
+        </div>
+      </div>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="getting-started-with-bonsai---sleap">Getting Started with Bonsai - SLEAP</h1>
+
+<p><img src="../images/sleap-Bonsai-icon.svg" alt="logo"></p>
+<h2 id="what-is-bonsai---sleap">What is Bonsai - SLEAP</h2>
+<p>Bonsai.SLEAP is a <a href="https://bonsai-rx.org/">Bonsai</a> interface for <a href="https://sleap.ai/">SLEAP</a> allowing multi-animal, real-time, pose and identity estimation using pretrained network models stored in a <a href="https://developers.google.com/protocol-buffers/">Protocol buffer (.pb) format</a>.</p>
+<p>Bonsai.SLEAP loads these .pb files using <a href="https://github.com/migueldeicaza/TensorFlowSharp">TensorFlowSharp</a>, a set of .NET bindings for TensorFlow allowing native inference using either the CPU or GPU. By using the .pb file and the corresponding configuration file (<code>training_config.json</code>), the <code>PredictFullModelPose</code> operator from Bonsai.SLEAP will push the live image data through the inference network and output a set of identified poses from which you can extract an object id and specific object part position. <code>Bonsai</code> can then leverage this data to drive online effectors or simply save it to an output file.</p>
+<p>The Bonsai.SLEAP package came about following a fruitful discussion with the SLEAP team during the <a href="http://cajal-training.org/on-site/qab2022">Quantitative Approaches to Behaviour</a>.</p>
+<h2 id="how-to-install">How to install</h2>
+<p>Bonsai.SLEAP can be downloaded through the Bonsai package manager. In order to get visualizer support, you should download both the <code>Bonsai.SLEAP</code> and <code>Bonsai.SLEAP.Design</code> packages. However, in order to use it for either CPU or GPU inference, you need to pair it with a compiled native TensorFlow binary. You can find precompiled binaries for Windows 64-bit at <a href="https://www.tensorflow.org/install/lang_c">https://www.tensorflow.org/install/lang_c</a>.</p>
+<p>To use GPU TensorFlow (highly recommended for live inference), you also need to install the <code>CUDA Toolkit</code> and the <code>cuDNN libraries</code>. The current SLEAP package was developed and tested with <a href="https://developer.nvidia.com/cuda-11.3.0-download-archive">CUDA v11.3</a> and <a href="https://developer.nvidia.com/cudnn">cuDNN 8.2</a>. Additionally, make sure you have a CUDA <a href="https://docs.nvidia.com/deploy/cuda-compatibility/index.html#support-hardware">compatible GPU</a> with the latest NVIDIA drivers.</p>
+<p>After downloading the native TensorFlow binary and cuDNN, you can follow these steps to get the required native files into the <code>Extensions</code> folder of your local Bonsai install:</p>
+<ol>
+<li>The easiest way to find your Bonsai install folder is to right-click on the Bonsai shortcut &gt; Properties. The path to the folder will be shown in the &quot;Start in&quot; textbox;</li>
+<li>Copy <code>tensorflow.dll</code> file from either the CPU or GPU <a href="https://www.tensorflow.org/install/lang_c#download_and_extract">tensorflow release</a> to the <code>Extensions</code> folder;</li>
+<li>If you are using TensorFlow GPU, make sure to add the <code>cuda/bin</code> folder of your cuDNN download to the <code>PATH</code> environment variable, or copy all DLL files to the <code>Extensions</code> folder.</li>
+</ol>
+<h2 id="sleap-installation">SLEAP installation</h2>
+<p>For all questions regarding installation of SLEAP, please check the official <a href="https://sleap.ai/">docs</a>.</p>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/bonsai-rx/sleap/blob/main/docs/articles/intro.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+                <h5>In This Article</h5>
+                <div></div>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

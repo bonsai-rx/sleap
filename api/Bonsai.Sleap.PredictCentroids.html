@@ -1,0 +1,405 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class PredictCentroids
+   </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class PredictCentroids
+   ">
+    <meta name="generator" content="docfx 2.59.4.0">
+    
+    <link rel="shortcut icon" href="../favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    <meta property="docfx:rel" content="../">
+    <meta property="docfx:newtab" content="true">
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div class="container body-content">
+        
+        <div id="search-results">
+          <div class="search-list">Search Results for <span></span></div>
+          <div class="sr-items">
+            <p><i class="glyphicon glyphicon-refresh index-loading"></i></p>
+          </div>
+          <ul id="pagination" data-first="First" data-prev="Previous" data-next="Next" data-last="Last"></ul>
+        </div>
+      </div>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="Bonsai.Sleap.PredictCentroids">
+  
+  
+  <h1 id="Bonsai_Sleap_PredictCentroids" data-uid="Bonsai.Sleap.PredictCentroids" class="text-break">Class PredictCentroids
+  </h1>
+  <div class="markdown level0 summary"><p>Represents an operator that performs multi-instance centroid detection for each
+image in the sequence using a SLEAP model.</p>
+</div>
+  <div class="markdown level0 conceptual"><p><a class="xref" href="Bonsai.Sleap.PredictCentroids.html"><code>PredictCentroids</code></a> implements the <a href="https://sleap.ai/develop/api/sleap.nn.config.model.html?highlight=centroid#sleap.nn.config.model.CentroidsHeadConfig"><em>centroid</em> network</a>. This operator is most commonly used to find a set of candidate centroids from a full-resolution image. For each frame, it will return a <a class="xref" href="Bonsai.Sleap.CentroidCollection.html"><code>CentroidCollection</code></a> that can be further indexed to access the individual instances.</p>
+<p>As an example application, the output of this operator is also fully compatible with the <a class="xref" href="https://bonsai-rx.org/docs/api/Bonsai.Vision.CropCenter.html"><code>CropCenter</code></a> transform node, which can be used to easily generate smaller crops centered on the detected centroid instance (i.e. <a class="xref" href="Bonsai.Sleap.Centroid.html"><code>Centroid</code></a>)</p>
+<div class="workflow"><p><img src="../workflows/CentroidModel.bonsai" alt="PredictCentroids"></p>
+</div>
+</div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">Object</a></div>
+    <div class="level1"><a class="xref" href="https://bonsai-rx.org/docs/api/Bonsai.Combinator-2.html">Combinator</a>&lt;<a class="xref" href="https://horizongir.github.io/opencv.net/api/OpenCV.Net.IplImage.html">IplImage</a>, <a class="xref" href="Bonsai.Sleap.CentroidCollection.html">CentroidCollection</a>&gt;</div>
+    <div class="level2"><a class="xref" href="https://bonsai-rx.org/docs/api/Bonsai.Transform-2.html">Transform</a>&lt;<a class="xref" href="https://horizongir.github.io/opencv.net/api/OpenCV.Net.IplImage.html">IplImage</a>, <a class="xref" href="Bonsai.Sleap.CentroidCollection.html">CentroidCollection</a>&gt;</div>
+    <div class="level3"><span class="xref">PredictCentroids</span></div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="https://bonsai-rx.org/docs/api/Bonsai.Combinator-2.html#Bonsai_Combinator_2_Process_System_IObservable__0__">Combinator&lt;IplImage, CentroidCollection&gt;.Process(IObservable&lt;IplImage&gt;)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring#system-object-tostring">Object.ToString()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">Object.Equals(Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">Object.Equals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals#system-object-referenceequals(system-object-system-object)">Object.ReferenceEquals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode#system-object-gethashcode">Object.GetHashCode()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype#system-object-gettype">Object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone#system-object-memberwiseclone">Object.MemberwiseClone()</a>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="Bonsai.Sleap.html">Bonsai.Sleap</a></h6>
+  <h6><strong>Assembly</strong>: Bonsai.Sleap.dll</h6>
+  <h5 id="Bonsai_Sleap_PredictCentroids_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public class PredictCentroids : Transform&lt;IplImage, CentroidCollection&gt;</code></pre>
+  </div>
+  <h3 id="properties">Properties
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bonsai-rx/sleap/new/main/docs/apidoc/new?filename=Bonsai_Sleap_PredictCentroids_CentroidMinConfidence.md&amp;value=---%0Auid%3A%20Bonsai.Sleap.PredictCentroids.CentroidMinConfidence%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bonsai-rx/sleap/blob/main/src/Bonsai.Sleap/PredictCentroids.cs/#L44">View Source</a>
+  </span>
+  <a id="Bonsai_Sleap_PredictCentroids_CentroidMinConfidence_" data-uid="Bonsai.Sleap.PredictCentroids.CentroidMinConfidence*"></a>
+  <h4 id="Bonsai_Sleap_PredictCentroids_CentroidMinConfidence" data-uid="Bonsai.Sleap.PredictCentroids.CentroidMinConfidence">CentroidMinConfidence</h4>
+  <div class="markdown level1 summary"><p>Gets or sets a value specifying the confidence threshold used to discard centroid
+predictions. If no value is specified, all estimated centroid positions are returned.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[Range(0, 1)]
+public float? CentroidMinConfidence { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.nullable-1">Nullable</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.single">Single</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bonsai-rx/sleap/new/main/docs/apidoc/new?filename=Bonsai_Sleap_PredictCentroids_ColorConversion.md&amp;value=---%0Auid%3A%20Bonsai.Sleap.PredictCentroids.ColorConversion%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bonsai-rx/sleap/blob/main/src/Bonsai.Sleap/PredictCentroids.cs/#L61">View Source</a>
+  </span>
+  <a id="Bonsai_Sleap_PredictCentroids_ColorConversion_" data-uid="Bonsai.Sleap.PredictCentroids.ColorConversion*"></a>
+  <h4 id="Bonsai_Sleap_PredictCentroids_ColorConversion" data-uid="Bonsai.Sleap.PredictCentroids.ColorConversion">ColorConversion</h4>
+  <div class="markdown level1 summary"><p>Gets or sets a value specifying the optional color conversion used to prepare
+RGB video frames for inference. If no value is specified, no color conversion
+is performed.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ColorConversion? ColorConversion { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.nullable-1">Nullable</a>&lt;<a class="xref" href="https://horizongir.github.io/opencv.net/api/OpenCV.Net.ColorConversion.html">ColorConversion</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bonsai-rx/sleap/new/main/docs/apidoc/new?filename=Bonsai_Sleap_PredictCentroids_ModelFileName.md&amp;value=---%0Auid%3A%20Bonsai.Sleap.PredictCentroids.ModelFileName%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bonsai-rx/sleap/blob/main/src/Bonsai.Sleap/PredictCentroids.cs/#L26">View Source</a>
+  </span>
+  <a id="Bonsai_Sleap_PredictCentroids_ModelFileName_" data-uid="Bonsai.Sleap.PredictCentroids.ModelFileName*"></a>
+  <h4 id="Bonsai_Sleap_PredictCentroids_ModelFileName" data-uid="Bonsai.Sleap.PredictCentroids.ModelFileName">ModelFileName</h4>
+  <div class="markdown level1 summary"><p>Gets or sets a value specifying the path to the exported Protocol Buffer
+file containing the pretrained SLEAP model.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[FileNameFilter(&quot;Protocol Buffer Files(*.pb)|*.pb&quot;)]
+public string ModelFileName { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bonsai-rx/sleap/new/main/docs/apidoc/new?filename=Bonsai_Sleap_PredictCentroids_ScaleFactor.md&amp;value=---%0Auid%3A%20Bonsai.Sleap.PredictCentroids.ScaleFactor%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bonsai-rx/sleap/blob/main/src/Bonsai.Sleap/PredictCentroids.cs/#L53">View Source</a>
+  </span>
+  <a id="Bonsai_Sleap_PredictCentroids_ScaleFactor_" data-uid="Bonsai.Sleap.PredictCentroids.ScaleFactor*"></a>
+  <h4 id="Bonsai_Sleap_PredictCentroids_ScaleFactor" data-uid="Bonsai.Sleap.PredictCentroids.ScaleFactor">ScaleFactor</h4>
+  <div class="markdown level1 summary"><p>Gets or sets a value specifying the scale factor used to resize video frames
+for inference. If no value is specified, no resizing is performed.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public float? ScaleFactor { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.nullable-1">Nullable</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.single">Single</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bonsai-rx/sleap/new/main/docs/apidoc/new?filename=Bonsai_Sleap_PredictCentroids_TrainingConfig.md&amp;value=---%0Auid%3A%20Bonsai.Sleap.PredictCentroids.TrainingConfig%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bonsai-rx/sleap/blob/main/src/Bonsai.Sleap/PredictCentroids.cs/#L35">View Source</a>
+  </span>
+  <a id="Bonsai_Sleap_PredictCentroids_TrainingConfig_" data-uid="Bonsai.Sleap.PredictCentroids.TrainingConfig*"></a>
+  <h4 id="Bonsai_Sleap_PredictCentroids_TrainingConfig" data-uid="Bonsai.Sleap.PredictCentroids.TrainingConfig">TrainingConfig</h4>
+  <div class="markdown level1 summary"><p>Gets or sets a value specifying the path to the configuration JSON file
+containing training metadata.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[FileNameFilter(&quot;Config Files(*.json)|*.json|All Files|*.*&quot;)]
+public string TrainingConfig { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bonsai-rx/sleap/new/main/docs/apidoc/new?filename=Bonsai_Sleap_PredictCentroids_Process_System_IObservable_OpenCV_Net_IplImage__.md&amp;value=---%0Auid%3A%20Bonsai.Sleap.PredictCentroids.Process(System.IObservable%7BOpenCV.Net.IplImage%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bonsai-rx/sleap/blob/main/src/Bonsai.Sleap/PredictCentroids.cs/#L163">View Source</a>
+  </span>
+  <a id="Bonsai_Sleap_PredictCentroids_Process_" data-uid="Bonsai.Sleap.PredictCentroids.Process*"></a>
+  <h4 id="Bonsai_Sleap_PredictCentroids_Process_System_IObservable_OpenCV_Net_IplImage__" data-uid="Bonsai.Sleap.PredictCentroids.Process(System.IObservable{OpenCV.Net.IplImage})">Process(IObservable&lt;IplImage&gt;)</h4>
+  <div class="markdown level1 summary"><p>Performs multi-instance centroid detection for each image in an observable
+sequence using a SLEAP model.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override IObservable&lt;CentroidCollection&gt; Process(IObservable&lt;IplImage&gt; source)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iobservable-1">IObservable</a>&lt;<a class="xref" href="https://horizongir.github.io/opencv.net/api/OpenCV.Net.IplImage.html">IplImage</a>&gt;</td>
+        <td><span class="parametername">source</span></td>
+        <td><p>The sequence of images from which to extract the centroids.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iobservable-1">IObservable</a>&lt;<a class="xref" href="Bonsai.Sleap.CentroidCollection.html">CentroidCollection</a>&gt;</td>
+        <td><p>A sequence of <a class="xref" href="Bonsai.Sleap.CentroidCollection.html">CentroidCollection</a> objects representing the
+centroids extracted from each image in the <code data-dev-comment-type="paramref" class="paramref">source</code> sequence.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><span class="xref">Bonsai.Combinator&lt;OpenCV.Net.IplImage, Bonsai.Sleap.CentroidCollection&gt;.Process(System.IObservable&lt;OpenCV.Net.IplImage&gt;)</span></div>
+  <h3 id="seealso">See Also</h3>
+  <div class="seealso">
+      <div><a class="xref" href="Bonsai.Sleap.PredictPoses.html">PredictPoses</a></div>
+      <div><a class="xref" href="Bonsai.Sleap.PredictPoseIdentities.html">PredictPoseIdentities</a></div>
+      <div><a class="xref" href="Bonsai.Sleap.PredictSinglePose.html">PredictSinglePose</a></div>
+      <div><a class="xref" href="Bonsai.Sleap.GetBodyPart.html">GetBodyPart</a></div>
+  </div>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/bonsai-rx/sleap/blob/main/docs/apidoc/Bonsai_Sleap_PredictCentroids.md/#L2" class="contribution-link">Improve this Doc</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/bonsai-rx/sleap/blob/main/src/Bonsai.Sleap/PredictCentroids.cs/#L18" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+                <h5>In This Article</h5>
+                <div></div>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

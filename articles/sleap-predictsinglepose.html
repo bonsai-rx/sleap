@@ -1,0 +1,126 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>PredictSinglePose </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="PredictSinglePose ">
+    <meta name="generator" content="docfx 2.59.4.0">
+    
+    <link rel="shortcut icon" href="../favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    <meta property="docfx:rel" content="../">
+    <meta property="docfx:newtab" content="true">
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div class="container body-content">
+        
+        <div id="search-results">
+          <div class="search-list">Search Results for <span></span></div>
+          <div class="sr-items">
+            <p><i class="glyphicon glyphicon-refresh index-loading"></i></p>
+          </div>
+          <ul id="pagination" data-first="First" data-prev="Previous" data-next="Next" data-last="Last"></ul>
+        </div>
+      </div>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="sleap-predictsinglepose">
+
+
+<p>Almost all SLEAP operators afford the detection of multiple instances for each incoming image. However, in certain cases we might be interested in only identifying a single object in the incoming image. This strategy offers multiple advantages, specifically in terms of performance. In Bonsai.SLEAP, this functionality is implemented using the <a class="xref" href="../api/Bonsai.Sleap.PredictSinglePose.html"><code>PredictSinglePose</code></a> operator that implements a <a href="https://sleap.ai/api/sleap.nn.config.model.html?highlight=centered%20instanc#sleap.nn.config.model.CenteredInstanceConfmapsHeadConfig"><em>single_instance</em> network</a>. Since the centroid detection step is not performed by the network, the operator expects an already centered instance on which it will run the pose estimation. Moreover, the network will always return a single output per incoming frame, even if no valid instances are detected.</p>
+<p>The following example workflow highlights how combining <a href="https://circuitdigest.com/tutorial/image-segmentation-using-opencv#:%7E:text=Image%20segmentation%20is%20a%20process,the%20parts%20of%20an%20image.">basic computer-vision algorithm for image segmentation</a> for centroid detection, with the network-based pose estimation, results in &gt;2-fold increases in performance relative to the previously introduced <a class="xref" href="../api/Bonsai.Sleap.PredictPoses.html"><code>PredictPoses</code></a> operator. In this example, the first part of the workflow segments and detects the centroid positions (output of <a class="xref" href="https://bonsai-rx.org/docs/api/Bonsai.Vision.BinaryRegionAnalysis.html"><code>BinaryRegionAnalysis</code></a>) of all available objects in the incoming frame, which are then combined with the original image to generate centered crops (<a class="xref" href="https://bonsai-rx.org/docs/api/Bonsai.Vision.CropCenter.html"><code>CropCenter</code></a>). These images are then pushed through the network that will perform the pose estimation step of the process.</p>
+<div class="workflow"><p><img src="../workflows/SingleInstanceModel.bonsai" alt="SingleInstanceModel"></p>
+</div>
+<p>Finally, it is worth noting that <a class="xref" href="../api/Bonsai.Sleap.PredictSinglePose.html"><code>PredictSinglePose</code></a> affords two input overloads. When receiving a single image it will output a corresponding <a class="xref" href="../api/Bonsai.Sleap.Pose.html"><code>Pose</code></a>. Since the operator skips the centroid-detection stage, it won't embed a <a class="xref" href="../api/Bonsai.Sleap.Centroid.html"><code>Centroid</code></a> field in<a class="xref" href="../api/Bonsai.Sleap.Pose.html"><code>Pose</code></a>. Alternatively, a <em>batch</em> mode can be accessed by providing an array of images to the operator, instead returning <a class="xref" href="../api/Bonsai.Sleap.PoseCollection.html"><code>PoseCollection</code></a>. This latter overload results in dramatic performance gains relative to single images.</p>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/bonsai-rx/sleap/blob/main/docs/articles/sleap-predictsinglepose.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+                <h5>In This Article</h5>
+                <div></div>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>
