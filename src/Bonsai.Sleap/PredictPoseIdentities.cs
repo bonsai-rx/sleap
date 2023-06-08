@@ -170,13 +170,19 @@ namespace Bonsai.Sleap
                             // Find the class with max score
                             var pose = new PoseIdentity(input.Length == 1 ? input[0] : input[iid]);
                             var maxIndex = ArgMax(idArr, iid, Comparer<float>.Default, out float maxScore);
-                            pose.IdentityIndex = maxIndex;
-                            pose.Confidence = maxScore;
+
                             if (maxScore < idThreshold || maxIndex < 0)
                             {
+                                pose.IdentityIndex = -1;
+                                pose.Confidence = float.NaN;
                                 pose.Identity = string.Empty;
                             }
-                            else pose.Identity = config.ClassNames[maxIndex];
+                            else
+                            {
+                                pose.IdentityIndex = maxIndex;
+                                pose.Confidence = maxScore;
+                                pose.Identity = config.ClassNames[maxIndex];
+                            }
 
                             var centroid = new BodyPart();
                             centroid.Name = config.AnchorName;
