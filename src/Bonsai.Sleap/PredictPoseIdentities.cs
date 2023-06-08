@@ -105,7 +105,7 @@ namespace Bonsai.Sleap
                     var tensorSize = input[0].Size;
                     var batchSize = input.Length;
                     var scaleFactor = ScaleFactor;
-                    
+
                     if (scaleFactor.HasValue)
                     {
                         poseScale = scaleFactor.Value;
@@ -121,7 +121,7 @@ namespace Bonsai.Sleap
                         tensor = TensorHelper.CreatePlaceholder(graph, runner, tensorSize, batchSize, colorChannels);
 
                         runner.Fetch(graph["Identity"][0]);
-                        runner.Fetch(graph["Identity_2"][0]); 
+                        runner.Fetch(graph["Identity_2"][0]);
                         runner.Fetch(graph["Identity_4"][0]);
                         runner.Fetch(graph["Identity_5"][0]);
                         runner.Fetch(graph["Identity_6"][0]);

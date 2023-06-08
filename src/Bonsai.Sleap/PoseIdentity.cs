@@ -25,7 +25,7 @@ namespace Bonsai.Sleap
         public string Identity { get; set; }
 
         /// <summary>
-        /// Gets or sets the predicted pose index identity.
+        /// Gets or sets the predicted pose identity index.
         /// </summary>
         [XmlIgnore]
         public int IdentityIndex { get; set; }
@@ -34,7 +34,5 @@ namespace Bonsai.Sleap
         /// Gets or sets the confidence score for the predicted identity.
         /// </summary>
         public float Confidence { get; set; }
-
-
     }
 }
