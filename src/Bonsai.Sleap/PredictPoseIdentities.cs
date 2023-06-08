@@ -105,7 +105,7 @@ namespace Bonsai.Sleap
                     var tensorSize = input[0].Size;
                     var batchSize = input.Length;
                     var scaleFactor = ScaleFactor;
-                    
+
                     if (scaleFactor.HasValue)
                     {
                         poseScale = scaleFactor.Value;
@@ -121,7 +121,7 @@ namespace Bonsai.Sleap
                         tensor = TensorHelper.CreatePlaceholder(graph, runner, tensorSize, batchSize, colorChannels);
 
                         runner.Fetch(graph["Identity"][0]);
-                        runner.Fetch(graph["Identity_2"][0]); 
+                        runner.Fetch(graph["Identity_2"][0]);
                         runner.Fetch(graph["Identity_4"][0]);
                         runner.Fetch(graph["Identity_5"][0]);
                         runner.Fetch(graph["Identity_6"][0]);
@@ -170,12 +170,19 @@ namespace Bonsai.Sleap
                             // Find the class with max score
                             var pose = new PoseIdentity(input.Length == 1 ? input[0] : input[iid]);
                             var maxIndex = ArgMax(idArr, iid, Comparer<float>.Default, out float maxScore);
-                            pose.Confidence = maxScore;
+
                             if (maxScore < idThreshold || maxIndex < 0)
                             {
+                                pose.IdentityIndex = -1;
+                                pose.Confidence = float.NaN;
                                 pose.Identity = string.Empty;
                             }
-                            else pose.Identity = config.ClassNames[maxIndex];
+                            else
+                            {
+                                pose.IdentityIndex = maxIndex;
+                                pose.Confidence = maxScore;
+                                pose.Identity = config.ClassNames[maxIndex];
+                            }
 
                             var centroid = new BodyPart();
                             centroid.Name = config.AnchorName;

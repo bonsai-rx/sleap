@@ -1,4 +1,5 @@
-﻿using OpenCV.Net;
+﻿using System.Xml.Serialization;
+using OpenCV.Net;
 
 namespace Bonsai.Sleap
 {
@@ -22,6 +23,12 @@ namespace Bonsai.Sleap
         /// Gets or sets the predicted pose identity.
         /// </summary>
         public string Identity { get; set; }
+
+        /// <summary>
+        /// Gets or sets the predicted pose identity index.
+        /// </summary>
+        [XmlIgnore]
+        public int IdentityIndex { get; set; }
 
         /// <summary>
         /// Gets or sets the confidence score for the predicted identity.
