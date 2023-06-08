@@ -6,7 +6,7 @@
     <PackageTags>Bonsai Rx SLEAP LEAP Markerless Multi Pose Tracking Visualizers</PackageTags>
     <TargetFramework>net472</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
-    <VersionPrefix>0.1.0</VersionPrefix>
+    <VersionPrefix>0.2.0</VersionPrefix>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,7 +15,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Bonsai.Sleap\Bonsai.Sleap.csproj" />
-	
   </ItemGroup>
 
 </Project>
