@@ -6,7 +6,7 @@
     <PackageTags>Bonsai Rx SLEAP LEAP Markerless Multi Pose Tracking</PackageTags>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <TargetFramework>net472</TargetFramework>
-    <VersionPrefix>0.2.0</VersionPrefix>
+    <VersionPrefix>0.2.1</VersionPrefix>
   </PropertyGroup>
 
   <ItemGroup>
