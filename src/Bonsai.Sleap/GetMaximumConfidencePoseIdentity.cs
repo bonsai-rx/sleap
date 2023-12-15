@@ -60,6 +60,7 @@ namespace Bonsai.Sleap
         {
             return new PoseIdentity(image)
             {
+                IdentityIndex = -1,
                 Identity = identity,
                 Confidence = float.NaN,
                 Centroid = GetBodyPart.DefaultBodyPart(string.Empty)
