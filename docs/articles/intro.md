@@ -1,17 +1,4 @@
-Getting Started with Bonsai - SLEAP
-===================================
-
-![logo](~/images/sleap-Bonsai-icon.svg)
-
-## What is Bonsai - SLEAP
-
-Bonsai.SLEAP is a [Bonsai](https://bonsai-rx.org/) interface for [SLEAP](https://sleap.ai/) allowing multi-animal, real-time, pose and identity estimation using pretrained network models stored in a [Protocol buffer (.pb) format](https://developers.google.com/protocol-buffers/).
-
-Bonsai.SLEAP loads these .pb files using [TensorFlowSharp](https://github.com/migueldeicaza/TensorFlowSharp), a set of .NET bindings for TensorFlow allowing native inference using either the CPU or GPU. By using the .pb file and the corresponding configuration file (`training_config.json`), the `PredictFullModelPose` operator from Bonsai.SLEAP will push the live image data through the inference network and output a set of identified poses from which you can extract an object id and specific object part position. `Bonsai` can then leverage this data to drive online effectors or simply save it to an output file.
-
-The Bonsai.SLEAP package came about following a fruitful discussion with the SLEAP team during the [Quantitative Approaches to Behaviour](http://cajal-training.org/on-site/qab2022).
-
-## How to install
+## Bonsai - SLEAP installation
 
 Bonsai.SLEAP can be downloaded through the Bonsai package manager. In order to get visualizer support, you should download both the `Bonsai.SLEAP` and `Bonsai.SLEAP.Design` packages. However, in order to use it for either CPU or GPU inference, you need to pair it with a compiled native TensorFlow binary. You can find precompiled binaries for Windows 64-bit at https://www.tensorflow.org/install/lang_c.
 
@@ -26,3 +13,7 @@ After downloading the native TensorFlow binary and cuDNN, you can follow these s
 ## SLEAP installation
 
 For all questions regarding installation of SLEAP, please check the official [docs](https://sleap.ai/).
+
+> [!WARNING]
+> At this time (3/15/24) `Bonsai.SLEAP` is only compatible with pb model files from SLEAP v1.2.9 and below. More information and status updates on a potential bug-fix can be found on this [link](https://github.com/talmolab/sleap/issues/1542)
+
