@@ -22,10 +22,10 @@ jobs:
         uses: microsoft/setup-msbuild@v2
         
       - name: Restore NuGet Packages
-        run: msbuild -t:restore src/Bonsai.ML.sln
+        run: msbuild -t:restore src/Bonsai.Sleap.sln
 
       - name: Build Solution
-        run: msbuild src/Bonsai.ML.sln /p:Configuration=Release
+        run: msbuild src/Bonsai.Sleap.sln /p:Configuration=Release
         
       - name: Setup DocFX
         run: dotnet tool restore
