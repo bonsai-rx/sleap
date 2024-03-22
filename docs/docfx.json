@@ -4,30 +4,25 @@
       "src": [
         {
           "files": [
-            "Bonsai.Sleap*/*.csproj"
+            "**/*.csproj"
           ],
           "src": "../src"
         }
       ],
       "dest": "api",
-      "disableGitFeatures": false,
-      "disableDefaultFilter": false
+      "filter": "filter.yml"
     }
   ],
   "build": {
     "content": [
       {
         "files": [
-          "api/**.yml",
-          "api/index.md"
-        ]
-      },
-      {
-        "files": [
-          "articles/**.md",
-          "articles/**/toc.yml",
-          "toc.yml",
-          "*.md"
+          "**/*.{md,yml}"
+        ], 
+        "exclude": [
+          "_site/**",
+          "bonsai/**",
+          "filter.yml"
         ]
       }
     ],
@@ -41,6 +36,7 @@
         ]
       }
     ],
+    "output": "_site",
     "overwrite": [
       {
         "files": [
@@ -52,21 +48,25 @@
         ]
       }
     ],
-    "globalMetadata": {
-      "_enableNewTab": true,
-      "_gitContribute": {
-        "branch": "main",
-        "apiSpecFolder": "docs/apidoc"
-      }
-    },
-    "dest": "_site",
-    "globalMetadataFiles": [],
-    "fileMetadataFiles": [],
     "template": [
       "default",
-      "templates/html"
+      "modern",
+      "bonsai/template",
+      "template"
     ],
-    "postProcessors": [ "ExtractSearchIndex" ],
+    "globalMetadata": {
+      "_appName": "Bonsai - SLEAP",
+      "_appTitle": "Bonsai.SLEAP",
+      "_enableNewTab": true,
+      "_enableSearch": true,
+      "pdf": false,      
+      "_appFooter": "&copy; 2024 Bonsai Foundation CIC and Contributors. Made with <a href=\"https://dotnet.github.io/docfx\">docfx</a>",
+      "_gitContribute": {
+        "repo": "https://github.com/bonsai-rx/sleap",
+        "branch": "main",
+        "apiSpecFolder": "apidoc"
+      }
+    },
     "markdownEngineName": "markdig",
     "markdownEngineProperties": {
       "markdigExtensions": [
@@ -74,11 +74,7 @@
         "customcontainers"
       ]
     },
-    "noLangKeyword": false,
-    "keepFileLink": false,
-    "cleanupCacheHistory": false,
-    "disableGitFeatures": false,
-    "xrefService": [ "https://xref.docs.microsoft.com/query?uid={uid}" ],
+
     "xref": [
       "https://horizongir.github.io/opencv.net/xrefmap.yml",
       "https://bonsai-rx.org/docs/xrefmap.yml"
