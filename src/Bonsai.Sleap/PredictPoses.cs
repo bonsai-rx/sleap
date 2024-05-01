@@ -102,20 +102,20 @@ namespace Bonsai.Sleap
                         poseScale = 1.0 / poseScale;
                     }
 
-                    if (tensor == null || tensor.Shape[0] != batchSize || tensor.Shape[1] != tensorSize.Height || tensor.Shape[2] != tensorSize.Width )
+                    if (tensor == null || tensor.Shape[0] != batchSize || tensor.Shape[1] != tensorSize.Height || tensor.Shape[2] != tensorSize.Width)
                     {
                         tensor?.Dispose();
                         runner = session.GetRunner();
                         tensor = TensorHelper.CreatePlaceholder(graph, runner, tensorSize, batchSize, colorChannels);
 
                         runner.Fetch(graph["Identity"][0]);
+                        runner.Fetch(graph["Identity_1"][0]);
                         runner.Fetch(graph["Identity_2"][0]);
-                        runner.Fetch(graph["Identity_4"][0]);
-                        runner.Fetch(graph["Identity_6"][0]);
+                        runner.Fetch(graph["Identity_3"][0]);
 
                     }
 
-                    var frames = Array.ConvertAll(input, frame => 
+                    var frames = Array.ConvertAll(input, frame =>
                     {
                         frame = TensorHelper.EnsureFrameSize(frame, tensorSize, ref resizeTemp);
                         frame = TensorHelper.EnsureColorFormat(frame, ColorConversion, ref colorTemp, colorChannels);
@@ -126,35 +126,36 @@ namespace Bonsai.Sleap
                     var output = runner.Run();
 
                     var poseCollection = new PoseCollection(input[0]);
-                    if (output[0].Shape[0] == 0) return poseCollection;
+
+                    if (output[0].Shape[1] == 0) return poseCollection;
                     else
                     {
                         var centroidConfidenceTensor = output[0];
-                        float[] centroidConfArr = new float[centroidConfidenceTensor.Shape[0]];
+                        float[,] centroidConfArr = new float[centroidConfidenceTensor.Shape[0], centroidConfidenceTensor.Shape[1]];
                         centroidConfidenceTensor.GetValue(centroidConfArr);
 
                         var centroidTensor = output[1];
-                        float[,] centroidArr = new float[centroidTensor.Shape[0], centroidTensor.Shape[1]];
+                        float[,,] centroidArr = new float[centroidTensor.Shape[0], centroidTensor.Shape[1], centroidTensor.Shape[2]];
                         centroidTensor.GetValue(centroidArr);
 
                         var partConfTensor = output[2];
-                        float[,] partConfArr = new float[partConfTensor.Shape[0], partConfTensor.Shape[1]];
+                        float[,,] partConfArr = new float[partConfTensor.Shape[0], partConfTensor.Shape[1], partConfTensor.Shape[2]];
                         partConfTensor.GetValue(partConfArr);
 
                         var poseTensor = output[3];
-                        float[,,] poseArr = new float[poseTensor.Shape[0], poseTensor.Shape[1], poseTensor.Shape[2]];
+                        float[,,,] poseArr = new float[poseTensor.Shape[0], poseTensor.Shape[1], poseTensor.Shape[2], poseTensor.Shape[3]];
                         poseTensor.GetValue(poseArr);
 
                         var partThreshold = PartMinConfidence;
                         var centroidThreshold = CentroidMinConfidence;
 
                         //Loop the available identifications
-                        for (int i = 0; i < centroidArr.GetLength(0); i++)
+                        for (int i = 0; i < centroidArr.GetLength(1); i++)
                         {
                             var pose = new Pose(input[0]);
                             var centroid = new BodyPart();
                             centroid.Name = config.AnchorName;
-                            centroid.Confidence = centroidConfArr[0];
+                            centroid.Confidence = centroidConfArr[0, 0];
                             if (centroid.Confidence < centroidThreshold)
                             {
                                 centroid.Position = new Point2f(float.NaN, float.NaN);
@@ -162,17 +163,17 @@ namespace Bonsai.Sleap
                             else
                             {
                                 centroid.Position = new Point2f(
-                                    x: (float)(centroidArr[i, 0] * poseScale),
-                                    y: (float)(centroidArr[i, 1] * poseScale));
+                                    x: (float)(centroidArr[0, i, 0] * poseScale),
+                                    y: (float)(centroidArr[0, i, 1] * poseScale));
                             }
                             pose.Centroid = centroid;
 
                             // Iterate on the body parts
-                            for (int bodyPartIdx = 0; bodyPartIdx < poseArr.GetLength(1); bodyPartIdx++)
+                            for (int bodyPartIdx = 0; bodyPartIdx < poseArr.GetLength(2); bodyPartIdx++)
                             {
                                 var bodyPart = new BodyPart();
                                 bodyPart.Name = config.PartNames[bodyPartIdx];
-                                bodyPart.Confidence = partConfArr[i, bodyPartIdx];
+                                bodyPart.Confidence = partConfArr[0, i, bodyPartIdx];
                                 if (bodyPart.Confidence < partThreshold)
                                 {
                                     bodyPart.Position = new Point2f(float.NaN, float.NaN);
@@ -180,8 +181,8 @@ namespace Bonsai.Sleap
                                 else
                                 {
                                     bodyPart.Position = new Point2f(
-                                        x: (float)(poseArr[i, bodyPartIdx, 0] * poseScale),
-                                        y: (float)(poseArr[i, bodyPartIdx, 1] * poseScale));
+                                        x: (float)(poseArr[0, i, bodyPartIdx, 0] * poseScale),
+                                        y: (float)(poseArr[0, i, bodyPartIdx, 1] * poseScale));
                                 }
                                 pose.Add(bodyPart);
                             }

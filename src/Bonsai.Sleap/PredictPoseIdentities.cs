@@ -114,17 +114,18 @@ namespace Bonsai.Sleap
                         poseScale = 1.0 / poseScale;
                     }
 
-                    if (tensor == null || tensor.Shape[0] != batchSize || tensor.Shape[1] != tensorSize.Height || tensor.Shape[2] != tensorSize.Width )
+                    if (tensor == null || tensor.Shape[0] != batchSize || tensor.Shape[1] != tensorSize.Height || tensor.Shape[2] != tensorSize.Width)
                     {
                         tensor?.Dispose();
                         runner = session.GetRunner();
                         tensor = TensorHelper.CreatePlaceholder(graph, runner, tensorSize, batchSize, colorChannels);
 
                         runner.Fetch(graph["Identity"][0]);
+                        runner.Fetch(graph["Identity_1"][0]);
                         runner.Fetch(graph["Identity_2"][0]);
+                        runner.Fetch(graph["Identity_3"][0]);
                         runner.Fetch(graph["Identity_4"][0]);
-                        runner.Fetch(graph["Identity_5"][0]);
-                        runner.Fetch(graph["Identity_6"][0]);
+
                     }
 
                     var frames = Array.ConvertAll(input, frame =>
@@ -137,16 +138,16 @@ namespace Bonsai.Sleap
                     var output = runner.Run();
 
                     var identityCollection = new PoseIdentityCollection(input[0]);
-                    if (output[0].Shape[0] == 0) return identityCollection;
+                    if (output[0].Shape[1] == 0) return identityCollection;
                     else
                     {
                         // Fetch the results from output
                         var centroidConfidenceTensor = output[0];
-                        float[] centroidConfArr = new float[centroidConfidenceTensor.Shape[0]];
+                        float[,] centroidConfArr = new float[centroidConfidenceTensor.Shape[0], centroidConfidenceTensor.Shape[1]];
                         centroidConfidenceTensor.GetValue(centroidConfArr);
 
                         var centroidTensor = output[1];
-                        float[,] centroidArr = new float[centroidTensor.Shape[0], centroidTensor.Shape[1]];
+                        float[,,] centroidArr = new float[centroidTensor.Shape[0], centroidTensor.Shape[1], centroidTensor.Shape[2]];
                         centroidTensor.GetValue(centroidArr);
 
                         var partConfTensor = output[2];
@@ -186,7 +187,7 @@ namespace Bonsai.Sleap
 
                             var centroid = new BodyPart();
                             centroid.Name = config.AnchorName;
-                            centroid.Confidence = centroidConfArr[0];
+                            centroid.Confidence = centroidConfArr[0, 0];
                             if (centroid.Confidence < centroidThreshold)
                             {
                                 centroid.Position = new Point2f(float.NaN, float.NaN);
@@ -194,8 +195,8 @@ namespace Bonsai.Sleap
                             else
                             {
                                 centroid.Position = new Point2f(
-                                    x: (float)(centroidArr[iid, 0] * poseScale),
-                                    y: (float)(centroidArr[iid, 1] * poseScale));
+                                    x: (float)(centroidArr[0, iid, 0] * poseScale),
+                                    y: (float)(centroidArr[0, iid, 1] * poseScale));
                             }
                             pose.Centroid = centroid;
 
