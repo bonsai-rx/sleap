@@ -71,6 +71,7 @@ namespace Bonsai.Sleap
                 TFSession.Runner runner = null;
                 var graph = TensorHelper.ImportModel(ModelFileName, out TFSession session);
                 var config = ConfigHelper.LoadTrainingConfig(TrainingConfig);
+                bool ragged = true;
 
                 if (config.ModelType != ModelType.Centroid)
                 {
@@ -96,11 +97,32 @@ namespace Bonsai.Sleap
                     if (tensor == null || tensor.Shape[0] != batchSize || tensor.Shape[1] != tensorSize.Height || tensor.Shape[2] != tensorSize.Width)
                     {
                         tensor?.Dispose();
+                        try
+                        {
+                            session.GetRunner().Fetch(graph["Identity_6"][0]);
+                        }
+                        catch (Exception e)
+                        {
+                            ragged = false;
+                        }
+
                         runner = session.GetRunner();
                         tensor = TensorHelper.CreatePlaceholder(graph, runner, tensorSize, batchSize, colorChannels);
 
-                        runner.Fetch(graph["Identity"][0]);
-                        runner.Fetch(graph["Identity_1"][0]);
+                        // ragged version of the frozen graph
+                        if (ragged)
+                        {
+                            runner.Fetch(graph["Identity"][0]);
+                            runner.Fetch(graph["Identity_2"][0]);
+                        }
+
+                        // unragged version of the frozen graph
+                        if (!ragged)
+                        {
+                            runner.Fetch(graph["Identity"][0]);
+                            runner.Fetch(graph["Identity_1"][0]);
+                        }
+                            
                     }
 
                     var frames = Array.ConvertAll(input, frame =>
@@ -113,39 +135,79 @@ namespace Bonsai.Sleap
                     var output = runner.Run();
 
                     var centroidCollection = new CentroidCollection(input[0]);
-                    if (output[0].Shape[1] == 0) return centroidCollection;
+                    if (!ragged)
+                    {
+                        if (output[0].Shape[1] == 0) return centroidCollection;
+                        else
+                        {
+                            // Fetch the results from output
+                            var centroidConfidenceTensor = output[0];
+                            float[,] centroidConfArr = new float[centroidConfidenceTensor.Shape[0], centroidConfidenceTensor.Shape[1]];
+                            centroidConfidenceTensor.GetValue(centroidConfArr);
+
+                            var centroidTensor = output[1];
+                            float[,,] centroidArr = new float[centroidTensor.Shape[0], centroidTensor.Shape[1], centroidTensor.Shape[2]];
+                            centroidTensor.GetValue(centroidArr);
+
+                            var confidenceThreshold = CentroidMinConfidence;
+                            for (int i = 0; i < centroidConfArr.GetLength(1); i++)
+                            {
+                                //TODO: batch centroid estimation is not currently supported
+                                var centroid = new Centroid(input[0]);
+                                centroid.Name = config.AnchorName;
+                                centroid.Confidence = centroidConfArr[0, i];
+
+                                if (centroid.Confidence < confidenceThreshold)
+                                {
+                                    centroid.Position = new Point2f(float.NaN, float.NaN);
+                                }
+                                else
+                                {
+                                    centroid.Position = new Point2f(
+                                        (float)(centroidArr[0, i, 0] * poseScale),
+                                        (float)(centroidArr[0, i, 1] * poseScale));
+                                }
+                                centroidCollection.Add(centroid);
+                            };
+                            return centroidCollection;
+                        }
+                    }
                     else
                     {
-                        // Fetch the results from output
-                        var centroidConfidenceTensor = output[0];
-                        float[,] centroidConfArr = new float[centroidConfidenceTensor.Shape[0], centroidConfidenceTensor.Shape[1]];
-                        centroidConfidenceTensor.GetValue(centroidConfArr);
-
-                        var centroidTensor = output[1];
-                        float[,,] centroidArr = new float[centroidTensor.Shape[0], centroidTensor.Shape[1], centroidTensor.Shape[2]];
-                        centroidTensor.GetValue(centroidArr);
-
-                        var confidenceThreshold = CentroidMinConfidence;
-                        for (int i = 0; i < centroidConfArr.GetLength(1); i++)
+                        if (output[0].Shape[0] == 0) return centroidCollection;
+                        else
                         {
-                            //TODO: batch centroid estimation is not currently supported
-                            var centroid = new Centroid(input[0]);
-                            centroid.Name = config.AnchorName;
-                            centroid.Confidence = centroidConfArr[0, i];
+                            // Fetch the results from output
+                            var centroidConfidenceTensor = output[0];
+                            float[] centroidConfArr = new float[centroidConfidenceTensor.Shape[0]];
+                            centroidConfidenceTensor.GetValue(centroidConfArr);
 
-                            if (centroid.Confidence < confidenceThreshold)
+                            var centroidTensor = output[1];
+                            float[,] centroidArr = new float[centroidTensor.Shape[0], centroidTensor.Shape[1]];
+                            centroidTensor.GetValue(centroidArr);
+
+                            var confidenceThreshold = CentroidMinConfidence;
+                            for (int i = 0; i < centroidConfArr.GetLength(0); i++)
                             {
-                                centroid.Position = new Point2f(float.NaN, float.NaN);
-                            }
-                            else
-                            {
-                                centroid.Position = new Point2f(
-                                    (float)(centroidArr[0, i, 0] * poseScale),
-                                    (float)(centroidArr[0, i, 1] * poseScale));
-                            }
-                            centroidCollection.Add(centroid);
-                        };
-                        return centroidCollection;
+                                //TODO: batch centroid estimation is not currently supported
+                                var centroid = new Centroid(input[0]);
+                                centroid.Name = config.AnchorName;
+                                centroid.Confidence = centroidConfArr[i];
+
+                                if (centroid.Confidence < confidenceThreshold)
+                                {
+                                    centroid.Position = new Point2f(float.NaN, float.NaN);
+                                }
+                                else
+                                {
+                                    centroid.Position = new Point2f(
+                                        (float)(centroidArr[i, 0] * poseScale),
+                                        (float)(centroidArr[i, 1] * poseScale));
+                                }
+                                centroidCollection.Add(centroid);
+                            };
+                            return centroidCollection;
+                        }
                     }
                 });
             });
