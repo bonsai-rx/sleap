@@ -131,11 +131,11 @@ namespace Bonsai.Sleap
                         // Fetch the results from output
                         var centroidConfidenceTensor = output[0];
                         float[] centroidConfArr = new float[centroidConfidenceTensor.Shape[shapeIdx]];
-                        centroidConfidenceTensor.GetValue(centroidConfArr);
+                        TensorHelper.GetTensorValue(centroidConfidenceTensor, centroidConfArr);
 
                         var centroidTensor = output[1];
                         float[,] centroidArr = new float[centroidTensor.Shape[shapeIdx], centroidTensor.Shape[shapeIdx + 1]];
-                        centroidTensor.GetValue(centroidArr);
+                        TensorHelper.GetTensorValue(centroidTensor, centroidArr);
 
                         var confidenceThreshold = CentroidMinConfidence;
                         for (int i = 0; i < centroidConfArr.GetLength(0); i++)

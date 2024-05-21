@@ -144,19 +144,19 @@ namespace Bonsai.Sleap
                     {
                         var centroidConfidenceTensor = output[0];
                         float[] centroidConfArr = new float[centroidConfidenceTensor.Shape[shapeIdx]];
-                        centroidConfidenceTensor.GetValue(centroidConfArr);
+                        TensorHelper.GetTensorValue(centroidConfidenceTensor, centroidConfArr);
 
                         var centroidTensor = output[1];
                         float[,] centroidArr = new float[centroidTensor.Shape[shapeIdx], centroidTensor.Shape[shapeIdx + 1]];
-                        centroidTensor.GetValue(centroidArr);
+                        TensorHelper.GetTensorValue(centroidTensor, centroidArr);
 
                         var partConfTensor = output[2];
                         float[,] partConfArr = new float[partConfTensor.Shape[shapeIdx], partConfTensor.Shape[shapeIdx + 1]];
-                        partConfTensor.GetValue(partConfArr);
+                        TensorHelper.GetTensorValue(partConfTensor, partConfArr);
 
                         var poseTensor = output[3];
                         float[,,] poseArr = new float[poseTensor.Shape[shapeIdx], poseTensor.Shape[shapeIdx + 1], poseTensor.Shape[shapeIdx + 2]];
-                        poseTensor.GetValue(poseArr);
+                        TensorHelper.GetTensorValue(poseTensor, poseArr);
 
                         var partThreshold = PartMinConfidence;
                         var centroidThreshold = CentroidMinConfidence;
