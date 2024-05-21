@@ -71,7 +71,7 @@ namespace Bonsai.Sleap
                 TFSession.Runner runner = null;
                 var graph = TensorHelper.ImportModel(ModelFileName, out TFSession session);
                 var config = ConfigHelper.LoadTrainingConfig(TrainingConfig);
-                var ragged = graph["Identity_2"] != null;
+                var ragged = graph["Identity_6"] != null;
 
                 if (config.ModelType != ModelType.Centroid)
                 {
