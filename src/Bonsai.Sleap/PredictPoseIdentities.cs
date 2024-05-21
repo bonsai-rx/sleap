@@ -165,15 +165,15 @@ namespace Bonsai.Sleap
                         TensorHelper.GetTensorValue(centroidTensor, centroidArr);
 
                         var partConfTensor = output[2];
-                        float[,] partConfArr = new float[partConfTensor.Shape[shapeIdx], partConfTensor.Shape[shapeIdx + 1]];
+                        float[,] partConfArr = new float[partConfTensor.Shape[0], partConfTensor.Shape[1]];
                         TensorHelper.GetTensorValue(partConfTensor, partConfArr);
 
                         var poseTensor = output[3];
-                        float[,,] poseArr = new float[poseTensor.Shape[shapeIdx], poseTensor.Shape[shapeIdx + 1], poseTensor.Shape[shapeIdx + 2]];
+                        float[,,] poseArr = new float[poseTensor.Shape[0], poseTensor.Shape[1], poseTensor.Shape[2]];
                         TensorHelper.GetTensorValue(poseTensor, poseArr);
 
                         var idTensor = output[4];
-                        float[,] idArr = new float[idTensor.Shape[shapeIdx], idTensor.Shape[shapeIdx + 1]];
+                        float[,] idArr = new float[idTensor.Shape[0], idTensor.Shape[1]];
                         TensorHelper.GetTensorValue(idTensor, idArr);
 
                         var partThreshold = PartMinConfidence;
