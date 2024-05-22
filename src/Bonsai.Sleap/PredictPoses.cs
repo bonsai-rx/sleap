@@ -80,6 +80,7 @@ namespace Bonsai.Sleap
                 TFSession.Runner runner = null;
                 var graph = TensorHelper.ImportModel(ModelFileName, out TFSession session);
                 var config = ConfigHelper.LoadTrainingConfig(TrainingConfig);
+                var ragged = graph["Identity_6"] != null;
 
                 if (config.ModelType != ModelType.CenteredInstance)
                 {
@@ -93,7 +94,7 @@ namespace Bonsai.Sleap
                     var tensorSize = input[0].Size;
                     var batchSize = input.Length;
                     var scaleFactor = ScaleFactor;
-                    
+
                     if (scaleFactor.HasValue)
                     {
                         poseScale = scaleFactor.Value;
@@ -102,20 +103,31 @@ namespace Bonsai.Sleap
                         poseScale = 1.0 / poseScale;
                     }
 
-                    if (tensor == null || tensor.Shape[0] != batchSize || tensor.Shape[1] != tensorSize.Height || tensor.Shape[2] != tensorSize.Width )
+                    if (tensor == null || tensor.Shape[0] != batchSize || tensor.Shape[1] != tensorSize.Height || tensor.Shape[2] != tensorSize.Width)
                     {
                         tensor?.Dispose();
                         runner = session.GetRunner();
                         tensor = TensorHelper.CreatePlaceholder(graph, runner, tensorSize, batchSize, colorChannels);
 
-                        runner.Fetch(graph["Identity"][0]);
-                        runner.Fetch(graph["Identity_2"][0]);
-                        runner.Fetch(graph["Identity_4"][0]);
-                        runner.Fetch(graph["Identity_6"][0]);
-
+                        if (ragged)
+                        {
+                            // ragged version of the frozen graph
+                            runner.Fetch(graph["Identity"][0]);
+                            runner.Fetch(graph["Identity_2"][0]);
+                            runner.Fetch(graph["Identity_4"][0]);
+                            runner.Fetch(graph["Identity_6"][0]);
+                        }
+                        else
+                        {
+                            // unragged version of the frozen graph
+                            runner.Fetch(graph["Identity"][0]);
+                            runner.Fetch(graph["Identity_1"][0]);
+                            runner.Fetch(graph["Identity_2"][0]);
+                            runner.Fetch(graph["Identity_3"][0]);
+                        }
                     }
 
-                    var frames = Array.ConvertAll(input, frame => 
+                    var frames = Array.ConvertAll(input, frame =>
                     {
                         frame = TensorHelper.EnsureFrameSize(frame, tensorSize, ref resizeTemp);
                         frame = TensorHelper.EnsureColorFormat(frame, ColorConversion, ref colorTemp, colorChannels);
@@ -125,30 +137,31 @@ namespace Bonsai.Sleap
                     TensorHelper.UpdateTensor(tensor, colorChannels, frames);
                     var output = runner.Run();
 
+                    var shapeIdx = ragged ? 0 : 1;
                     var poseCollection = new PoseCollection(input[0]);
-                    if (output[0].Shape[0] == 0) return poseCollection;
+                    if (output[0].Shape[shapeIdx] == 0) return poseCollection;
                     else
                     {
                         var centroidConfidenceTensor = output[0];
-                        float[] centroidConfArr = new float[centroidConfidenceTensor.Shape[0]];
-                        centroidConfidenceTensor.GetValue(centroidConfArr);
+                        float[] centroidConfArr = new float[centroidConfidenceTensor.Shape[shapeIdx]];
+                        TensorHelper.GetTensorValue(centroidConfidenceTensor, centroidConfArr);
 
                         var centroidTensor = output[1];
-                        float[,] centroidArr = new float[centroidTensor.Shape[0], centroidTensor.Shape[1]];
-                        centroidTensor.GetValue(centroidArr);
+                        float[,] centroidArr = new float[centroidTensor.Shape[shapeIdx], centroidTensor.Shape[shapeIdx + 1]];
+                        TensorHelper.GetTensorValue(centroidTensor, centroidArr);
 
                         var partConfTensor = output[2];
-                        float[,] partConfArr = new float[partConfTensor.Shape[0], partConfTensor.Shape[1]];
-                        partConfTensor.GetValue(partConfArr);
+                        float[,] partConfArr = new float[partConfTensor.Shape[shapeIdx], partConfTensor.Shape[shapeIdx + 1]];
+                        TensorHelper.GetTensorValue(partConfTensor, partConfArr);
 
                         var poseTensor = output[3];
-                        float[,,] poseArr = new float[poseTensor.Shape[0], poseTensor.Shape[1], poseTensor.Shape[2]];
-                        poseTensor.GetValue(poseArr);
+                        float[,,] poseArr = new float[poseTensor.Shape[shapeIdx], poseTensor.Shape[shapeIdx + 1], poseTensor.Shape[shapeIdx + 2]];
+                        TensorHelper.GetTensorValue(poseTensor, poseArr);
 
                         var partThreshold = PartMinConfidence;
                         var centroidThreshold = CentroidMinConfidence;
 
-                        //Loop the available identifications
+                        // Loop the available identifications
                         for (int i = 0; i < centroidArr.GetLength(0); i++)
                         {
                             var pose = new Pose(input[0]);

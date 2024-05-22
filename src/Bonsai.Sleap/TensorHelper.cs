@@ -1,6 +1,7 @@
 ﻿using OpenCV.Net;
 using System;
 using System.IO;
+using System.Runtime.InteropServices;
 using TensorFlow;
 
 namespace Bonsai.Sleap
@@ -131,6 +132,19 @@ namespace Bonsai.Sleap
                 }
                 return result;
             }
+        }
+
+        public static unsafe void GetTensorValue(TFTensor tensor, Array array)
+        {
+            var elementType = array.GetType().GetElementType();
+            tensor.CheckDataTypeAndSize(elementType, array.Length);
+            var gCHandle = GCHandle.Alloc(array, GCHandleType.Pinned);
+            try
+            {
+                var num = tensor.TensorByteSize.ToUInt64();
+                Buffer.MemoryCopy(tensor.Data.ToPointer(), gCHandle.AddrOfPinnedObject().ToPointer(), num, num);
+            }
+            finally { gCHandle.Free(); }
         }
     }
 }
