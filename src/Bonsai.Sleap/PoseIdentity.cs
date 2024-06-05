@@ -20,19 +20,25 @@ namespace Bonsai.Sleap
         }
 
         /// <summary>
-        /// Gets or sets the predicted pose identity.
+        /// Gets or sets the maximum likelihood predicted pose identity.
         /// </summary>
         public string Identity { get; set; }
 
         /// <summary>
-        /// Gets or sets the predicted pose identity index.
+        /// Gets or sets the maximum likelihood confidence score for the predicted identity.
+        /// </summary>
+        public float Confidence { get; set; }
+
+        /// <summary>
+        /// Gets or sets the maximum likelihood predicted pose identity index.
         /// </summary>
         [XmlIgnore]
         public int IdentityIndex { get; set; }
 
         /// <summary>
-        /// Gets or sets the confidence score for the predicted identity.
+        /// Gets or sets the predicted identity confidence scores for this instance.
         /// </summary>
-        public float Confidence { get; set; }
+        [XmlIgnore]
+        public float[] IdentityScores { get; set; }
     }
 }

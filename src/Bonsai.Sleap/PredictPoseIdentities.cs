@@ -184,7 +184,7 @@ namespace Bonsai.Sleap
                         {
                             // Find the class with max score
                             var pose = new PoseIdentity(input.Length == 1 ? input[0] : input[iid]);
-                            var maxIndex = ArgMax(idArr, iid, Comparer<float>.Default, out float maxScore);
+                            var maxIndex = ArgMax(idArr, iid, Comparer<float>.Default, out float maxScore, out float[] scores);
 
                             if (maxScore < idThreshold || maxIndex < 0)
                             {
@@ -257,16 +257,23 @@ namespace Bonsai.Sleap
             return Process(source.Select(frame => new IplImage[] { frame }));
         }
 
-        static int ArgMax<TElement>(TElement[,] array, int instance, IComparer<TElement> comparer, out TElement maxValue)
+        static int ArgMax<TElement>(
+            TElement[,] array,
+            int instance,
+            IComparer<TElement> comparer,
+            out TElement maxValue,
+            out TElement[] values)
         {
             if (array == null) throw new ArgumentNullException(nameof(array));
             if (comparer == null) throw new ArgumentNullException(nameof(comparer));
 
             int maxIndex = -1;
             maxValue = default;
-            for (int i = 0; i < array.GetLength(1); i++)
+            values = new TElement[array.GetLength(1)];
+            for (int i = 0; i < values.Length; i++)
             {
-                if (i == 0 || comparer.Compare(array[instance, i], maxValue) > 0)
+                values[i] = array[instance, i];
+                if (i == 0 || comparer.Compare(values[i], maxValue) > 0)
                 {
                     maxIndex = i;
                     maxValue = array[instance, i];

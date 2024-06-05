@@ -6,11 +6,11 @@
     <PackageTags>Bonsai Rx SLEAP LEAP Markerless Multi Pose Tracking Visualizers</PackageTags>
     <TargetFramework>net472</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
-    <VersionPrefix>0.2.0</VersionPrefix>
+    <VersionPrefix>0.3.0</VersionPrefix>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Bonsai.Vision.Design" Version="2.7.0" />
+    <PackageReference Include="Bonsai.Vision.Design" Version="2.8.0" />
   </ItemGroup>
 
   <ItemGroup>
