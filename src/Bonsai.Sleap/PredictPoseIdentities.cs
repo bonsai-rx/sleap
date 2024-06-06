@@ -184,7 +184,7 @@ namespace Bonsai.Sleap
                         {
                             // Find the class with max score
                             var pose = new PoseIdentity(input.Length == 1 ? input[0] : input[iid]);
-                            var maxIndex = ArgMax(idArr, iid, Comparer<float>.Default, out float maxScore, out float[] scores);
+                            pose.IdentityScores = GetRowValues(idArr, iid, Comparer<float>.Default, out float maxScore, out int maxIndex);
 
                             if (maxScore < idThreshold || maxIndex < 0)
                             {
@@ -257,29 +257,29 @@ namespace Bonsai.Sleap
             return Process(source.Select(frame => new IplImage[] { frame }));
         }
 
-        static int ArgMax<TElement>(
+        static TElement[] GetRowValues<TElement>(
             TElement[,] array,
-            int instance,
+            int rowIndex,
             IComparer<TElement> comparer,
             out TElement maxValue,
-            out TElement[] values)
+            out int maxIndex)
         {
             if (array == null) throw new ArgumentNullException(nameof(array));
             if (comparer == null) throw new ArgumentNullException(nameof(comparer));
 
-            int maxIndex = -1;
+            maxIndex = -1;
             maxValue = default;
-            values = new TElement[array.GetLength(1)];
+            var values = new TElement[array.GetLength(1)];
             for (int i = 0; i < values.Length; i++)
             {
-                values[i] = array[instance, i];
+                values[i] = array[rowIndex, i];
                 if (i == 0 || comparer.Compare(values[i], maxValue) > 0)
                 {
                     maxIndex = i;
-                    maxValue = array[instance, i];
+                    maxValue = array[rowIndex, i];
                 }
             }
-            return maxIndex;
+            return values;
         }
     }
 }
