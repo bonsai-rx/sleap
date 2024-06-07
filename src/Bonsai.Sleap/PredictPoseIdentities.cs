@@ -151,7 +151,7 @@ namespace Bonsai.Sleap
                     var output = runner.Run();
 
                     var shapeIdx = ragged ? 0 : 1;
-                    var identityCollection = new PoseIdentityCollection(input[0]);
+                    var identityCollection = new PoseIdentityCollection(input[0], config);
                     if (output[0].Shape[shapeIdx] == 0) return identityCollection;
                     else
                     {
@@ -183,7 +183,7 @@ namespace Bonsai.Sleap
                         for (int iid = 0; iid < idArr.GetLength(0); iid++)
                         {
                             // Find the class with max score
-                            var pose = new PoseIdentity(input.Length == 1 ? input[0] : input[iid]);
+                            var pose = new PoseIdentity(input.Length == 1 ? input[0] : input[iid], config);
                             pose.IdentityScores = GetRowValues(idArr, iid, Comparer<float>.Default, out float maxScore, out int maxIndex);
 
                             if (maxScore < idThreshold || maxIndex < 0)
