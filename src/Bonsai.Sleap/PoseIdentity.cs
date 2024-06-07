@@ -14,8 +14,9 @@ namespace Bonsai.Sleap
         /// extracted from the specified image.
         /// </summary>
         /// <param name="image">The image from which the pose identity was extracted.</param>
-        public PoseIdentity(IplImage image)
-            : base(image)
+        /// <param name="model">Information about the model used to extract the pose identity.</param>
+        public PoseIdentity(IplImage image, IModelInfo model)
+            : base(image, model)
         {
         }
 

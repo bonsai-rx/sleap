@@ -138,7 +138,7 @@ namespace Bonsai.Sleap
                     var output = runner.Run();
 
                     var shapeIdx = ragged ? 0 : 1;
-                    var poseCollection = new PoseCollection(input[0]);
+                    var poseCollection = new PoseCollection(input[0], config);
                     if (output[0].Shape[shapeIdx] == 0) return poseCollection;
                     else
                     {
@@ -164,7 +164,7 @@ namespace Bonsai.Sleap
                         // Loop the available identifications
                         for (int i = 0; i < centroidArr.GetLength(0); i++)
                         {
-                            var pose = new Pose(input[0]);
+                            var pose = new Pose(input[0], config);
                             var centroid = new BodyPart();
                             centroid.Name = config.AnchorName;
                             centroid.Confidence = centroidConfArr[0];

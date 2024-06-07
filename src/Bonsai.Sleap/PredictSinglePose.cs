@@ -136,7 +136,7 @@ namespace Bonsai.Sleap
                     //Loop the available identifications
                     for (int i = 0; i < input.Length; i++)
                     {
-                        var pose = new Pose(input[i]);
+                        var pose = new Pose(input[i], config);
                         // Iterate on the body parts
                         for (int bodyPartIdx = 0; bodyPartIdx < poseArr.GetLength(2); bodyPartIdx++)
                         {

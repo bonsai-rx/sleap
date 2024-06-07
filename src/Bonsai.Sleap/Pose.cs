@@ -13,15 +13,22 @@ namespace Bonsai.Sleap
         /// extracted from the specified image.
         /// </summary>
         /// <param name="image">The image from which the pose was extracted.</param>
-        public Pose(IplImage image)
+        /// <param name="model">Information about the model used to extract the pose.</param>
+        public Pose(IplImage image, IModelInfo model)
         {
             Image = image;
+            Model = model;
         }
 
         /// <summary>
         /// Gets the image from which the pose was extracted.
         /// </summary>
         public IplImage Image { get; }
+
+        /// <summary>
+        /// Gets information about the model used to extract the pose.
+        /// </summary>
+        public IModelInfo Model { get; }
 
         /// <summary>
         /// Gets or sets the center point used for cropping. 

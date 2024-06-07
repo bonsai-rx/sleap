@@ -52,18 +52,18 @@ namespace Bonsai.Sleap
                     }
                 }
 
-                return maxIndex < 0 ? DefaultPose(poses.Image, identity) : poses[maxIndex];
+                return maxIndex < 0 ? DefaultPose(poses.Image, identity, poses.Model) : poses[maxIndex];
             });
         }
 
-        static PoseIdentity DefaultPose(IplImage image, string identity)
+        static PoseIdentity DefaultPose(IplImage image, string identity, IModelInfo model)
         {
-            return new PoseIdentity(image)
+            return new PoseIdentity(image, model)
             {
                 IdentityIndex = -1,
                 Identity = identity,
                 Confidence = float.NaN,
-                Centroid = GetBodyPart.DefaultBodyPart(string.Empty)
+                Centroid = GetBodyPart.DefaultBodyPart(model.AnchorName)
             };
         }
     }
