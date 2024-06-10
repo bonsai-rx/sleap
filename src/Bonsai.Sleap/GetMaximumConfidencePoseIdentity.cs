@@ -58,13 +58,21 @@ namespace Bonsai.Sleap
 
         static PoseIdentity DefaultPose(IplImage image, string identity, IModelInfo model)
         {
-            return new PoseIdentity(image, model)
+            var pose = new PoseIdentity(image, model)
             {
-                IdentityIndex = -1,
                 Identity = identity,
                 Confidence = float.NaN,
+                IdentityIndex = -1,
+                IdentityScores = new float[model.ClassNames.Count],
                 Centroid = GetBodyPart.DefaultBodyPart(model.AnchorName)
             };
+
+            foreach (var partName in model.PartNames)
+            {
+                pose.Add(GetBodyPart.DefaultBodyPart(partName));
+            }
+
+            return pose;
         }
     }
 }
