@@ -44,7 +44,7 @@ namespace Bonsai.Sleap
             {
                 Name = name,
                 Position = new Point2f(float.NaN, float.NaN),
-                Confidence = 0
+                Confidence = float.NaN
             };
         }
     }
