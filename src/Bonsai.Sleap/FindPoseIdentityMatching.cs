@@ -20,6 +20,18 @@ namespace Bonsai.Sleap
     public class FindPoseIdentityMatching : Transform<PoseIdentityCollection, PoseIdentityCollection>
     {
         /// <summary>
+        /// Gets or sets a value specifying the minimum confidence value used to match an identity
+        /// class. If no value is specified, identity classes will be matched to poses regardless
+        /// of the identity confidence value.
+        /// </summary>
+        [Range(0, 1)]
+        [Editor(DesignTypes.SliderEditor, DesignTypes.UITypeEditor)]
+        [Description("Specifies the minimum confidence value used to match an identity class. " +
+                     "If no value is specified, identity classes will be matched to poses regardless " +
+                     "of the identity confidence value.")]
+        public float? IdentityMinConfidence { get; set; }
+
+        /// <summary>
         /// Returns a collection of poses where each distinct model class has been matched to
         /// a single high confidence pose.
         /// </summary>
@@ -36,6 +48,7 @@ namespace Bonsai.Sleap
             return source.Select(poses =>
             {
                 var model = poses.Model;
+                var identityThreshold = IdentityMinConfidence;
                 var matchedPoses = new HashSet<PoseIdentity>();
                 var bestPoses = new PoseIdentity[model.ClassNames.Count];
                 var result = new PoseIdentityCollection(poses.Image, model);
@@ -77,7 +90,8 @@ namespace Bonsai.Sleap
                             continue;
 
                         var poseConfidence = GetMaxConfidence(pose, bestPoses, out int poseClass);
-                        if (maxPose == null || poseConfidence > maxPose.IdentityScores[maxClass])
+                        if (!(poseConfidence < identityThreshold) &&
+                            (maxPose == null || poseConfidence > maxPose.IdentityScores[maxClass]))
                         {
                             maxClass = poseClass;
                             maxPose = pose;
