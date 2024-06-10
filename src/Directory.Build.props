@@ -14,6 +14,7 @@
     <RepositoryUrl>https://github.com/bonsai-rx/sleap.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <VersionSuffix></VersionSuffix>
+    <LangVersion>8.0</LangVersion>
     <Features>strict</Features>
   </PropertyGroup>
 </Project>
