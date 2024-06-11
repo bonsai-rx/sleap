@@ -6,54 +6,30 @@ How to use
 ```mermaid
 flowchart TD
 
-id1("`**IplImage**`") --> id7{Multiple Instances}
+id1("`**IplImage**`") --> id7(Multiple Instances)
 
-id1 --> id8{Single Instance}
+id1 --> id8(Single Instance)
 
-id7 --> id3("`**PredictCentroids** 
+id7 -- centroid --> id3("`**PredictCentroids** 
 
 Returns multiple: 
-*Centroid*
+*Centroid*`")
 
-&nbsp;
-&nbsp;
-Implements:
-*centroid*
-`")
-
-id7 --> id4("`**PredictPoses**
+id7 -- top-down-model --> id4("`**PredictPoses**
 
 Returns multiple:
-*Centroid*
-*Pose*
-
-&nbsp;
-Implements:
-*top-down-model*
-`")
+*Centroid*, *Pose*`")
 
 
-id7 --> id5("`**PredictPoseIdentities**
+id7 -- top-down-id-model --> id5("`**PredictPoseIdentities**
 
 Returns multiple:
-*Centroid*
-*Pose*
-*Identity*
+*Centroid*, *Pose*, *Identity*`")
 
-Implements:
-*top-down-id-model*
-`")
-
-id8 --> id2("`**PredictSinglePose**
+id8 -- single_instance --> id2("`**PredictSinglePose**
 
 Returns single:
-*Pose*
-
-&nbsp;
-&nbsp;
-Implements:
-*single_instance*
-`")
+*Pose*`")
 ```
 
 
