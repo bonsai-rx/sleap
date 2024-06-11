@@ -13,7 +13,3 @@ After downloading the native TensorFlow binary and cuDNN, you can follow these s
 ## SLEAP installation
 
 For all questions regarding installation of SLEAP, please check the official [docs](https://sleap.ai/).
-
-> [!WARNING]
-> At this time (3/15/24) `Bonsai.SLEAP` is only compatible with pb model files from SLEAP v1.2.9 and below. More information and status updates on a potential bug-fix can be found on this [link](https://github.com/talmolab/sleap/issues/1542)
-
