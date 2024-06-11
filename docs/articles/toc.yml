@@ -1,6 +1,2 @@
-- name: Getting Started
-  items:
-  - name: Quickstart
-    href: intro.md
-  - name: How to use
-    href: manual.md
+- href: ../index.md
+- href: manual.md

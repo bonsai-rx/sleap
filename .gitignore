@@ -6,3 +6,10 @@ obj
 *.layout
 movies
 models
+
+# bonsai environment
+Packages
+*.dll
+*.exe
+*.exe.old
+*.exe.settings
