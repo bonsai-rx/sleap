@@ -17,7 +17,7 @@ namespace Bonsai.Sleap
     /// </remarks>
     [WorkflowElementCategory(ElementCategory.Transform)]
     [Description("Returns a collection of poses where each distinct identity class has been matched to a single high confidence pose.")]
-    public class FindPoseIdentityMatching : Transform<PoseIdentityCollection, PoseIdentityCollection>
+    public class FindPoseIdentityMatching : Transform<PoseIdentityCollection, PoseIdentityMatching>
     {
         /// <summary>
         /// Gets or sets a value specifying the minimum confidence value used to match an identity
@@ -40,10 +40,10 @@ namespace Bonsai.Sleap
         /// for each distinct model class.
         /// </param>
         /// <returns>
-        /// A sequence of <see cref="PoseIdentityCollection"/> objects representing
+        /// A sequence of <see cref="PoseIdentityMatching"/> objects representing
         /// the poses matched to each distinct model class.
         /// </returns>
-        public override IObservable<PoseIdentityCollection> Process(IObservable<PoseIdentityCollection> source)
+        public override IObservable<PoseIdentityMatching> Process(IObservable<PoseIdentityCollection> source)
         {
             return source.Select(poses =>
             {
@@ -51,7 +51,7 @@ namespace Bonsai.Sleap
                 var identityThreshold = IdentityMinConfidence;
                 var matchedPoses = new HashSet<PoseIdentity>();
                 var bestPoses = new PoseIdentity[model.ClassNames.Count];
-                var result = new PoseIdentityCollection(poses.Image, model);
+                var result = new PoseIdentityMatching(poses.Image, model);
 
                 static float GetMaxConfidence(PoseIdentity pose, PoseIdentity[] bestPoses, out int maxClass)
                 {
