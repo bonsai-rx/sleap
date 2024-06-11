@@ -21,6 +21,7 @@
         ], 
         "exclude": [
           "_site/**",
+          "apidoc/**",
           "bonsai/**",
           "filter.yml"
         ]
@@ -41,10 +42,6 @@
       {
         "files": [
           "apidoc/**.md"
-        ],
-        "exclude": [
-          "obj/**",
-          "_site/**"
         ]
       }
     ],
@@ -74,7 +71,6 @@
         "customcontainers"
       ]
     },
-
     "xref": [
       "https://horizongir.github.io/opencv.net/xrefmap.yml",
       "https://bonsai-rx.org/docs/xrefmap.yml"
