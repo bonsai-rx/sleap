@@ -1,0 +1,484 @@
+﻿<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+      <title>Class PredictPoseIdentities | Bonsai.SLEAP </title>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="title" content="Class PredictPoseIdentities | Bonsai.SLEAP ">
+      
+      <meta name="description" content="Represents an operator that performs markerless multi-pose and identity estimation for each image in the sequence using a SLEAP model.">
+      <link rel="icon" href="../favicon.ico">
+      <link rel="stylesheet" href="../public/docfx.min.css">
+      <link rel="stylesheet" href="../public/main.css">
+      <meta name="docfx:navrel" content="../toc.html">
+      <meta name="docfx:tocrel" content="toc.html">
+      
+      <meta name="docfx:rel" content="../">
+      
+      
+      <meta name="docfx:docurl" content="https://github.com/bonsai-rx/sleap/blob/main/docs/apidoc/Bonsai_Sleap_PredictPoseIdentities.md/#L2">
+      <meta name="loc:inThisArticle" content="In this article">
+      <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
+      <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
+      <meta name="loc:tocFilter" content="Filter by title">
+      <meta name="loc:nextArticle" content="Next">
+      <meta name="loc:prevArticle" content="Previous">
+      <meta name="loc:themeLight" content="Light">
+      <meta name="loc:themeDark" content="Dark">
+      <meta name="loc:themeAuto" content="Auto">
+      <meta name="loc:changeTheme" content="Change theme">
+      <meta name="loc:copy" content="Copy">
+      <meta name="loc:downloadPdf" content="Download PDF">
+  </head>
+
+  <script type="module" src="./../public/docfx.min.js"></script>
+
+  <script>
+    const theme = localStorage.getItem('theme') || 'auto'
+    document.documentElement.setAttribute('data-bs-theme', theme === 'auto' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme)
+  </script>
+
+
+  <body class="tex2jax_ignore" data-layout="" data-yaml-mime="ManagedReference">
+    <header class="bg-body border-bottom">
+      <nav id="autocollapse" class="navbar navbar-expand-md" role="navigation">
+        <div class="container-xxl flex-nowrap">
+          <a class="navbar-brand" href="../index.html">
+            <img id="logo" class="svg" src="../logo.svg" alt="Bonsai - SLEAP">
+            Bonsai - SLEAP
+          </a>
+          <button class="btn btn-lg d-md-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navpanel" aria-controls="navpanel" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="bi bi-three-dots"></i>
+          </button>
+          <div class="collapse navbar-collapse" id="navpanel">
+            <div id="navbar">
+              <form class="search" role="search" id="search">
+                <i class="bi bi-search"></i>
+                <input class="form-control" id="search-query" type="search" disabled="" placeholder="Search" autocomplete="off" aria-label="Search">
+              </form>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main class="container-xxl">
+      <div class="toc-offcanvas">
+        <div class="offcanvas-md offcanvas-start" tabindex="-1" id="tocOffcanvas" aria-labelledby="tocOffcanvasLabel">
+          <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="tocOffcanvasLabel">Table of Contents</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#tocOffcanvas" aria-label="Close"></button>
+          </div>
+          <div class="offcanvas-body">
+            <nav class="toc" id="toc"></nav>
+          </div>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="actionbar">
+          <button class="btn btn-lg border-0 d-md-none" style="margin-top: -.65em; margin-left: -.8em" type="button" data-bs-toggle="offcanvas" data-bs-target="#tocOffcanvas" aria-controls="tocOffcanvas" aria-expanded="false" aria-label="Show table of contents">
+            <i class="bi bi-list"></i>
+          </button>
+
+          <nav id="breadcrumb"></nav>
+        </div>
+
+        <article data-uid="Bonsai.Sleap.PredictPoseIdentities">
+
+
+
+  <h1 id="Bonsai_Sleap_PredictPoseIdentities" data-uid="Bonsai.Sleap.PredictPoseIdentities" class="text-break">
+Class PredictPoseIdentities  <a class="header-action link-secondary" title="View source" href="https://github.com/bonsai-rx/sleap/blob/main/src/Bonsai.Sleap/PredictPoseIdentities.cs/#L20"><i class="bi bi-code-slash"></i></a>
+  </h1>
+
+  <div class="facts text-secondary">
+    <dl><dt>Namespace</dt><dd><a class="xref" href="Bonsai.html">Bonsai</a>.<a class="xref" href="Bonsai.Sleap.html">Sleap</a></dd></dl>
+  <dl><dt>Assembly</dt><dd>Bonsai.Sleap.dll</dd></dl>
+  </div>
+
+  <div class="markdown summary"><p>Represents an operator that performs markerless multi-pose and identity
+estimation for each image in the sequence using a SLEAP model.</p>
+</div>
+  <div class="markdown conceptual"><p><a class="xref" href="Bonsai.Sleap.PredictPoseIdentities.html"><code>PredictPoseIdentities</code></a> evaluates the full SLEAP model network. In addition to extracting pose information for each detected instance in the image, it also returns the inferred identity of the object, i.e. it performs inference on the <a href="https://sleap.ai/develop/api/sleap.nn.config.model.html#sleap.nn.config.model.MultiClassTopDownConfig"><em>top-down-id-model</em> network</a>.</p>
+<p>In addition to the properties of the <a class="xref" href="Bonsai.Sleap.Pose.html"><code>Pose</code></a> object, the extended <a class="xref" href="Bonsai.Sleap.PoseIdentity.html"><code>PoseIdentity</code></a> class adds <a class="xref" href="Bonsai.Sleap.PoseIdentity.html#Bonsai_Sleap_PoseIdentity_Identity"><code>Identity</code></a> property that indicates the highest confidence identity. This will match one of the class labels found in <code>training_config.json</code>. The <a class="xref" href="Bonsai.Sleap.PoseIdentity.html#Bonsai_Sleap_PoseIdentity_IdentityScores"><code>IdentityScores</code></a> property indicates the confidence values for all class labels.</p>
+<p>Since we are very often only interested in the instance with the highest identification confidence we have added the operator <a class="xref" href="Bonsai.Sleap.GetMaximumConfidencePoseIdentity.html"><code>GetMaximumConfidencePoseIdentity</code></a> which returns the <a class="xref" href="Bonsai.Sleap.PoseIdentity.html"><code>PoseIdentity</code></a> with the highest confidence from the input <a class="xref" href="Bonsai.Sleap.PoseIdentityCollection.html"><code>PoseIdentityCollection</code></a>. Moreover, by specifying a value in the optional <a class="xref" href="Bonsai.Sleap.GetMaximumConfidencePoseIdentity.html#Bonsai_Sleap_GetMaximumConfidencePoseIdentity_Identity"><code>Identity</code></a> property, the operator will return the instance will the highest confidence for that particular class.</p>
+<div class="workflow"><p><img src="../workflows/FullTopDownModel.bonsai" alt="FullTopDownModel"></p>
+</div>
+</div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public class PredictPoseIdentities : Transform&lt;IplImage, PoseIdentityCollection&gt;</code></pre>
+  </div>
+
+
+
+
+  <dl class="typelist inheritance">
+    <dt>Inheritance</dt>
+    <dd>
+      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
+      <div><a class="xref" href="https://bonsai-rx.org/docs/api/Bonsai.Combinator-2.html">Combinator</a>&lt;<a class="xref" href="https://horizongir.github.io/opencv.net/api/OpenCV.Net.IplImage.html">IplImage</a>, <a class="xref" href="Bonsai.Sleap.PoseIdentityCollection.html">PoseIdentityCollection</a>&gt;</div>
+      <div><a class="xref" href="https://bonsai-rx.org/docs/api/Bonsai.Transform-2.html">Transform</a>&lt;<a class="xref" href="https://horizongir.github.io/opencv.net/api/OpenCV.Net.IplImage.html">IplImage</a>, <a class="xref" href="Bonsai.Sleap.PoseIdentityCollection.html">PoseIdentityCollection</a>&gt;</div>
+      <div><span class="xref">PredictPoseIdentities</span></div>
+    </dd>
+  </dl>
+
+
+
+  <dl class="typelist inheritedMembers">
+    <dt>Inherited Members</dt>
+    <dd>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iobservable-1">Combinator&lt;IplImage, PoseIdentityCollection&gt;.Process(IObservable&lt;IplImage&gt;)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring">object.ToString()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">object.Equals(object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">object.GetHashCode()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone">object.MemberwiseClone()</a>
+    </div>
+  </dd></dl>
+
+
+
+
+
+
+  <h2 class="section" id="properties">Properties
+</h2>
+
+
+  <a id="Bonsai_Sleap_PredictPoseIdentities_CentroidMinConfidence_" data-uid="Bonsai.Sleap.PredictPoseIdentities.CentroidMinConfidence*"></a>
+
+  <h3 id="Bonsai_Sleap_PredictPoseIdentities_CentroidMinConfidence" data-uid="Bonsai.Sleap.PredictPoseIdentities.CentroidMinConfidence">
+  CentroidMinConfidence
+  <a class="header-action link-secondary" title="View source" href="https://github.com/bonsai-rx/sleap/blob/main/src/Bonsai.Sleap/PredictPoseIdentities.cs/#L46"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Gets or sets a value specifying the confidence threshold used to discard centroid
+predictions. If no value is specified, all estimated centroid positions are returned.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[Range(0, 1)]
+public float? CentroidMinConfidence { get; set; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.single">float</a>?</dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="Bonsai_Sleap_PredictPoseIdentities_ColorConversion_" data-uid="Bonsai.Sleap.PredictPoseIdentities.ColorConversion*"></a>
+
+  <h3 id="Bonsai_Sleap_PredictPoseIdentities_ColorConversion" data-uid="Bonsai.Sleap.PredictPoseIdentities.ColorConversion">
+  ColorConversion
+  <a class="header-action link-secondary" title="View source" href="https://github.com/bonsai-rx/sleap/blob/main/src/Bonsai.Sleap/PredictPoseIdentities.cs/#L82"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Gets or sets a value specifying the optional color conversion used to prepare
+RGB video frames for inference. If no value is specified, no color conversion
+is performed.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ColorConversion? ColorConversion { get; set; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><span class="xref">ColorConversion</span>?</dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="Bonsai_Sleap_PredictPoseIdentities_IdentityMinConfidence_" data-uid="Bonsai.Sleap.PredictPoseIdentities.IdentityMinConfidence*"></a>
+
+  <h3 id="Bonsai_Sleap_PredictPoseIdentities_IdentityMinConfidence" data-uid="Bonsai.Sleap.PredictPoseIdentities.IdentityMinConfidence">
+  IdentityMinConfidence
+  <a class="header-action link-secondary" title="View source" href="https://github.com/bonsai-rx/sleap/blob/main/src/Bonsai.Sleap/PredictPoseIdentities.cs/#L56"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Gets or sets a value specifying the confidence threshold used to assign an identity
+class. If no value is specified, the identity with highest confidence will be
+assigned to each pose.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[Range(0, 1)]
+public float? IdentityMinConfidence { get; set; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.single">float</a>?</dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="Bonsai_Sleap_PredictPoseIdentities_ModelFileName_" data-uid="Bonsai.Sleap.PredictPoseIdentities.ModelFileName*"></a>
+
+  <h3 id="Bonsai_Sleap_PredictPoseIdentities_ModelFileName" data-uid="Bonsai.Sleap.PredictPoseIdentities.ModelFileName">
+  ModelFileName
+  <a class="header-action link-secondary" title="View source" href="https://github.com/bonsai-rx/sleap/blob/main/src/Bonsai.Sleap/PredictPoseIdentities.cs/#L28"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Gets or sets a value specifying the path to the exported Protocol Buffer
+file containing the pretrained SLEAP model.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[FileNameFilter(&quot;Protocol Buffer Files(*.pb)|*.pb&quot;)]
+public string ModelFileName { get; set; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="Bonsai_Sleap_PredictPoseIdentities_PartMinConfidence_" data-uid="Bonsai.Sleap.PredictPoseIdentities.PartMinConfidence*"></a>
+
+  <h3 id="Bonsai_Sleap_PredictPoseIdentities_PartMinConfidence" data-uid="Bonsai.Sleap.PredictPoseIdentities.PartMinConfidence">
+  PartMinConfidence
+  <a class="header-action link-secondary" title="View source" href="https://github.com/bonsai-rx/sleap/blob/main/src/Bonsai.Sleap/PredictPoseIdentities.cs/#L65"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Gets or sets a value specifying the confidence threshold used to discard predicted
+body part positions. If no value is specified, all estimated positions are returned.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[Range(0, 1)]
+public float? PartMinConfidence { get; set; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.single">float</a>?</dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="Bonsai_Sleap_PredictPoseIdentities_ScaleFactor_" data-uid="Bonsai.Sleap.PredictPoseIdentities.ScaleFactor*"></a>
+
+  <h3 id="Bonsai_Sleap_PredictPoseIdentities_ScaleFactor" data-uid="Bonsai.Sleap.PredictPoseIdentities.ScaleFactor">
+  ScaleFactor
+  <a class="header-action link-secondary" title="View source" href="https://github.com/bonsai-rx/sleap/blob/main/src/Bonsai.Sleap/PredictPoseIdentities.cs/#L74"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Gets or sets a value specifying the scale factor used to resize video frames
+for inference. If no value is specified, no resizing is performed.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public float? ScaleFactor { get; set; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.single">float</a>?</dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="Bonsai_Sleap_PredictPoseIdentities_TrainingConfig_" data-uid="Bonsai.Sleap.PredictPoseIdentities.TrainingConfig*"></a>
+
+  <h3 id="Bonsai_Sleap_PredictPoseIdentities_TrainingConfig" data-uid="Bonsai.Sleap.PredictPoseIdentities.TrainingConfig">
+  TrainingConfig
+  <a class="header-action link-secondary" title="View source" href="https://github.com/bonsai-rx/sleap/blob/main/src/Bonsai.Sleap/PredictPoseIdentities.cs/#L37"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Gets or sets a value specifying the path to the configuration JSON file
+containing training metadata.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[FileNameFilter(&quot;Config Files(*.json)|*.json|All Files|*.*&quot;)]
+public string TrainingConfig { get; set; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <h2 class="section" id="methods">Methods
+</h2>
+
+
+  <a id="Bonsai_Sleap_PredictPoseIdentities_Process_" data-uid="Bonsai.Sleap.PredictPoseIdentities.Process*"></a>
+
+  <h3 id="Bonsai_Sleap_PredictPoseIdentities_Process_System_IObservable_OpenCV_Net_IplImage__" data-uid="Bonsai.Sleap.PredictPoseIdentities.Process(System.IObservable{OpenCV.Net.IplImage})">
+  Process(IObservable&lt;IplImage&gt;)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/bonsai-rx/sleap/blob/main/src/Bonsai.Sleap/PredictPoseIdentities.cs/#L255"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Performs markerless multi-pose and identity estimation for each image in
+an observable sequence using a SLEAP model.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override IObservable&lt;PoseIdentityCollection&gt; Process(IObservable&lt;IplImage&gt; source)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>source</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iobservable-1">IObservable</a>&lt;<a class="xref" href="https://horizongir.github.io/opencv.net/api/OpenCV.Net.IplImage.html">IplImage</a>&gt;</dt>
+    <dd><p>The sequence of images from which to extract the pose identities.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iobservable-1">IObservable</a>&lt;<a class="xref" href="Bonsai.Sleap.PoseIdentityCollection.html">PoseIdentityCollection</a>&gt;</dt>
+    <dd><p>A sequence of <a class="xref" href="Bonsai.Sleap.PoseIdentityCollection.html">PoseIdentityCollection</a> objects representing
+the pose identities extracted from each image in the <code class="paramref">source</code>
+sequence.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <h2 id="seealso">See Also</h2>
+  <div class="seealso">
+      <div><a class="xref" href="Bonsai.Sleap.PredictCentroids.html">PredictCentroids</a></div>
+      <div><a class="xref" href="Bonsai.Sleap.PredictPoses.html">PredictPoses</a></div>
+      <div><a class="xref" href="Bonsai.Sleap.PredictSinglePose.html">PredictSinglePose</a></div>
+      <div><a class="xref" href="Bonsai.Sleap.GetBodyPart.html">GetBodyPart</a></div>
+      <div><a class="xref" href="Bonsai.Sleap.GetMaximumConfidencePoseIdentity.html">GetMaximumConfidencePoseIdentity</a></div>
+  </div>
+
+</article>
+
+        <div class="contribution d-print-none">
+          <a href="https://github.com/bonsai-rx/sleap/blob/main/src/Bonsai.Sleap/PredictPoseIdentities.cs/#L20" class="edit-link">Edit this page</a>
+        </div>
+
+
+      </div>
+
+      <div class="affix">
+        <nav id="affix"></nav>
+      </div>
+    </main>
+
+    <div class="container-xxl search-results" id="search-results"></div>
+
+    <footer class="border-top text-secondary">
+      <div class="container-xxl">
+        <div class="flex-fill">
+          &copy; 2024 Bonsai Foundation CIC and Contributors. Made with <a href="https://dotnet.github.io/docfx">docfx</a>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

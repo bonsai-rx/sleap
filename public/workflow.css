@@ -1,0 +1,16 @@
+.workflow {
+  display: flex;
+  padding: 1px;
+}
+
+.workflow > p > img {
+  padding-top: 12px;
+  padding-left: 12px;
+  padding-right: 12px;
+}
+
+.wrap-right > p > img,
+.wrap-right > p > a > img {
+  max-width: 50%;
+  float: inline-end;
+}

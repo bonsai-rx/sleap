@@ -1,0 +1,528 @@
+{
+  "source_base_path": "D:/a/sleap/sleap/docs",
+  "xrefmap": "xrefmap.yml",
+  "files": [
+    {
+      "type": "Resource",
+      "output": {
+        "resource": {
+          "relative_path": "index.json"
+        }
+      }
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Bonsai.Sleap.BodyPart.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Bonsai.Sleap.BodyPart.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Bonsai.Sleap.Centroid.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Bonsai.Sleap.Centroid.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Bonsai.Sleap.CentroidCollection.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Bonsai.Sleap.CentroidCollection.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Bonsai.Sleap.Design.CentroidCollectionVisualizer.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Bonsai.Sleap.Design.CentroidCollectionVisualizer.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Bonsai.Sleap.Design.CentroidVisualizer.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Bonsai.Sleap.Design.CentroidVisualizer.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Bonsai.Sleap.Design.PoseCollectionVisualizer.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Bonsai.Sleap.Design.PoseCollectionVisualizer.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Bonsai.Sleap.Design.PoseIdentityCollectionVisualizer.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Bonsai.Sleap.Design.PoseIdentityCollectionVisualizer.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Bonsai.Sleap.Design.PoseIdentityVisualizer.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Bonsai.Sleap.Design.PoseIdentityVisualizer.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Bonsai.Sleap.Design.PoseVisualizer.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Bonsai.Sleap.Design.PoseVisualizer.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Bonsai.Sleap.Design.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Bonsai.Sleap.Design.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Bonsai.Sleap.FindPoseIdentityMatching.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Bonsai.Sleap.FindPoseIdentityMatching.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Bonsai.Sleap.GetBodyPart.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Bonsai.Sleap.GetBodyPart.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Bonsai.Sleap.GetMaximumConfidencePoseIdentity.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Bonsai.Sleap.GetMaximumConfidencePoseIdentity.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Bonsai.Sleap.IModelInfo.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Bonsai.Sleap.IModelInfo.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Bonsai.Sleap.ModelType.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Bonsai.Sleap.ModelType.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Bonsai.Sleap.Pose.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Bonsai.Sleap.Pose.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Bonsai.Sleap.PoseCollection.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Bonsai.Sleap.PoseCollection.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Bonsai.Sleap.PoseIdentity.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Bonsai.Sleap.PoseIdentity.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Bonsai.Sleap.PoseIdentityCollection.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Bonsai.Sleap.PoseIdentityCollection.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Bonsai.Sleap.PredictCentroids.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Bonsai.Sleap.PredictCentroids.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Bonsai.Sleap.PredictPoseIdentities.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Bonsai.Sleap.PredictPoseIdentities.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Bonsai.Sleap.PredictPoses.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Bonsai.Sleap.PredictPoses.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Bonsai.Sleap.PredictSinglePose.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Bonsai.Sleap.PredictSinglePose.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Bonsai.Sleap.UnexpectedModelTypeException.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Bonsai.Sleap.UnexpectedModelTypeException.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Bonsai.Sleap.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Bonsai.Sleap.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "api/toc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/toc.html"
+        },
+        ".json": {
+          "relative_path": "api/toc.json"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/manual.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/manual.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/sleap-intro.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/sleap-intro.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/sleap-predictcentroids.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/sleap-predictcentroids.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/sleap-predictposeidentities.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/sleap-predictposeidentities.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/sleap-predictposes.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/sleap-predictposes.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/sleap-predictsinglepose.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/sleap-predictsinglepose.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "articles/toc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "articles/toc.html"
+        },
+        ".json": {
+          "relative_path": "articles/toc.json"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "assets/README.md",
+      "output": {
+        ".html": {
+          "relative_path": "assets/README.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "assets/favicon.ico",
+      "output": {
+        "resource": {
+          "relative_path": "favicon.ico"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "assets/logo.svg",
+      "output": {
+        "resource": {
+          "relative_path": "logo.svg"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "images/demo.gif",
+      "output": {
+        "resource": {
+          "relative_path": "images/demo.gif"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "images/sleap-Bonsai-icon.svg",
+      "output": {
+        "resource": {
+          "relative_path": "images/sleap-Bonsai-icon.svg"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "index.md",
+      "output": {
+        ".html": {
+          "relative_path": "index.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "toc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "toc.html"
+        },
+        ".json": {
+          "relative_path": "toc.json"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "workflows/CentroidModel.bonsai",
+      "output": {
+        "resource": {
+          "relative_path": "workflows/CentroidModel.bonsai"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "workflows/CentroidModel.svg",
+      "output": {
+        "resource": {
+          "relative_path": "workflows/CentroidModel.svg"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "workflows/FullTopDownModel.bonsai",
+      "output": {
+        "resource": {
+          "relative_path": "workflows/FullTopDownModel.bonsai"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "workflows/FullTopDownModel.svg",
+      "output": {
+        "resource": {
+          "relative_path": "workflows/FullTopDownModel.svg"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "workflows/PredictPoseIdentities.bonsai",
+      "output": {
+        "resource": {
+          "relative_path": "workflows/PredictPoseIdentities.bonsai"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "workflows/PredictPoseIdentities.svg",
+      "output": {
+        "resource": {
+          "relative_path": "workflows/PredictPoseIdentities.svg"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "workflows/SingleInstanceModel.bonsai",
+      "output": {
+        "resource": {
+          "relative_path": "workflows/SingleInstanceModel.bonsai"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "workflows/SingleInstanceModel.svg",
+      "output": {
+        "resource": {
+          "relative_path": "workflows/SingleInstanceModel.svg"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "workflows/TopDownNoIDModel.bonsai",
+      "output": {
+        "resource": {
+          "relative_path": "workflows/TopDownNoIDModel.bonsai"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "workflows/TopDownNoIDModel.svg",
+      "output": {
+        "resource": {
+          "relative_path": "workflows/TopDownNoIDModel.svg"
+        }
+      },
+      "version": ""
+    }
+  ],
+  "groups": [
+    {
+      "xrefmap": "xrefmap.yml"
+    }
+  ]
+}

@@ -1,0 +1,140 @@
+﻿<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+      <title>Getting Started | Bonsai.SLEAP </title>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="title" content="Getting Started | Bonsai.SLEAP ">
+      
+      
+      <link rel="icon" href="favicon.ico">
+      <link rel="stylesheet" href="public/docfx.min.css">
+      <link rel="stylesheet" href="public/main.css">
+      <meta name="docfx:navrel" content="toc.html">
+      <meta name="docfx:tocrel" content="articles/toc.html">
+      
+      <meta name="docfx:rel" content="">
+      
+      
+      <meta name="docfx:docurl" content="https://github.com/bonsai-rx/sleap/blob/main/docs/index.md/#L1">
+      <meta name="loc:inThisArticle" content="In this article">
+      <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
+      <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
+      <meta name="loc:tocFilter" content="Filter by title">
+      <meta name="loc:nextArticle" content="Next">
+      <meta name="loc:prevArticle" content="Previous">
+      <meta name="loc:themeLight" content="Light">
+      <meta name="loc:themeDark" content="Dark">
+      <meta name="loc:themeAuto" content="Auto">
+      <meta name="loc:changeTheme" content="Change theme">
+      <meta name="loc:copy" content="Copy">
+      <meta name="loc:downloadPdf" content="Download PDF">
+  </head>
+
+  <script type="module" src="./public/docfx.min.js"></script>
+
+  <script>
+    const theme = localStorage.getItem('theme') || 'auto'
+    document.documentElement.setAttribute('data-bs-theme', theme === 'auto' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme)
+  </script>
+
+
+  <body class="tex2jax_ignore" data-layout="" data-yaml-mime="">
+    <header class="bg-body border-bottom">
+      <nav id="autocollapse" class="navbar navbar-expand-md" role="navigation">
+        <div class="container-xxl flex-nowrap">
+          <a class="navbar-brand" href="index.html">
+            <img id="logo" class="svg" src="logo.svg" alt="Bonsai - SLEAP">
+            Bonsai - SLEAP
+          </a>
+          <button class="btn btn-lg d-md-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navpanel" aria-controls="navpanel" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="bi bi-three-dots"></i>
+          </button>
+          <div class="collapse navbar-collapse" id="navpanel">
+            <div id="navbar">
+              <form class="search" role="search" id="search">
+                <i class="bi bi-search"></i>
+                <input class="form-control" id="search-query" type="search" disabled="" placeholder="Search" autocomplete="off" aria-label="Search">
+              </form>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main class="container-xxl">
+      <div class="toc-offcanvas">
+        <div class="offcanvas-md offcanvas-start" tabindex="-1" id="tocOffcanvas" aria-labelledby="tocOffcanvasLabel">
+          <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="tocOffcanvasLabel">Table of Contents</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#tocOffcanvas" aria-label="Close"></button>
+          </div>
+          <div class="offcanvas-body">
+            <nav class="toc" id="toc"></nav>
+          </div>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="actionbar">
+          <button class="btn btn-lg border-0 d-md-none" style="margin-top: -.65em; margin-left: -.8em" type="button" data-bs-toggle="offcanvas" data-bs-target="#tocOffcanvas" aria-controls="tocOffcanvas" aria-expanded="false" aria-label="Show table of contents">
+            <i class="bi bi-list"></i>
+          </button>
+
+          <nav id="breadcrumb"></nav>
+        </div>
+
+        <article data-uid="">
+
+<p><img src="images/sleap-Bonsai-icon.svg" alt="logo"></p>
+<h1 id="getting-started">Getting Started</h1>
+<p>Bonsai.SLEAP is a <a href="https://bonsai-rx.org/">Bonsai</a> interface for <a href="https://sleap.ai/">SLEAP</a> allowing multi-animal, real-time, pose and identity estimation using pretrained network models stored in a <a href="https://developers.google.com/protocol-buffers/">Protocol buffer (.pb) format</a>.</p>
+<p>Bonsai.SLEAP loads these .pb files using <a href="https://github.com/migueldeicaza/TensorFlowSharp">TensorFlowSharp</a>, a set of .NET bindings for TensorFlow allowing native inference using either the CPU or GPU. By using the .pb file and the corresponding configuration file (<code>training_config.json</code>), the <code>PredictFullModelPose</code> operator from Bonsai.SLEAP will push the live image data through the inference network and output a set of identified poses from which you can extract an object id and specific object part position. <code>Bonsai</code> can then leverage this data to drive online effectors or simply save it to an output file.</p>
+<h2 id="how-to-install">How to install</h2>
+<p>Bonsai.SLEAP can be downloaded through the Bonsai package manager. In order to get visualizer support, you should download both the <code>Bonsai.Sleap</code> and <code>Bonsai.Sleap.Design</code> packages. However, in order to use it for either CPU or GPU inference, you need to pair it with a compiled native TensorFlow binary. You can find precompiled binaries for Windows 64-bit at <a href="https://www.tensorflow.org/install/lang_c">https://www.tensorflow.org/install/lang_c</a>.</p>
+<p>To use GPU TensorFlow (highly recommended for live inference), you also need to install the <code>CUDA Toolkit</code> and the <code>cuDNN libraries</code>. This package was developed and tested with <a href="https://developer.nvidia.com/cuda-11.3.0-download-archive">CUDA v11.3</a> and <a href="https://developer.nvidia.com/cudnn">cuDNN 8.2</a>. Additionally, make sure you have a CUDA <a href="https://docs.nvidia.com/deploy/cuda-compatibility/index.html#support-hardware">compatible GPU</a> with the latest NVIDIA drivers.</p>
+<p>After downloading the native TensorFlow binary and cuDNN, you can follow these steps to get the required native files into the <code>Extensions</code> folder of your local Bonsai install:</p>
+<ol>
+<li>The easiest way to find your Bonsai install folder is to right-click on the Bonsai shortcut &gt; Properties. The path to the folder will be shown in the &quot;Start in&quot; textbox;</li>
+<li>Copy <code>tensorflow.dll</code> file from either the CPU or GPU <a href="https://www.tensorflow.org/install/lang_c#download_and_extract">tensorflow release</a> to the <code>Extensions</code> folder;</li>
+<li>If you are using TensorFlow GPU, make sure to add the <code>cuda/bin</code> folder of your cuDNN download to the <code>PATH</code> environment variable, or copy all DLL files to the <code>Extensions</code> folder.</li>
+</ol>
+<div class="TIP">
+<h5>Tip</h5>
+<p>For all questions regarding installation and use of SLEAP for training models, please check the official <a href="https://sleap.ai/">docs</a>.</p>
+</div>
+<h2 id="simple-example">Simple example</h2>
+<p>The simplest Bonsai workflow for running the complete SLEAP <code>top-down-id-model</code> is:</p>
+<div class="workflow"><p><img src="workflows/PredictPoseIdentities.bonsai" alt="PredictPoseIdentities"></p>
+</div>
+<p>If everything works out, you should see some indication in the Bonsai command line window that the GPU was successfully detected and enabled. The first frame will cold start the inference graph and this may take a bit of time, but after that, your poses should start streaming through!</p>
+<p><img src="images/demo.gif" alt="Bonsai_Pipeline_expanded"></p>
+<h2 id="acknowledgments">Acknowledgments</h2>
+<p>The Bonsai.SLEAP package came about following a fruitful discussion with the SLEAP team during the <a href="http://cajal-training.org/on-site/qab2022">Quantitative Approaches to Behaviour</a>.</p>
+
+</article>
+
+        <div class="contribution d-print-none">
+          <a href="https://github.com/bonsai-rx/sleap/blob/main/docs/index.md/#L1" class="edit-link">Edit this page</a>
+        </div>
+
+        <div class="next-article d-print-none border-top" id="nextArticle"></div>
+
+      </div>
+
+      <div class="affix">
+        <nav id="affix"></nav>
+      </div>
+    </main>
+
+    <div class="container-xxl search-results" id="search-results"></div>
+
+    <footer class="border-top text-secondary">
+      <div class="container-xxl">
+        <div class="flex-fill">
+          &copy; 2024 Bonsai Foundation CIC and Contributors. Made with <a href="https://dotnet.github.io/docfx">docfx</a>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>
