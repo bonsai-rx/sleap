@@ -1,15 +1,17 @@
 {
+  "$schema": "https://raw.githubusercontent.com/dotnet/docfx/main/schemas/docfx.schema.json",
   "metadata": [
     {
       "src": [
         {
-          "files": [
-            "**/*.csproj"
-          ],
-          "src": "../src"
+          "src": "../src/",
+          "files": "**/*.csproj",
+          "exclude": "**/*.Tests.csproj"
         }
       ],
-      "dest": "api",
+      "output": "../artifacts/docs/api/",
+      "enumSortOrder": "declaringOrder",
+      "memberLayout": "separatePages",
       "filter": "filter.yml"
     }
   ],
@@ -17,54 +19,57 @@
     "content": [
       {
         "files": [
-          "**/*.{md,yml}"
-        ], 
-        "exclude": [
-          "_site/**",
-          "apidoc/**",
-          "bonsai/**",
-          "filter.yml"
-        ]
+          "*.md",
+          "toc.yml",
+          "{articles,tutorials,examples}/**/*.md",
+          "{articles,tutorials,examples}/**/toc.yml"
+        ],
+        "exclude": "README.md"
+      },
+      {
+        "src": "../artifacts/docs/api/",
+        "dest": "api",
+        "files": "**/*.yml"
       }
     ],
     "resource": [
       {
         "files": [
-          "logo.svg",
-          "favicon.ico"
-        ],
-        "src": "assets"
+          "images/**",
+          "workflows/**/*.{bonsai,svg}",
+          "{articles,tutorials,examples}/**/*.{bonsai,svg}"
+        ]
       },
       {
-        "files": [
-          "images/**",
-          "workflows/**"
-        ]
+        "src": "../build/",
+        "files": "icon.png"
       }
     ],
-    "output": "_site",
     "overwrite": [
-      {
-        "files": [
-          "apidoc/**.md"
-        ]
-      }
+      "apidoc/**/*.md"
     ],
+    "output": "../artifacts/docs/site/",
     "template": [
       "default",
       "modern",
-      "bonsai/template",
+      "bonsai-docfx/template",
       "template"
     ],
+    "sitemap": {
+      "baseUrl": "https://bonsai-rx.org/sleap"
+    },
     "globalMetadata": {
-      "_appName": "Bonsai - SLEAP",
-      "_appTitle": "Bonsai.SLEAP",
+      "_appName": "Bonsai.Sleap",
+      "_appTitle": "Bonsai.Sleap",
+      "_appFooter": "&copy; Bonsai Foundation CIC and Contributors. Made with <a href=\"https://dotnet.github.io/docfx\">docfx</a>",
+      "_appLogoPath": "logo.svg",
+      "_appFaviconPath": "icon.png",
       "_enableNewTab": true,
       "_enableSearch": true,
-      "pdf": false,      
-      "_appFooter": "&copy; 2024 Bonsai Foundation CIC and Contributors. Made with <a href=\"https://dotnet.github.io/docfx\">docfx</a>"
+      "_gitContribute": {
+        "apiSpecFolder": "docs/apidoc"
+      }
     },
-    "markdownEngineName": "markdig",
     "markdownEngineProperties": {
       "markdigExtensions": [
         "attributes",
@@ -72,8 +77,8 @@
       ]
     },
     "xref": [
-      "https://horizongir.github.io/opencv.net/xrefmap.yml",
-      "https://bonsai-rx.org/docs/xrefmap.yml"
+      "https://bonsai-rx.org/docs/xrefmap.yml",
+      "https://horizongir.github.io/reactive/xrefmap.yml"
     ]
   }
 }
