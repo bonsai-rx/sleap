@@ -1,5 +1,5 @@
 # Bonsai - SLEAP
-![logo](docs/images/sleap-Bonsai-icon.svg)
+![logo](images/sleap-Bonsai-icon.svg)
 
 Bonsai.SLEAP is a [Bonsai](https://bonsai-rx.org/) interface for [SLEAP](https://sleap.ai/) allowing multi-animal, real-time, pose and identity estimation using pretrained network models stored in a [Protocol buffer (.pb) format](https://developers.google.com/protocol-buffers/).
 
@@ -42,11 +42,11 @@ After downloading the native TensorFlow binary and cuDNN, you can follow these s
 
 The general Bonsai workflow will thus be:
 
-![Bonsai_Pipeline](docs/workflows/PredictPoseIdentities.svg)
+![Bonsai_Pipeline](workflows/PredictPoseIdentities.svg)
 
 Additional information can be extracted by selecting the relevant structure fields.
 
-![Bonsai_Pipeline_expanded](docs/images/demo.gif)
+![Bonsai_Pipeline_expanded](images/demo.gif)
 
 In order to use the `Predict` operators, you will need to provide the `ModelFileName` to the exported .pb file folder containing your pretrained SLEAP model, along with the corresponding `PoseConfigFileName` to the `training_config.json` file.
 
