@@ -1,12 +1,11 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <Title>Bonsai - SLEAP Design Library</Title>
     <Description>Bonsai Library containing reactive visualizations for markerless multi-pose estimation using SLEAP.</Description>
-    <PackageTags>Bonsai Rx SLEAP LEAP Markerless Multi Pose Tracking Visualizers</PackageTags>
+    <PackageTags>$(PackageTags) Visualizers</PackageTags>
     <TargetFramework>net472</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
-    <VersionPrefix>0.3.0</VersionPrefix>
   </PropertyGroup>
 
   <ItemGroup>
@@ -18,4 +17,3 @@
   </ItemGroup>
 
 </Project>
-

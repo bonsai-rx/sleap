@@ -1,15 +1,13 @@
-.vs
-bin
-obj
+.bonsai/Bonsai.exe*
+.bonsai/Packages/
+.bonsai/Settings/
+.vs/
+/artifacts/
+
 *.user
 *.suo
 *.layout
 movies
 models
 
-# bonsai environment
-Packages
-*.dll
-*.exe
 *.exe.old
-*.exe.settings
