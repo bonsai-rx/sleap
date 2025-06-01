@@ -42,7 +42,7 @@ After downloading the native TensorFlow binary and cuDNN, you can follow these s
 
 The general Bonsai workflow will thus be:
 
-![Bonsai_Pipeline](workflows/PredictPoseIdentities.svg)
+![Bonsai_Pipeline](https://bonsai-rx.org/sleap/workflows/PredictPoseIdentities.svg)
 
 Additional information can be extracted by selecting the relevant structure fields.
 
