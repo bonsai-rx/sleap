@@ -26,13 +26,18 @@
         CenteredInstance = 3,
 
         /// <summary>
-        /// A model for multi instance pose estimation.
+        /// A model for bottom-up pose estimation.
         /// </summary>
-        MultiInstance = 4,
+        BottomUp = 4,
 
         /// <summary>
-        /// A model for multi-class multi-instance pose estimation.
+        /// A model for multi-class bottom-up pose estimation.
         /// </summary>
-        MultiClass = 5
+        MultiClassBottomUp = 5,
+
+        /// <summary>
+        /// A model for multi-class top-down pose estimation.
+        /// </summary>
+        MultiClassTopDown = 6
     }
 }

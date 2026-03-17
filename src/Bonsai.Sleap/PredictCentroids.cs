@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Reactive.Linq;
 using OpenCV.Net;
-using TensorFlow;
+using Microsoft.ML.OnnxRuntime;
+using Microsoft.ML.OnnxRuntime.Tensors;
 
 namespace Bonsai.Sleap
 {
@@ -20,12 +22,12 @@ namespace Bonsai.Sleap
     public class PredictCentroids : Transform<IplImage, CentroidCollection>
     {
         /// <summary>
-        /// Gets or sets a value specifying the path to the exported Protocol Buffer
+        /// Gets or sets a value specifying the path to the exported ONNX
         /// file containing the pretrained SLEAP model.
         /// </summary>
-        [FileNameFilter("Protocol Buffer Files(*.pb)|*.pb")]
+        [FileNameFilter("ONNX Files(*.onnx)|*.onnx")]
         [Editor("Bonsai.Design.OpenFileNameEditor, Bonsai.Design", DesignTypes.UITypeEditor)]
-        [Description("Specifies the path to the exported Protocol Buffer file containing the pretrained SLEAP model.")]
+        [Description("Specifies the path to the exported ONNX file containing the pretrained SLEAP model.")]
         public string ModelFileName { get; set; }
 
         /// <summary>
@@ -47,118 +49,99 @@ namespace Bonsai.Sleap
         public float? CentroidMinConfidence { get; set; }
 
         /// <summary>
-        /// Gets or sets a value specifying the scale factor used to resize video frames
-        /// for inference. If no value is specified, no resizing is performed.
-        /// </summary>
-        [Description("Specifies the scale factor used to resize video frames for inference. If no value is specified, no resizing is performed.")]
-        public float? ScaleFactor { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value specifying the optional color conversion used to prepare
-        /// RGB video frames for inference. If no value is specified, no color conversion
-        /// is performed.
-        /// </summary>
-        [Description("Specifies the optional color conversion used to prepare RGB video frames for inference. If no value is specified, no color conversion is performed.")]
-        public ColorConversion? ColorConversion { get; set; }
+        /// Gets or sets the backend execution provider used to perform inference.
+        /// </summary> <summary>
+        [Description("The backend execution provider used to perform inference.")]
+        public Provider Provider { get; set; } = Provider.Cpu;
 
         private IObservable<CentroidCollection> Process(IObservable<IplImage[]> source)
         {
             return Observable.Defer(() =>
             {
-                IplImage resizeTemp = null;
-                IplImage colorTemp = null;
-                TFTensor tensor = null;
-                TFSession.Runner runner = null;
-                var graph = TensorHelper.ImportModel(ModelFileName, out TFSession session);
+                IplImage tmpImage = null;
+                Size currentImageSize = default;
+                DenseTensor<byte> inputBuffer = null;
+
+                var sessionOptions = new SessionOptions
+                {
+                    EnableProfiling = true,
+                    ProfileOutputPathPrefix = "onnx_profile",
+                };
+
+                switch (Provider)
+                {
+                    case Provider.Cuda:
+                        {
+                            var cudaOptions = new OrtCUDAProviderOptions();
+                            sessionOptions.AppendExecutionProvider_CUDA(cudaOptions);
+                            break;
+                        }
+
+                    case Provider.TensorRT:
+                        {
+                            var cudaOptions = new OrtCUDAProviderOptions();
+                            sessionOptions.AppendExecutionProvider_CUDA(cudaOptions);
+                            sessionOptions.AppendExecutionProvider_Tensorrt();
+                            break;
+                        }
+                }
+
+                var session = new InferenceSession(ModelFileName, sessionOptions);
+                var inputName = session.InputMetadata.Keys.First();
                 var config = ConfigHelper.LoadTrainingConfig(TrainingConfig);
-                var ragged = graph["Identity_6"] != null;
 
                 if (config.ModelType != ModelType.Centroid)
                 {
-                    throw new UnexpectedModelTypeException($"Expected {nameof(ModelType.Centroid)} model type but found {config.ModelType} .");
+                    session?.Dispose();
+                    throw new UnexpectedModelTypeException($"Expected {nameof(ModelType.Centroid)} model type but found {config.ModelType}.");
                 }
 
                 return source.Select(input =>
                 {
-                    var poseScale = 1.0;
-                    int colorChannels = (ColorConversion is null) ? input[0].Channels : ExtensionMethods.GetConversionNumChannels((ColorConversion)ColorConversion);
-                    var tensorSize = input[0].Size;
+                    var imageSize = input[0].Size;
                     var batchSize = input.Length;
-                    var scaleFactor = ScaleFactor;
+                    var centroidThreshold = CentroidMinConfidence ?? 0;
 
-                    if (scaleFactor.HasValue)
+                    if (inputBuffer == null || currentImageSize != imageSize)
                     {
-                        poseScale = scaleFactor.Value;
-                        tensorSize.Width = (int)(tensorSize.Width * poseScale);
-                        tensorSize.Height = (int)(tensorSize.Height * poseScale);
-                        poseScale = 1.0 / poseScale;
+                        ReadOnlySpan<int> inputSize = stackalloc int[] { batchSize, 1, imageSize.Height, imageSize.Width };
+                        inputBuffer = TensorHelper.CreateInputBuffer(inputSize);
+                        currentImageSize = imageSize;
                     }
 
-                    if (tensor == null || tensor.Shape[0] != batchSize || tensor.Shape[1] != tensorSize.Height || tensor.Shape[2] != tensorSize.Width)
-                    {
-                        tensor?.Dispose();
-                        runner = session.GetRunner();
-                        tensor = TensorHelper.CreatePlaceholder(graph, runner, tensorSize, batchSize, colorChannels);
+                    var frames = input.Select(frame => TensorHelper.EnsureGrayscale(frame, ref tmpImage)).ToArray();
 
-                        if (ragged)
-                        {
-                            // ragged version of the frozen graph
-                            runner.Fetch(graph["Identity"][0]);
-                            runner.Fetch(graph["Identity_2"][0]);
-                        }
-                        else
-                        {
-                            // unragged version of the frozen graph
-                            runner.Fetch(graph["Identity"][0]);
-                            runner.Fetch(graph["Identity_1"][0]);
-                        }
-                    }
+                    TensorHelper.UpdateInputBuffer(inputBuffer, imageSize, frames);
+                    var onnxInputs = new [] { NamedOnnxValue.CreateFromTensor(inputName, inputBuffer) };
 
-                    var frames = Array.ConvertAll(input, frame =>
-                    {
-                        frame = TensorHelper.EnsureFrameSize(frame, tensorSize, ref resizeTemp);
-                        frame = TensorHelper.EnsureColorFormat(frame, ColorConversion, ref colorTemp, colorChannels);
-                        return frame;
-                    });
-                    TensorHelper.UpdateTensor(tensor, colorChannels, frames);
-                    var output = runner.Run();
-
-                    var shapeIdx = ragged ? 0 : 1;
                     var centroidCollection = new CentroidCollection(input[0]);
-                    if (output[0].Shape[shapeIdx] == 0) return centroidCollection;
-                    else
-                    {
-                        // Fetch the results from output
-                        var centroidConfidenceTensor = output[0];
-                        float[] centroidConfArr = new float[centroidConfidenceTensor.Shape[shapeIdx]];
-                        TensorHelper.GetTensorValue(centroidConfidenceTensor, centroidConfArr);
 
-                        var centroidTensor = output[1];
-                        float[,] centroidArr = new float[centroidTensor.Shape[shapeIdx], centroidTensor.Shape[shapeIdx + 1]];
-                        TensorHelper.GetTensorValue(centroidTensor, centroidArr);
+                    using var onnxOutputs = session.Run(onnxInputs);
+                    var outputs = onnxOutputs.ToList();
 
-                        var confidenceThreshold = CentroidMinConfidence;
-                        for (int i = 0; i < centroidConfArr.GetLength(0); i++)
-                        {
-                            //TODO: batch centroid estimation is not currently supported
-                            var centroid = new Centroid(input[0]);
-                            centroid.Name = config.AnchorName;
-                            centroid.Confidence = centroidConfArr[i];
+                    var centroidTensor = outputs[0].AsTensor<float>();
+                    var confTensor = outputs[1].AsTensor<float>();
+                    var validTensor = outputs[2].AsTensor<bool>();
 
-                            if (centroid.Confidence < confidenceThreshold)
-                            {
-                                centroid.Position = new Point2f(float.NaN, float.NaN);
-                            }
-                            else
-                            {
-                                centroid.Position = new Point2f(
-                                    (float)(centroidArr[i, 0] * poseScale),
-                                    (float)(centroidArr[i, 1] * poseScale));
-                            }
-                            centroidCollection.Add(centroid);
-                        };
+                    var nInstances = confTensor.Dimensions[1];
+                    if (nInstances == 0)
                         return centroidCollection;
+
+                    for (int i = 0; i < nInstances; i++)
+                    {
+                        if (validTensor[0, i] && confTensor[0, i] >= centroidThreshold)
+                        {
+                            centroidCollection.Add(new Centroid(frames[0])
+                            {
+                                Name = config.AnchorName,
+                                Position = new Point2f(
+                                    centroidTensor[0, i, 0],
+                                    centroidTensor[0, i, 1]),
+                                Confidence = confTensor[0, i]
+                            });
+                        }
                     }
+                    return centroidCollection;
                 });
             });
         }

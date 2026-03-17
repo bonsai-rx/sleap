@@ -2,9 +2,10 @@
 using System.Linq;
 using System.Reactive.Linq;
 using OpenCV.Net;
-using TensorFlow;
 using System.ComponentModel;
 using System.Collections.Generic;
+using Microsoft.ML.OnnxRuntime;
+using Microsoft.ML.OnnxRuntime.Tensors;
 
 namespace Bonsai.Sleap
 {
@@ -21,12 +22,12 @@ namespace Bonsai.Sleap
     public class PredictSinglePose : Transform<IplImage, Pose>
     {
         /// <summary>
-        /// Gets or sets a value specifying the path to the exported Protocol Buffer
+        /// Gets or sets a value specifying the path to the exported ONNX
         /// file containing the pretrained SLEAP model.
         /// </summary>
-        [FileNameFilter("Protocol Buffer Files(*.pb)|*.pb")]
+        [FileNameFilter("ONNX Files(*.onnx)|*.onnx")]
         [Editor("Bonsai.Design.OpenFileNameEditor, Bonsai.Design", DesignTypes.UITypeEditor)]
-        [Description("Specifies the path to the exported Protocol Buffer file containing the pretrained SLEAP model.")]
+        [Description("Specifies the path to the exported ONNX file containing the pretrained SLEAP model.")]
         public string ModelFileName { get; set; }
 
         /// <summary>
@@ -78,24 +79,28 @@ namespace Bonsai.Sleap
             {
                 IplImage resizeTemp = null;
                 IplImage colorTemp = null;
-                TFTensor tensor = null;
-                TFSession.Runner runner = null;
-                var graph = TensorHelper.ImportModel(ModelFileName, out TFSession session);
+                IplImage depthTemp = null;
+                DenseTensor<byte> inputBuffer = null;
+                Size currentTensorSize = default;
+                int currentBatchSize = 0;
+
+                var session = new InferenceSession(ModelFileName);
+                var inputName = session.InputMetadata.Keys.First();
                 var config = ConfigHelper.LoadTrainingConfig(TrainingConfig);
 
                 if (config.ModelType != ModelType.SingleInstance)
                 {
-                    throw new UnexpectedModelTypeException($"Expected {nameof(ModelType.SingleInstance)} model type but found {config.ModelType} .");
+                    session.Dispose();
+                    throw new UnexpectedModelTypeException($"Expected {nameof(ModelType.SingleInstance)} model type but found {config.ModelType}.");
                 }
 
                 return source.Select(input =>
                 {
                     var poseScale = 1.0;
-                    int colorChannels = (ColorConversion is null) ? input[0].Channels : ExtensionMethods.GetConversionNumChannels((ColorConversion)ColorConversion);
                     var tensorSize = input[0].Size;
                     var batchSize = input.Length;
                     var scaleFactor = ScaleFactor;
-                    
+
                     if (scaleFactor.HasValue)
                     {
                         poseScale = scaleFactor.Value;
@@ -104,45 +109,43 @@ namespace Bonsai.Sleap
                         poseScale = 1.0 / poseScale;
                     }
 
-                    if (tensor == null || tensor.Shape[0] != batchSize || tensor.Shape[1] != tensorSize.Height || tensor.Shape[2] != tensorSize.Width )
+                    if (inputBuffer == null || currentBatchSize != batchSize || currentTensorSize != tensorSize)
                     {
-                        tensor?.Dispose();
-                        runner = session.GetRunner();
-                        tensor = TensorHelper.CreatePlaceholder(graph, runner, tensorSize, batchSize, colorChannels);
-                        runner.Fetch(graph["Identity"][0]);
-                        runner.Fetch(graph["Identity_1"][0]);
+                        ReadOnlySpan<int> inputSize = stackalloc int[] { batchSize, 1, tensorSize.Height, tensorSize.Width };
+                        inputBuffer = TensorHelper.CreateInputBuffer(inputSize);
+                        currentTensorSize = tensorSize;
+                        currentBatchSize = batchSize;
                     }
 
-                    var frames = Array.ConvertAll(input, frame => 
+                    var frames = Array.ConvertAll(input, frame =>
                     {
-                        frame = TensorHelper.EnsureFrameSize(frame, tensorSize, ref resizeTemp);
-                        frame = TensorHelper.EnsureColorFormat(frame, ColorConversion, ref colorTemp, colorChannels);
+                        // frame = TensorHelper.EnsureFrameSize(frame, tensorSize, ref resizeTemp);
+                        frame = TensorHelper.EnsureGrayscale(frame, ref colorTemp);
                         return frame;
                     });
-                    TensorHelper.UpdateTensor(tensor, colorChannels, frames);
-                    var output = runner.Run();
 
-                    var partConfTensor = output[0];
-                    float[,,] partConfArr = new float[partConfTensor.Shape[0], partConfTensor.Shape[1], partConfTensor.Shape[2]];
-                    partConfTensor.GetValue(partConfArr);
+                    TensorHelper.UpdateInputBuffer(inputBuffer, tensorSize, frames);
+                    var onnxInputs = new[] { NamedOnnxValue.CreateFromTensor(inputName, inputBuffer) };
 
-                    var poseTensor = output[1];
-                    float[,,,] poseArr = new float[poseTensor.Shape[0], poseTensor.Shape[1], poseTensor.Shape[2], poseTensor.Shape[3]];
-                    poseTensor.GetValue(poseArr);
+                    using var onnxOutputs = session.Run(onnxInputs);
+                    var outputs = onnxOutputs.ToList();
+
+                    // SingleInstance outputs: [batch, 1, n_parts] confidence, [batch, 1, n_parts, 2] positions
+                    var partConfTensor = outputs[0].AsTensor<float>();
+                    var poseTensor = outputs[1].AsTensor<float>();
+                    var nParts = partConfTensor.Dimensions[2];
 
                     var poseCollection = new List<Pose>();
                     var partThreshold = PartMinConfidence;
 
-                    //Loop the available identifications
                     for (int i = 0; i < input.Length; i++)
                     {
                         var pose = new Pose(input[i], config);
-                        // Iterate on the body parts
-                        for (int bodyPartIdx = 0; bodyPartIdx < poseArr.GetLength(2); bodyPartIdx++)
+                        for (int j = 0; j < nParts; j++)
                         {
                             var bodyPart = new BodyPart();
-                            bodyPart.Name = config.PartNames[bodyPartIdx];
-                            bodyPart.Confidence = partConfArr[i,0, bodyPartIdx];
+                            bodyPart.Name = config.PartNames[j];
+                            bodyPart.Confidence = partConfTensor.GetValue(i * nParts + j);
                             if (bodyPart.Confidence < partThreshold)
                             {
                                 bodyPart.Position = new Point2f(float.NaN, float.NaN);
@@ -150,14 +153,20 @@ namespace Bonsai.Sleap
                             else
                             {
                                 bodyPart.Position = new Point2f(
-                                    x: (float)(poseArr[i, 0, bodyPartIdx, 0] * poseScale),
-                                    y: (float)(poseArr[i, 0, bodyPartIdx, 1] * poseScale));
+                                    x: (float)(poseTensor.GetValue(i * nParts * 2 + j * 2) * poseScale),
+                                    y: (float)(poseTensor.GetValue(i * nParts * 2 + j * 2 + 1) * poseScale));
                             }
                             pose.Add(bodyPart);
                         }
                         poseCollection.Add(pose);
-                    };
-                    return poseCollection;
+                    }
+                    return (IList<Pose>)poseCollection;
+                }).Finally(() =>
+                {
+                    resizeTemp?.Dispose();
+                    colorTemp?.Dispose();
+                    depthTemp?.Dispose();
+                    session.Dispose();
                 });
             });
         }

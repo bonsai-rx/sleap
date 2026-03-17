@@ -39,9 +39,9 @@ namespace Bonsai.Sleap
             ParseModel(config, mapping);
 
             config.TargetSize = new Size(
-                int.Parse((string)mapping["data"]["preprocessing"]["target_width"], CultureInfo.InvariantCulture),
-                int.Parse((string)mapping["data"]["preprocessing"]["target_height"], CultureInfo.InvariantCulture));
-            config.InputScaling = float.Parse((string)mapping["data"]["preprocessing"]["input_scaling"], CultureInfo.InvariantCulture);
+                int.Parse((string)mapping["data_config"]["preprocessing"]["max_width"], CultureInfo.InvariantCulture),
+                int.Parse((string)mapping["data_config"]["preprocessing"]["max_height"], CultureInfo.InvariantCulture));
+            config.InputScaling = float.Parse((string)mapping["data_config"]["preprocessing"]["scale"], CultureInfo.InvariantCulture);
             return config;
 
         }
@@ -49,7 +49,7 @@ namespace Bonsai.Sleap
         public static ModelType GetModelType(YamlMappingNode mapping)
         {
             int modelCount = 0;
-            var availableModels = mapping["model"]["heads"];
+            var availableModels = mapping["model_config"]["head_configs"];
             var outArg = ModelType.InvalidModel;
 
             if (availableModels["single_instance"].AllNodes.Count() > 1)
@@ -67,29 +67,32 @@ namespace Bonsai.Sleap
                 modelCount++;
                 outArg = ModelType.CenteredInstance;
             }
-            if (availableModels["multi_instance"].AllNodes.Count() > 1)
+            if (availableModels["bottomup"].AllNodes.Count() > 1)
             {
                 modelCount++;
-                outArg = ModelType.MultiInstance;
+                outArg = ModelType.BottomUp;
             }
-            if (modelCount == 0)
+            if (availableModels["multi_class_bottomup"].AllNodes.Count() > 1)
             {
-                //TODO: Sometimes it does not appear in the json, might need a try/catch
-                if (availableModels["multi_class_topdown"].AllNodes.Count() > 1)
-                {
-                    modelCount++;
-                    outArg = ModelType.MultiClass;
-                }
+                modelCount++;
+                outArg = ModelType.MultiClassBottomUp;
+            }
+            if (availableModels["multi_class_topdown"].AllNodes.Count() > 1)
+            {
+                modelCount++;
+                outArg = ModelType.MultiClassTopDown;
             }
 
             if (modelCount == 0)
             {
                 throw new InvalidDataException("No models found in training_config.json file.");
             }
+
             if (modelCount > 1)
             {
                 throw new InvalidDataException("Multiple models found in training_config.json file.");
             }
+
             return outArg;
         }
 
@@ -106,29 +109,32 @@ namespace Bonsai.Sleap
                 case ModelType.CenteredInstance:
                     ParseCenteredInstanceModel(config, mapping);
                     break;
-                case ModelType.MultiInstance:
-                    ParseMultiInstanceModel(config, mapping);
+                case ModelType.BottomUp:
+                    ParseBottomUpModel(config, mapping);
                     break;
-                case ModelType.MultiClass:
-                    ParseMultiClassModel(config, mapping);
-                    break;
+                // case ModelType.MultiClassBottomUp:
+                //     ParseMultiClassBottomUpModel(config, mapping);
+                //     break;
+                // case ModelType.MultiClassTopDown:
+                //     ParseMultiClassTopDownModel(config, mapping);
+                //     break;
             }
         }
 
         public static void ParseSingleInstanceModel(TrainingConfig config, YamlMappingNode mapping)
         {
-            var partNames = (YamlSequenceNode)mapping["model"]["heads"]["single_instance"]["part_names"];
+            var partNames = (YamlSequenceNode)mapping["model_config"]["head_configs"]["single_instance"]["part_names"];
             foreach (var part in partNames.Children)
             {
                 config.PartNames.Add((string)part);
             }
-            AddSkeleton(config, mapping);
+            // AddSkeleton(config, mapping);
         }
 
         public static void ParseCentroidModel(TrainingConfig config, YamlMappingNode mapping)
         {
-            config.AnchorName = (string)mapping["model"]["heads"]["centroid"]["anchor_part"];
-            AddSkeleton(config, mapping);
+            config.AnchorName = (string)mapping["model_config"]["head_configs"]["centroid"]["confmaps"]["anchor_part"];
+            // AddSkeleton(config, mapping);
         }
 
         public static void ParseCenteredInstanceModel(TrainingConfig config, YamlMappingNode mapping)
@@ -139,7 +145,17 @@ namespace Bonsai.Sleap
             {
                 config.PartNames.Add((string)part);
             }
-            AddSkeleton(config, mapping);
+            // AddSkeleton(config, mapping);
+        }
+
+        public static void ParseBottomUpModel(TrainingConfig config, YamlMappingNode mapping)
+        {
+            var partNames = (YamlSequenceNode)mapping["model_config"]["head_configs"]["bottomup"]["confmaps"]["part_names"];
+            foreach (var part in partNames.Children)
+            {
+                config.PartNames.Add((string)part);
+            }
+            // AddSkeleton(config, mapping);
         }
 
         public static void ParseMultiClassModel(TrainingConfig config, YamlMappingNode mapping)
@@ -155,7 +171,7 @@ namespace Bonsai.Sleap
             {
                 config.ClassNames.Add((string) id);
             }
-            AddSkeleton(config, mapping);
+            // AddSkeleton(config, mapping);
         }
 
         public static void ParseMultiInstanceModel(TrainingConfig config, YamlMappingNode mapping)
@@ -171,19 +187,7 @@ namespace Bonsai.Sleap
             {
                 config.ClassNames.Add((string)id);
             }
-            AddSkeleton(config, mapping);
-        }
-
-        public static void AddSkeleton(TrainingConfig config, YamlMappingNode mapping)
-        {
-            var skeleton = new Skeleton();
-            skeleton.DirectedEdges = (string)mapping["data"]["labels"]["skeletons"][0]["directed"] == "true";
-            skeleton.Name = (string)mapping["data"]["labels"]["skeletons"][0]["graph"]["name"];
-
-            //TODO: fill edges
-            var edges = new List<Link>();
-            skeleton.Edges = edges;
-            config.Skeleton = skeleton;
+            // AddSkeleton(config, mapping);
         }
     }
 }
