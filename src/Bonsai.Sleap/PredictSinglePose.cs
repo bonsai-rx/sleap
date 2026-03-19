@@ -64,6 +64,12 @@ namespace Bonsai.Sleap
         public ColorConversion? ColorConversion { get; set; }
 
         /// <summary>
+        /// Gets or sets the ONNX runtime execution provider used to perform model inference.
+        /// </summary>
+        [Description("The ONNX runtime execution provider used to perform model inference.")]
+        public ExecutionProvider ExecutionProvider { get; set; } = ExecutionProvider.Cpu;
+
+        /// <summary>
         /// Performs markerless, single instance, batched pose estimation for each array
         /// of images in an observable sequence using a SLEAP model.
         /// </summary>
@@ -75,28 +81,26 @@ namespace Bonsai.Sleap
         /// </returns>
         public IObservable<IList<Pose>> Process(IObservable<IplImage[]> source)
         {
-            return Observable.Defer(() =>
+            return Observable.Using(() => TensorHelper.ImportModel(ModelFileName, ExecutionProvider), session =>
             {
                 IplImage resizeTemp = null;
                 IplImage colorTemp = null;
-                IplImage depthTemp = null;
-                DenseTensor<byte> inputBuffer = null;
+                DenseTensor<byte> tensor = null;
                 Size currentTensorSize = default;
+                var colorConversion = ColorConversion;
                 int currentBatchSize = 0;
 
-                var session = new InferenceSession(ModelFileName);
                 var inputName = session.InputMetadata.Keys.First();
                 var config = ConfigHelper.LoadTrainingConfig(TrainingConfig);
-
                 if (config.ModelType != ModelType.SingleInstance)
                 {
-                    session.Dispose();
                     throw new UnexpectedModelTypeException($"Expected {nameof(ModelType.SingleInstance)} model type but found {config.ModelType}.");
                 }
 
                 return source.Select(input =>
                 {
                     var poseScale = 1.0;
+                    var colorChannels = (colorConversion?.GetConversionNumChannels()) ?? input[0].Channels;
                     var tensorSize = input[0].Size;
                     var batchSize = input.Length;
                     var scaleFactor = ScaleFactor;
@@ -109,31 +113,29 @@ namespace Bonsai.Sleap
                         poseScale = 1.0 / poseScale;
                     }
 
-                    if (inputBuffer == null || currentBatchSize != batchSize || currentTensorSize != tensorSize)
+                    if (tensor == null || currentBatchSize != batchSize || currentTensorSize != tensorSize)
                     {
-                        ReadOnlySpan<int> inputSize = stackalloc int[] { batchSize, 1, tensorSize.Height, tensorSize.Width };
-                        inputBuffer = TensorHelper.CreateInputBuffer(inputSize);
+                        ReadOnlySpan<int> dimensions = stackalloc int[] { batchSize, colorChannels, tensorSize.Height, tensorSize.Width };
+                        tensor = new DenseTensor<byte>(dimensions);
                         currentTensorSize = tensorSize;
                         currentBatchSize = batchSize;
                     }
 
                     var frames = Array.ConvertAll(input, frame =>
                     {
-                        // frame = TensorHelper.EnsureFrameSize(frame, tensorSize, ref resizeTemp);
-                        frame = TensorHelper.EnsureGrayscale(frame, ref colorTemp);
+                        frame = TensorHelper.EnsureFrameSize(frame, tensorSize, ref resizeTemp);
+                        frame = TensorHelper.EnsureColorFormat(frame, colorConversion, ref colorTemp, colorChannels);
                         return frame;
                     });
 
-                    TensorHelper.UpdateInputBuffer(inputBuffer, tensorSize, frames);
-                    var onnxInputs = new[] { NamedOnnxValue.CreateFromTensor(inputName, inputBuffer) };
-
-                    using var onnxOutputs = session.Run(onnxInputs);
-                    var outputs = onnxOutputs.ToList();
+                    TensorHelper.UpdateTensor(tensor, tensorSize, frames);
+                    var inputs = new[] { NamedOnnxValue.CreateFromTensor(inputName, tensor) };
+                    using var output = session.Run(inputs);
 
                     // SingleInstance outputs: [batch, 1, n_parts] confidence, [batch, 1, n_parts, 2] positions
-                    var partConfTensor = outputs[0].AsTensor<float>();
-                    var poseTensor = outputs[1].AsTensor<float>();
-                    var nParts = partConfTensor.Dimensions[2];
+                    var partConfTensor = output[0].AsTensor<float>();
+                    var poseTensor = output[1].AsTensor<float>();
+                    var partCount = partConfTensor.Dimensions[2];
 
                     var poseCollection = new List<Pose>();
                     var partThreshold = PartMinConfidence;
@@ -141,11 +143,11 @@ namespace Bonsai.Sleap
                     for (int i = 0; i < input.Length; i++)
                     {
                         var pose = new Pose(input[i], config);
-                        for (int j = 0; j < nParts; j++)
+                        for (int j = 0; j < partCount; j++)
                         {
                             var bodyPart = new BodyPart();
                             bodyPart.Name = config.PartNames[j];
-                            bodyPart.Confidence = partConfTensor.GetValue(i * nParts + j);
+                            bodyPart.Confidence = partConfTensor.GetValue(i * partCount + j);
                             if (bodyPart.Confidence < partThreshold)
                             {
                                 bodyPart.Position = new Point2f(float.NaN, float.NaN);
@@ -153,20 +155,14 @@ namespace Bonsai.Sleap
                             else
                             {
                                 bodyPart.Position = new Point2f(
-                                    x: (float)(poseTensor.GetValue(i * nParts * 2 + j * 2) * poseScale),
-                                    y: (float)(poseTensor.GetValue(i * nParts * 2 + j * 2 + 1) * poseScale));
+                                    x: (float)(poseTensor.GetValue(i * partCount * 2 + j * 2) * poseScale),
+                                    y: (float)(poseTensor.GetValue(i * partCount * 2 + j * 2 + 1) * poseScale));
                             }
                             pose.Add(bodyPart);
                         }
                         poseCollection.Add(pose);
                     }
-                    return (IList<Pose>)poseCollection;
-                }).Finally(() =>
-                {
-                    resizeTemp?.Dispose();
-                    colorTemp?.Dispose();
-                    depthTemp?.Dispose();
-                    session.Dispose();
+                    return poseCollection;
                 });
             });
         }

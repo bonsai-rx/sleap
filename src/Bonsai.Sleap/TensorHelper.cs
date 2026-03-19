@@ -9,31 +9,79 @@ namespace Bonsai.Sleap
 {
     static class TensorHelper
     {
-        public static DenseTensor<byte> CreateInputBuffer(ReadOnlySpan<int> tensorSize)
+        public static InferenceSession ImportModel(string modelPath, ExecutionProvider provider)
         {
-            if (tensorSize.Length != 4)
+            var options = new SessionOptions
             {
-                throw new ArgumentException("Expected tensor size to have 4 dimensions (batch, height, width, channels).", nameof(tensorSize));
+                EnableProfiling = true,
+                ProfileOutputPathPrefix = "onnx_profile",
+            };
+
+            if (provider >= ExecutionProvider.Cuda)
+            {
+                var cudaOptions = new OrtCUDAProviderOptions();
+                options.AppendExecutionProvider_CUDA(cudaOptions);
+                if (provider == ExecutionProvider.TensorRT)
+                {
+                    options.AppendExecutionProvider_Tensorrt();
+                }
             }
-            Memory<byte> totalSize = new byte[tensorSize[0] * tensorSize[1] * tensorSize[2] * tensorSize[3]];
-            return new DenseTensor<byte>(totalSize, tensorSize);
+
+            return new InferenceSession(modelPath, options);
         }
 
-        public static void UpdateInputBuffer(DenseTensor<byte> inputBuffer, Size tensorSize, params IplImage[] frames)
+        public static IplImage GetRegionOfInterest(IplImage frame, Rect rect, out Point offset)
+        {
+            if (rect.Width > 0 && rect.Height > 0)
+            {
+                frame = frame.GetSubRect(rect);
+                offset = new Point(rect.X, rect.Y);
+            }
+            else offset = Point.Zero;
+            return frame;
+        }
+
+        public static IplImage EnsureFrameSize(IplImage frame, Size tensorSize, ref IplImage resizeTemp)
+        {
+            if (tensorSize != frame.Size)
+            {
+                if (resizeTemp == null || resizeTemp.Size != tensorSize)
+                {
+                    resizeTemp = new IplImage(tensorSize, frame.Depth, frame.Channels);
+                }
+
+                CV.Resize(frame, resizeTemp);
+                frame = resizeTemp;
+            }
+
+            return frame;
+        }
+
+        public static IplImage EnsureColorFormat(IplImage frame, ColorConversion? colorConversion, ref IplImage colorTemp, int channels = 1)
+        {
+            if (colorConversion != null)
+            {
+                if (colorTemp == null || colorTemp.Size != frame.Size)
+                {
+                    colorTemp = new IplImage(frame.Size, frame.Depth, channels);
+                }
+
+                CV.CvtColor(frame, colorTemp, colorConversion.Value);
+                frame = colorTemp;
+            }
+
+            return frame;
+        }
+
+        public static unsafe void UpdateTensor(DenseTensor<byte> tensor, Size tensorSize, params IplImage[] frames)
         {
             var batchSize = frames.Length;
             var tensorRows = tensorSize.Height;
             var tensorCols = tensorSize.Width;
-            if (!MemoryMarshal.TryGetArray<byte>(inputBuffer.Buffer, out var segment))
-            {
-                throw new InvalidOperationException("Unable to pin tensor buffer.");
-            }
 
-            var handle = GCHandle.Alloc(segment.Array, GCHandleType.Pinned);
-            try
+            using var handle = tensor.Buffer.Pin();
+            using var data = new Mat(batchSize * tensorRows, tensorCols, Depth.U8, 1, (IntPtr)handle.Pointer);
             {
-                var basePtr = IntPtr.Add(handle.AddrOfPinnedObject(), segment.Offset * sizeof(byte));
-                using var data = new Mat(new Size(tensorCols, batchSize * tensorRows), Depth.U8, 1, basePtr);
                 if (frames.Length == 1)
                 {
                     CV.Convert(frames[0], data);
@@ -48,37 +96,6 @@ namespace Bonsai.Sleap
                     }
                 }
             }
-            finally
-            {
-                handle.Free();
-            }
-        }
-
-        public static IplImage GetRegionOfInterest(IplImage frame, Rect rect, out Point offset)
-        {
-            if (rect.Width > 0 && rect.Height > 0)
-            {
-                frame = frame.GetSubRect(rect);
-                offset = new Point(rect.X, rect.Y);
-            }
-            else offset = Point.Zero;
-            return frame;
-        }
-
-        public static IplImage EnsureGrayscale(IplImage frame, ref IplImage colorTemp)
-        {
-            if (frame.Channels != 1)
-            {
-                if (colorTemp == null || colorTemp.Size != frame.Size)
-                {
-                    colorTemp = new IplImage(frame.Size, frame.Depth, 1);
-                }
-
-                CV.CvtColor(frame, colorTemp, ColorConversion.Bgr2Gray);
-                frame = colorTemp;
-            }
-
-            return frame;
         }
     }
 }

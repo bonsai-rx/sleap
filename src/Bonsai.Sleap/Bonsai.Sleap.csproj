@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Title>Bonsai - SLEAP Library</Title>
     <Description>Bonsai Library for real-time multi-pose tracking using SLEAP with ONNX Runtime inference.</Description>
-    <TargetFrameworks>net472;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>net472</TargetFrameworks>
   </PropertyGroup>
 
   <ItemGroup>
@@ -11,7 +11,7 @@
     <PackageReference Include="Microsoft.ML.OnnxRuntime" Version="1.24.3" />
     <PackageReference Include="OpenCV.Net" Version="3.4.1" />
     <PackageReference Include="System.Numerics.Tensors" Version="10.0.5" />
-    <PackageReference Include="YamlDotNet" Version="12.0.2" />
+    <PackageReference Include="YamlDotNet" Version="16.3.0" />
   </ItemGroup>
 
 </Project>

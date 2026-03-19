@@ -128,13 +128,13 @@ namespace Bonsai.Sleap
             {
                 config.PartNames.Add((string)part);
             }
-            // AddSkeleton(config, mapping);
+            AddSkeleton(config, mapping);
         }
 
         public static void ParseCentroidModel(TrainingConfig config, YamlMappingNode mapping)
         {
             config.AnchorName = (string)mapping["model_config"]["head_configs"]["centroid"]["confmaps"]["anchor_part"];
-            // AddSkeleton(config, mapping);
+            AddSkeleton(config, mapping);
         }
 
         public static void ParseCenteredInstanceModel(TrainingConfig config, YamlMappingNode mapping)
@@ -145,7 +145,7 @@ namespace Bonsai.Sleap
             {
                 config.PartNames.Add((string)part);
             }
-            // AddSkeleton(config, mapping);
+            AddSkeleton(config, mapping);
         }
 
         public static void ParseBottomUpModel(TrainingConfig config, YamlMappingNode mapping)
@@ -155,7 +155,7 @@ namespace Bonsai.Sleap
             {
                 config.PartNames.Add((string)part);
             }
-            // AddSkeleton(config, mapping);
+            AddSkeleton(config, mapping);
         }
 
         public static void ParseMultiClassModel(TrainingConfig config, YamlMappingNode mapping)
@@ -171,7 +171,7 @@ namespace Bonsai.Sleap
             {
                 config.ClassNames.Add((string) id);
             }
-            // AddSkeleton(config, mapping);
+            AddSkeleton(config, mapping);
         }
 
         public static void ParseMultiInstanceModel(TrainingConfig config, YamlMappingNode mapping)
@@ -187,7 +187,19 @@ namespace Bonsai.Sleap
             {
                 config.ClassNames.Add((string)id);
             }
-            // AddSkeleton(config, mapping);
+            AddSkeleton(config, mapping);
+        }
+
+        public static void AddSkeleton(TrainingConfig config, YamlMappingNode mapping)
+        {
+            var skeleton = new Skeleton();
+            //skeleton.DirectedEdges = (string)mapping["data"]["labels"]["skeletons"][0]["directed"] == "true";
+            //skeleton.Name = (string)mapping["data"]["labels"]["skeletons"][0]["graph"]["name"];
+
+            //TODO: fill edges
+            var edges = new List<Link>();
+            skeleton.Edges = edges;
+            config.Skeleton = skeleton;
         }
     }
 }
