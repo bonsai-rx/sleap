@@ -1,7 +1,5 @@
 ﻿using OpenCV.Net;
 using System;
-using System.Runtime.InteropServices;
-using System.Numerics.Tensors;
 using Microsoft.ML.OnnxRuntime;
 using Microsoft.ML.OnnxRuntime.Tensors;
 

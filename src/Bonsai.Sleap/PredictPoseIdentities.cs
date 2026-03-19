@@ -32,12 +32,12 @@ namespace Bonsai.Sleap
         public string ModelFileName { get; set; }
 
         /// <summary>
-        /// Gets or sets a value specifying the path to the configuration JSON file
+        /// Gets or sets a value specifying the path to the configuration YAML file
         /// containing training metadata.
         /// </summary>
-        [FileNameFilter("Config Files(*.json)|*.json|All Files|*.*")]
+        [FileNameFilter("Config Files(*.yaml)|*.yaml|All Files|*.*")]
         [Editor("Bonsai.Design.OpenFileNameEditor, Bonsai.Design", DesignTypes.UITypeEditor)]
-        [Description("Specifies the path to the configuration JSON file containing training metadata.")]
+        [Description("Specifies the path to the configuration YAML file containing training metadata.")]
         public string TrainingConfig { get; set; }
 
         /// <summary>
@@ -91,7 +91,7 @@ namespace Bonsai.Sleap
 
         private IObservable<PoseIdentityCollection> Process(IObservable<IplImage[]> source)
         {
-            return Observable.Using(() => TensorHelper.ImportModel(ModelFileName, ExecutionProvider), session =>
+            return Observable.Defer(() =>
             {
                 IplImage resizeTemp = null;
                 IplImage colorTemp = null;
@@ -100,6 +100,7 @@ namespace Bonsai.Sleap
                 var colorConversion = ColorConversion;
                 int currentBatchSize = 0;
 
+                var session = TensorHelper.ImportModel(ModelFileName, ExecutionProvider);
                 var inputName = session.InputMetadata.Keys.First();
                 var config = ConfigHelper.LoadTrainingConfig(TrainingConfig);
                 if (config.ModelType != ModelType.MultiClassBottomUp)
