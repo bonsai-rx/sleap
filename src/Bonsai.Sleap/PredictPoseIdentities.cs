@@ -103,9 +103,9 @@ namespace Bonsai.Sleap
                 var session = TensorHelper.ImportModel(ModelFileName, ExecutionProvider);
                 var inputName = session.InputMetadata.Keys.First();
                 var config = ConfigHelper.LoadTrainingConfig(TrainingConfig);
-                if (config.ModelType != ModelType.MultiClassBottomUp)
+                if (config.ModelType != ModelType.MultiClassTopDown)
                 {
-                    throw new UnexpectedModelTypeException($"Expected {nameof(ModelType.MultiClassBottomUp)} model type but found {config.ModelType}.");
+                    throw new UnexpectedModelTypeException($"Expected {nameof(ModelType.MultiClassTopDown)} model type but found {config.ModelType}.");
                 }
 
                 return source.Select(input =>
@@ -144,15 +144,14 @@ namespace Bonsai.Sleap
                     using var output = session.Run(inputs);
 
                     var identityCollection = new PoseIdentityCollection(input[0], config);
-                    var centroidConfidenceTensor = output[0].AsTensor<float>();
-                    var instanceCount = centroidConfidenceTensor.Dimensions[0];
+                    var poseTensor = output[0].AsTensor<float>();
+                    var partConfTensor = output[1].AsTensor<float>();
+                    var idTensor = output[2].AsTensor<float>();
+
+                    var instanceCount = poseTensor.Dimensions[0];
                     if (instanceCount == 0)
                         return identityCollection;
 
-                    var centroidTensor = output[1].AsTensor<float>();
-                    var partConfTensor = output[2].AsTensor<float>();
-                    var poseTensor = output[3].AsTensor<float>();
-                    var idTensor = output[4].AsTensor<float>();
                     var partCount = partConfTensor.Dimensions[1];
                     var classCount = idTensor.Dimensions[1];
 
@@ -178,21 +177,6 @@ namespace Bonsai.Sleap
                             pose.Identity = config.ClassNames[maxIndex];
                         }
 
-                        var centroid = new BodyPart();
-                        centroid.Name = config.AnchorName;
-                        centroid.Confidence = centroidConfidenceTensor.GetValue(i);
-                        if (centroid.Confidence < centroidThreshold)
-                        {
-                            centroid.Position = new Point2f(float.NaN, float.NaN);
-                        }
-                        else
-                        {
-                            centroid.Position = new Point2f(
-                                x: (float)(centroidTensor.GetValue(i * 2) * poseScale),
-                                y: (float)(centroidTensor.GetValue(i * 2 + 1) * poseScale));
-                        }
-                        pose.Centroid = centroid;
-
                         for (int j = 0; j < partCount; j++)
                         {
                             var bodyPart = new BodyPart();
@@ -209,6 +193,9 @@ namespace Bonsai.Sleap
                                     y: (float)(poseTensor.GetValue(i * partCount * 2 + j * 2 + 1) * poseScale));
                             }
                             pose.Add(bodyPart);
+
+                            if (bodyPart.Name == config.AnchorName)
+                                pose.Centroid = bodyPart;
                         }
                         identityCollection.Add(pose);
                     }

@@ -9,23 +9,24 @@ namespace Bonsai.Sleap
     {
         public static InferenceSession ImportModel(string modelPath, ExecutionProvider provider)
         {
-            var options = new SessionOptions
-            {
-                EnableProfiling = true,
-                ProfileOutputPathPrefix = "onnx_profile",
-            };
-
+            var sessionOptions = new SessionOptions();
             if (provider >= ExecutionProvider.Cuda)
             {
-                var cudaOptions = new OrtCUDAProviderOptions();
-                options.AppendExecutionProvider_CUDA(cudaOptions);
                 if (provider == ExecutionProvider.TensorRT)
                 {
-                    options.AppendExecutionProvider_Tensorrt();
+                    var tensorRtOptions = new OrtTensorRTProviderOptions();
+                    tensorRtOptions.UpdateOptions(new()
+                    {
+                        { "trt_fp16_enable", "true" },
+                        { "trt_engine_cache_enable", "true" },
+                        { "trt_engine_cache_path", ".bonsai/onnx" }
+                    });
+                    sessionOptions.AppendExecutionProvider_Tensorrt(tensorRtOptions);
                 }
+                sessionOptions.AppendExecutionProvider_CUDA();
             }
 
-            return new InferenceSession(modelPath, options);
+            return new InferenceSession(modelPath, sessionOptions);
         }
 
         public static IplImage GetRegionOfInterest(IplImage frame, Rect rect, out Point offset)

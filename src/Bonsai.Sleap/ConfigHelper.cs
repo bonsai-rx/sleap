@@ -115,15 +115,15 @@ namespace Bonsai.Sleap
                 // case ModelType.MultiClassBottomUp:
                 //     ParseMultiClassBottomUpModel(config, mapping);
                 //     break;
-                // case ModelType.MultiClassTopDown:
-                //     ParseMultiClassTopDownModel(config, mapping);
-                //     break;
+                case ModelType.MultiClassTopDown:
+                    ParseMultiClassTopDownModel(config, mapping);
+                    break;
             }
         }
 
         public static void ParseSingleInstanceModel(TrainingConfig config, YamlMappingNode mapping)
         {
-            var partNames = (YamlSequenceNode)mapping["model_config"]["head_configs"]["single_instance"]["part_names"];
+            var partNames = (YamlSequenceNode)mapping["model_config"]["head_configs"]["single_instance"]["confmaps"]["part_names"];
             foreach (var part in partNames.Children)
             {
                 config.PartNames.Add((string)part);
@@ -139,8 +139,8 @@ namespace Bonsai.Sleap
 
         public static void ParseCenteredInstanceModel(TrainingConfig config, YamlMappingNode mapping)
         {
-            config.AnchorName = (string)mapping["model"]["heads"]["centered_instance"]["anchor_part"];
-            var partNames = (YamlSequenceNode)mapping["model"]["heads"]["centered_instance"]["part_names"];
+            config.AnchorName = (string)mapping["model_config"]["head_configs"]["centered_instance"]["confmaps"]["anchor_part"];
+            var partNames = (YamlSequenceNode)mapping["model_config"]["head_configs"]["centered_instance"]["confmaps"]["part_names"];
             foreach (var part in partNames.Children)
             {
                 config.PartNames.Add((string)part);
@@ -158,15 +158,15 @@ namespace Bonsai.Sleap
             AddSkeleton(config, mapping);
         }
 
-        public static void ParseMultiClassModel(TrainingConfig config, YamlMappingNode mapping)
+        public static void ParseMultiClassTopDownModel(TrainingConfig config, YamlMappingNode mapping)
         {
-            config.AnchorName = (string)mapping["model"]["heads"]["multi_class_topdown"]["confmaps"]["anchor_part"];
-            var partNames = (YamlSequenceNode)mapping["model"]["heads"]["multi_class_topdown"]["confmaps"]["part_names"];
+            config.AnchorName = (string)mapping["model_config"]["head_configs"]["multi_class_topdown"]["confmaps"]["anchor_part"];
+            var partNames = (YamlSequenceNode)mapping["model_config"]["head_configs"]["multi_class_topdown"]["confmaps"]["part_names"];
             foreach (var part in partNames.Children)
             {
                 config.PartNames.Add((string) part);
             }
-            var classNames = (YamlSequenceNode)mapping["model"]["heads"]["multi_class_topdown"]["class_vectors"]["classes"];
+            var classNames = (YamlSequenceNode)mapping["model_config"]["head_configs"]["multi_class_topdown"]["class_vectors"]["classes"];
             foreach (var id in classNames.Children)
             {
                 config.ClassNames.Add((string) id);

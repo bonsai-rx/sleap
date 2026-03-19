@@ -134,9 +134,9 @@ namespace Bonsai.Sleap
                     using var output = session.Run(inputs);
 
                     // SingleInstance outputs: [batch, 1, n_parts] confidence, [batch, 1, n_parts, 2] positions
-                    var partConfTensor = output[0].AsTensor<float>();
-                    var poseTensor = output[1].AsTensor<float>();
-                    var partCount = partConfTensor.Dimensions[2];
+                    var poseTensor = output[0].AsTensor<float>();
+                    var partConfTensor = output[1].AsTensor<float>();
+                    var partCount = partConfTensor.Dimensions[1];
 
                     var poseCollection = new List<Pose>();
                     var partThreshold = PartMinConfidence;
