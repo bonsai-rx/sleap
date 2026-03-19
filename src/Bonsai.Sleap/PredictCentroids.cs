@@ -30,15 +30,6 @@ namespace Bonsai.Sleap
         public string ModelFileName { get; set; }
 
         /// <summary>
-        /// Gets or sets a value specifying the path to the configuration YAML file
-        /// containing training metadata.
-        /// </summary>
-        [FileNameFilter("Config Files(*.yaml)|*.yaml|All Files|*.*")]
-        [Editor("Bonsai.Design.OpenFileNameEditor, Bonsai.Design", DesignTypes.UITypeEditor)]
-        [Description("Specifies the path to the configuration YAML file containing training metadata.")]
-        public string TrainingConfig { get; set; }
-
-        /// <summary>
         /// Gets or sets a value specifying the confidence threshold used to discard centroid
         /// predictions. If no value is specified, all estimated centroid positions are returned.
         /// </summary>
@@ -77,27 +68,25 @@ namespace Bonsai.Sleap
                 Size currentImageSize = default;
                 DenseTensor<byte> tensor = null;
                 var colorConversion = ColorConversion;
+                var modelPath = ModelFileName;
 
-                var session = TensorHelper.ImportModel(ModelFileName, ExecutionProvider);
+                var session = TensorHelper.ImportModel(modelPath, ExecutionProvider, out var exportMetadata);
                 var inputName = session.InputMetadata.Keys.First();
-                var config = ConfigHelper.LoadTrainingConfig(TrainingConfig);
-                if (config.ModelType != ModelType.Centroid)
+                if (exportMetadata.ModelType != ModelType.Centroid)
                 {
-                    throw new UnexpectedModelTypeException($"Expected {nameof(ModelType.Centroid)} model type but found {config.ModelType}.");
+                    throw new UnexpectedModelTypeException($"Expected {nameof(ModelType.Centroid)} model type but found {exportMetadata.ModelType}.");
                 }
 
                 return source.Select(input =>
                 {
-                    var poseScale = 1.0;
                     var colorChannels = (colorConversion?.GetConversionNumChannels()) ?? input[0].Channels;
                     var tensorSize = input[0].Size;
                     var batchSize = input.Length;
                     var scaleFactor = ScaleFactor;
-                    var centroidThreshold = CentroidMinConfidence ?? 0;
+                    var poseScale = (double)scaleFactor.GetValueOrDefault(exportMetadata.InputScale);
 
-                    if (scaleFactor.HasValue)
+                    if (poseScale < 1)
                     {
-                        poseScale = scaleFactor.GetValueOrDefault();
                         tensorSize.Width = (int)(tensorSize.Width * poseScale);
                         tensorSize.Height = (int)(tensorSize.Height * poseScale);
                         poseScale = 1.0 / poseScale;
@@ -130,13 +119,14 @@ namespace Bonsai.Sleap
                     if (instanceCount == 0)
                         return centroidCollection;
 
+                    var centroidThreshold = CentroidMinConfidence ?? 0;
+
                     for (int i = 0; i < instanceCount; i++)
                     {
                         if (centroidValidTensor[0, i] && centroidConfidenceTensor[0, i] >= centroidThreshold)
                         {
                             centroidCollection.Add(new Centroid(frames[0])
                             {
-                                Name = config.AnchorName,
                                 Position = new Point2f(
                                     (float)(centroidTensor[0, i, 0] * poseScale),
                                     (float)(centroidTensor[0, i, 1] * poseScale)),

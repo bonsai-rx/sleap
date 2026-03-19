@@ -30,15 +30,6 @@ namespace Bonsai.Sleap
         public string ModelFileName { get; set; }
 
         /// <summary>
-        /// Gets or sets a value specifying the path to the configuration YAML file
-        /// containing training metadata.
-        /// </summary>
-        [FileNameFilter("Config Files(*.yaml)|*.yaml|All Files|*.*")]
-        [Editor("Bonsai.Design.OpenFileNameEditor, Bonsai.Design", DesignTypes.UITypeEditor)]
-        [Description("Specifies the path to the configuration YAML file containing training metadata.")]
-        public string TrainingConfig { get; set; }
-
-        /// <summary>
         /// Gets or sets a value specifying the confidence threshold used to discard centroid
         /// predictions. If no value is specified, all estimated centroid positions are returned.
         /// </summary>
@@ -86,27 +77,26 @@ namespace Bonsai.Sleap
                 Size currentTensorSize = default;
                 DenseTensor<byte> tensor = null;
                 var colorConversion = ColorConversion;
+                var modelPath = ModelFileName;
                 int currentBatchSize = 0;
 
-                var session = TensorHelper.ImportModel(ModelFileName, ExecutionProvider);
+                var session = TensorHelper.ImportModel(modelPath, ExecutionProvider, out var exportMetadata);
                 var inputName = session.InputMetadata.Keys.First();
-                var config = ConfigHelper.LoadTrainingConfig(TrainingConfig);
-                if (config.ModelType != ModelType.CenteredInstance)
+                if (exportMetadata.ModelType != ModelType.TopDown)
                 {
-                    throw new UnexpectedModelTypeException($"Expected {nameof(ModelType.CenteredInstance)} model type but found {config.ModelType}.");
+                    throw new UnexpectedModelTypeException($"Expected {nameof(ModelType.CenteredInstance)} model type but found {exportMetadata.ModelType}.");
                 }
 
                 return source.Select(input =>
                 {
-                    var poseScale = 1.0;
                     var colorChannels = (colorConversion?.GetConversionNumChannels()) ?? input[0].Channels;
                     var tensorSize = input[0].Size;
                     var batchSize = input.Length;
                     var scaleFactor = ScaleFactor;
+                    var poseScale = (double)scaleFactor.GetValueOrDefault(exportMetadata.InputScale);
 
-                    if (scaleFactor.HasValue)
+                    if (poseScale < 1)
                     {
-                        poseScale = scaleFactor.Value;
                         tensorSize.Width = (int)(tensorSize.Width * poseScale);
                         tensorSize.Height = (int)(tensorSize.Height * poseScale);
                         poseScale = 1.0 / poseScale;
@@ -131,42 +121,39 @@ namespace Bonsai.Sleap
                     var inputs = new[] { NamedOnnxValue.CreateFromTensor(inputName, tensor) };
                     using var output = session.Run(inputs);
 
-                    var poseCollection = new PoseCollection(input[0], config);
-                    var centroidConfidenceTensor = output[0].AsTensor<float>();
-                    var instanceCount = centroidConfidenceTensor.Dimensions[0];
+                    var poseCollection = new PoseCollection(input[0], exportMetadata);
+                    var centroidTensor = output[0].AsTensor<float>();
+                    var instanceCount = centroidTensor.Dimensions[1];
                     if (instanceCount == 0)
                         return poseCollection;
 
-                    var centroidTensor = output[1].AsTensor<float>();
-                    var partConfTensor = output[2].AsTensor<float>();
-                    var poseTensor = output[3].AsTensor<float>();
-                    var partCount = partConfTensor.Dimensions[1];
+                    var centroidConfidenceTensor = output[1].AsTensor<float>();
+                    var poseTensor = output[2].AsTensor<float>();
+                    var partConfTensor = output[3].AsTensor<float>();
+                    var instanceValidTensor = output[4].AsTensor<bool>();
+                    var partCount = partConfTensor.Dimensions[2];
 
                     var partThreshold = PartMinConfidence;
                     var centroidThreshold = CentroidMinConfidence;
 
                     for (int i = 0; i < instanceCount; i++)
                     {
-                        var pose = new Pose(input[0], config);
+                        var centroidConfidence = centroidConfidenceTensor.GetValue(i);
+                        if (centroidConfidence < centroidThreshold || !instanceValidTensor.GetValue(i))
+                            continue;
+
+                        var pose = new Pose(input[0], exportMetadata);
                         var centroid = new BodyPart();
-                        centroid.Name = config.AnchorName;
-                        centroid.Confidence = centroidConfidenceTensor.GetValue(i);
-                        if (centroid.Confidence < centroidThreshold)
-                        {
-                            centroid.Position = new Point2f(float.NaN, float.NaN);
-                        }
-                        else
-                        {
-                            centroid.Position = new Point2f(
-                                x: (float)(centroidTensor.GetValue(i * 2) * poseScale),
-                                y: (float)(centroidTensor.GetValue(i * 2 + 1) * poseScale));
-                        }
+                        centroid.Confidence = centroidConfidence;
+                        centroid.Position = new Point2f(
+                            x: (float)(centroidTensor.GetValue(i * 2) * poseScale),
+                            y: (float)(centroidTensor.GetValue(i * 2 + 1) * poseScale));
                         pose.Centroid = centroid;
 
                         for (int j = 0; j < partCount; j++)
                         {
                             var bodyPart = new BodyPart();
-                            bodyPart.Name = config.PartNames[j];
+                            bodyPart.Name = exportMetadata.PartNames[j];
                             bodyPart.Confidence = partConfTensor.GetValue(i * partCount + j);
                             if (bodyPart.Confidence < partThreshold)
                             {

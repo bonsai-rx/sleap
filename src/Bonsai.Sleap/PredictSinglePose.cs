@@ -31,15 +31,6 @@ namespace Bonsai.Sleap
         public string ModelFileName { get; set; }
 
         /// <summary>
-        /// Gets or sets a value specifying the path to the configuration YAML file
-        /// containing training metadata.
-        /// </summary>
-        [FileNameFilter("Config Files(*.yaml)|*.yaml|All Files|*.*")]
-        [Editor("Bonsai.Design.OpenFileNameEditor, Bonsai.Design", DesignTypes.UITypeEditor)]
-        [Description("Specifies the path to the configuration YAML file containing training metadata.")]
-        public string TrainingConfig { get; set; }
-
-        /// <summary>
         /// Gets or sets a value specifying the confidence threshold used to discard predicted
         /// body part positions. If no value is specified, all estimated positions are returned.
         /// </summary>
@@ -88,27 +79,26 @@ namespace Bonsai.Sleap
                 DenseTensor<byte> tensor = null;
                 Size currentTensorSize = default;
                 var colorConversion = ColorConversion;
+                var modelPath = ModelFileName;
                 int currentBatchSize = 0;
 
-                var session = TensorHelper.ImportModel(ModelFileName, ExecutionProvider);
+                var session = TensorHelper.ImportModel(modelPath, ExecutionProvider, out var exportMetadata);
                 var inputName = session.InputMetadata.Keys.First();
-                var config = ConfigHelper.LoadTrainingConfig(TrainingConfig);
-                if (config.ModelType != ModelType.SingleInstance)
+                if (exportMetadata.ModelType != ModelType.SingleInstance)
                 {
-                    throw new UnexpectedModelTypeException($"Expected {nameof(ModelType.SingleInstance)} model type but found {config.ModelType}.");
+                    throw new UnexpectedModelTypeException($"Expected {nameof(ModelType.SingleInstance)} model type but found {exportMetadata.ModelType}.");
                 }
 
                 return source.Select(input =>
                 {
-                    var poseScale = 1.0;
                     var colorChannels = (colorConversion?.GetConversionNumChannels()) ?? input[0].Channels;
                     var tensorSize = input[0].Size;
                     var batchSize = input.Length;
                     var scaleFactor = ScaleFactor;
+                    var poseScale = (double)scaleFactor.GetValueOrDefault(exportMetadata.InputScale);
 
-                    if (scaleFactor.HasValue)
+                    if (poseScale < 1)
                     {
-                        poseScale = scaleFactor.Value;
                         tensorSize.Width = (int)(tensorSize.Width * poseScale);
                         tensorSize.Height = (int)(tensorSize.Height * poseScale);
                         poseScale = 1.0 / poseScale;
@@ -143,11 +133,11 @@ namespace Bonsai.Sleap
 
                     for (int i = 0; i < input.Length; i++)
                     {
-                        var pose = new Pose(input[i], config);
+                        var pose = new Pose(input[i], exportMetadata);
                         for (int j = 0; j < partCount; j++)
                         {
                             var bodyPart = new BodyPart();
-                            bodyPart.Name = config.PartNames[j];
+                            bodyPart.Name = exportMetadata.PartNames[j];
                             bodyPart.Confidence = partConfTensor.GetValue(i * partCount + j);
                             if (bodyPart.Confidence < partThreshold)
                             {

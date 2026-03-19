@@ -1,14 +1,16 @@
-﻿using OpenCV.Net;
-using System;
-using Microsoft.ML.OnnxRuntime;
+﻿using Microsoft.ML.OnnxRuntime;
 using Microsoft.ML.OnnxRuntime.Tensors;
+using OpenCV.Net;
+using System;
+using System.IO;
 
 namespace Bonsai.Sleap
 {
     static class TensorHelper
     {
-        public static InferenceSession ImportModel(string modelPath, ExecutionProvider provider)
+        public static InferenceSession ImportModel(string modelPath, ExecutionProvider provider, out ExportMetadata exportMetadata)
         {
+            exportMetadata = LoadExportMetadata(modelPath);
             var sessionOptions = new SessionOptions();
             if (provider >= ExecutionProvider.Cuda)
             {
@@ -27,6 +29,14 @@ namespace Bonsai.Sleap
             }
 
             return new InferenceSession(modelPath, sessionOptions);
+        }
+
+        static ExportMetadata LoadExportMetadata(string modelPath)
+        {
+            var baseDirectory = Path.GetDirectoryName(modelPath);
+            var exportMetadataFileName = Path.Combine(baseDirectory, "export_metadata.json");
+            var contents = File.ReadAllText(exportMetadataFileName);
+            return ExportMetadata.Deserializer.Deserialize<ExportMetadata>(contents);
         }
 
         public static IplImage GetRegionOfInterest(IplImage frame, Rect rect, out Point offset)

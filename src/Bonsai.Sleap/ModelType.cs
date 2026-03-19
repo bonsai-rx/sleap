@@ -8,36 +8,46 @@
         /// <summary>
         /// A model type which is unsupported by this package.
         /// </summary>
-        InvalidModel = 0,
+        InvalidModel,
 
         /// <summary>
         /// A model for single instance pose estimation.
         /// </summary>
-        SingleInstance = 1,
+        SingleInstance,
 
         /// <summary>
         /// A model for centroid-only pose estimation.
         /// </summary>
-        Centroid = 2,
+        Centroid,
 
         /// <summary>
         /// A model for centered instance pose estimation.
         /// </summary>
-        CenteredInstance = 3,
+        CenteredInstance,
 
         /// <summary>
         /// A model for bottom-up pose estimation.
         /// </summary>
-        BottomUp = 4,
+        BottomUp,
+
+        /// <summary>
+        /// A model for top-down pose estimation.
+        /// </summary>
+        TopDown,
 
         /// <summary>
         /// A model for multi-class bottom-up pose estimation.
         /// </summary>
-        MultiClassBottomUp = 5,
+        MultiClassBottomUp,
 
         /// <summary>
         /// A model for multi-class top-down pose estimation.
         /// </summary>
-        MultiClassTopDown = 6
+        MultiClassTopDown,
+
+        /// <summary>
+        /// A model for combined centroid and multi-class top-down pose estimation.
+        /// </summary>
+        MultiClassTopDownCombined
     }
 }

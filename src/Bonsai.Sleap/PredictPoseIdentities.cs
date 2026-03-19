@@ -32,15 +32,6 @@ namespace Bonsai.Sleap
         public string ModelFileName { get; set; }
 
         /// <summary>
-        /// Gets or sets a value specifying the path to the configuration YAML file
-        /// containing training metadata.
-        /// </summary>
-        [FileNameFilter("Config Files(*.yaml)|*.yaml|All Files|*.*")]
-        [Editor("Bonsai.Design.OpenFileNameEditor, Bonsai.Design", DesignTypes.UITypeEditor)]
-        [Description("Specifies the path to the configuration YAML file containing training metadata.")]
-        public string TrainingConfig { get; set; }
-
-        /// <summary>
         /// Gets or sets a value specifying the confidence threshold used to discard centroid
         /// predictions. If no value is specified, all estimated centroid positions are returned.
         /// </summary>
@@ -98,27 +89,26 @@ namespace Bonsai.Sleap
                 Size currentTensorSize = default;
                 DenseTensor<byte> tensor = null;
                 var colorConversion = ColorConversion;
+                var modelPath = ModelFileName;
                 int currentBatchSize = 0;
 
-                var session = TensorHelper.ImportModel(ModelFileName, ExecutionProvider);
+                var session = TensorHelper.ImportModel(modelPath, ExecutionProvider, out var exportMetadata);
                 var inputName = session.InputMetadata.Keys.First();
-                var config = ConfigHelper.LoadTrainingConfig(TrainingConfig);
-                if (config.ModelType != ModelType.MultiClassTopDown)
+                if (exportMetadata.ModelType != ModelType.MultiClassTopDown)
                 {
-                    throw new UnexpectedModelTypeException($"Expected {nameof(ModelType.MultiClassTopDown)} model type but found {config.ModelType}.");
+                    throw new UnexpectedModelTypeException($"Expected {nameof(ModelType.MultiClassTopDown)} model type but found {exportMetadata.ModelType}.");
                 }
 
                 return source.Select(input =>
                 {
-                    var poseScale = 1.0;
                     var colorChannels = (colorConversion?.GetConversionNumChannels()) ?? input[0].Channels;
                     var tensorSize = input[0].Size;
                     var batchSize = input.Length;
                     var scaleFactor = ScaleFactor;
+                    var poseScale = (double)scaleFactor.GetValueOrDefault(exportMetadata.InputScale);
 
-                    if (scaleFactor.HasValue)
+                    if (poseScale < 1)
                     {
-                        poseScale = scaleFactor.Value;
                         tensorSize.Width = (int)(tensorSize.Width * poseScale);
                         tensorSize.Height = (int)(tensorSize.Height * poseScale);
                         poseScale = 1.0 / poseScale;
@@ -143,7 +133,7 @@ namespace Bonsai.Sleap
                     var inputs = new[] { NamedOnnxValue.CreateFromTensor(inputName, tensor) };
                     using var output = session.Run(inputs);
 
-                    var identityCollection = new PoseIdentityCollection(input[0], config);
+                    var identityCollection = new PoseIdentityCollection(input[0], exportMetadata);
                     var poseTensor = output[0].AsTensor<float>();
                     var partConfTensor = output[1].AsTensor<float>();
                     var idTensor = output[2].AsTensor<float>();
@@ -161,7 +151,7 @@ namespace Bonsai.Sleap
 
                     for (int i = 0; i < instanceCount; i++)
                     {
-                        var pose = new PoseIdentity(input.Length == 1 ? input[0] : input[i], config);
+                        var pose = new PoseIdentity(input.Length == 1 ? input[0] : input[i], exportMetadata);
                         pose.IdentityScores = GetIdentityScores(idTensor, i, classCount, Comparer<float>.Default, out float maxScore, out int maxIndex);
 
                         if (maxScore < idThreshold || maxIndex < 0)
@@ -174,13 +164,13 @@ namespace Bonsai.Sleap
                         {
                             pose.IdentityIndex = maxIndex;
                             pose.Confidence = maxScore;
-                            pose.Identity = config.ClassNames[maxIndex];
+                            pose.Identity = exportMetadata.ClassNames[maxIndex];
                         }
 
                         for (int j = 0; j < partCount; j++)
                         {
                             var bodyPart = new BodyPart();
-                            bodyPart.Name = config.PartNames[j];
+                            bodyPart.Name = exportMetadata.PartNames[j];
                             bodyPart.Confidence = partConfTensor.GetValue(i * partCount + j);
                             if (bodyPart.Confidence < partThreshold)
                             {
@@ -193,9 +183,6 @@ namespace Bonsai.Sleap
                                     y: (float)(poseTensor.GetValue(i * partCount * 2 + j * 2 + 1) * poseScale));
                             }
                             pose.Add(bodyPart);
-
-                            if (bodyPart.Name == config.AnchorName)
-                                pose.Centroid = bodyPart;
                         }
                         identityCollection.Add(pose);
                     }
