@@ -77,9 +77,9 @@ namespace Bonsai.Sleap
             return Observable.Defer(() =>
             {
                 var session = RuntimeHelper.ImportModel(ModelFileName, ExecutionProvider, out var exportMetadata);
-                if (exportMetadata.ModelType != ModelType.MultiClassTopDown)
+                if (exportMetadata.ModelType != ModelType.MultiClassTopDownCombined)
                 {
-                    throw new UnexpectedModelTypeException($"Expected {nameof(ModelType.MultiClassTopDown)} model type but found {exportMetadata.ModelType}.");
+                    throw new UnexpectedModelTypeException($"Expected {nameof(ModelType.MultiClassTopDownCombined)} model type but found {exportMetadata.ModelType}.");
                 }
 
                 var inputName = session.InputMetadata.Keys.First();
@@ -91,16 +91,19 @@ namespace Bonsai.Sleap
                     using var output = session.Run(frameBatch.Inputs);
 
                     var identityCollection = new PoseIdentityCollection(frames[0], exportMetadata);
-                    var poseTensor = output[0].AsTensor<float>();
-                    var partConfTensor = output[1].AsTensor<float>();
-                    var idTensor = output[2].AsTensor<float>();
-
-                    var instanceCount = poseTensor.Dimensions[0];
+                    var centroidTensor = output[0].AsTensor<float>();
+                    var instanceCount = centroidTensor.Dimensions[1];
                     if (instanceCount == 0)
                         return identityCollection;
 
-                    var partCount = partConfTensor.Dimensions[1];
-                    var classCount = idTensor.Dimensions[1];
+                    var centroidConfidenceTensor = output[1].AsTensor<float>();
+                    var poseTensor = output[2].AsTensor<float>();
+                    var partConfTensor = output[3].AsTensor<float>();
+                    var idTensor = output[4].AsTensor<float>();
+                    var instanceValidTensor = output[5].AsTensor<bool>();
+
+                    var partCount = partConfTensor.Dimensions[2];
+                    var classCount = idTensor.Dimensions[2];
 
                     var partThreshold = PartMinConfidence;
                     var idThreshold = IdentityMinConfidence;
@@ -108,7 +111,17 @@ namespace Bonsai.Sleap
 
                     for (int i = 0; i < instanceCount; i++)
                     {
+                        var centroidConfidence = centroidConfidenceTensor.GetValue(i);
+                        if (centroidConfidence < centroidThreshold || !instanceValidTensor.GetValue(i))
+                            continue;
+
                         var pose = new PoseIdentity(frames.Length == 1 ? frames[0] : frames[i], exportMetadata);
+                        var centroid = new BodyPart();
+                        centroid.Confidence = centroidConfidence;
+                        centroid.Position = new Point2f(
+                            x: (float)centroidTensor.GetValue(i * 2),
+                            y: (float)centroidTensor.GetValue(i * 2 + 1));
+                        pose.Centroid = centroid;
                         pose.IdentityScores = GetIdentityScores(idTensor, i, classCount, Comparer<float>.Default, out float maxScore, out int maxIndex);
 
                         if (maxScore < idThreshold || maxIndex < 0)
