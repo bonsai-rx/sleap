@@ -3,8 +3,6 @@ using System.ComponentModel;
 using System.Linq;
 using System.Reactive.Linq;
 using OpenCV.Net;
-using Microsoft.ML.OnnxRuntime;
-using Microsoft.ML.OnnxRuntime.Tensors;
 
 namespace Bonsai.Sleap
 {
@@ -39,13 +37,6 @@ namespace Bonsai.Sleap
         public float? CentroidMinConfidence { get; set; }
 
         /// <summary>
-        /// Gets or sets a value specifying the scale factor used to resize video frames
-        /// for inference. If no value is specified, no resizing is performed.
-        /// </summary>
-        [Description("Specifies the scale factor used to resize video frames for inference. If no value is specified, no resizing is performed.")]
-        public float? ScaleFactor { get; set; }
-
-        /// <summary>
         /// Gets or sets a value specifying the optional color conversion used to prepare
         /// RGB video frames for inference. If no value is specified, no color conversion
         /// is performed.
@@ -63,54 +54,21 @@ namespace Bonsai.Sleap
         {
             return Observable.Defer(() =>
             {
-                IplImage resizeTemp = null;
-                IplImage colorTemp = null;
-                Size currentImageSize = default;
-                DenseTensor<byte> tensor = null;
-                var colorConversion = ColorConversion;
-                var modelPath = ModelFileName;
-
-                var session = TensorHelper.ImportModel(modelPath, ExecutionProvider, out var exportMetadata);
-                var inputName = session.InputMetadata.Keys.First();
+                var session = RuntimeHelper.ImportModel(ModelFileName, ExecutionProvider, out var exportMetadata);
                 if (exportMetadata.ModelType != ModelType.Centroid)
                 {
                     throw new UnexpectedModelTypeException($"Expected {nameof(ModelType.Centroid)} model type but found {exportMetadata.ModelType}.");
                 }
 
-                return source.Select(input =>
+                var inputName = session.InputMetadata.Keys.First();
+                var frameBatch = new FrameBatch(inputName, ColorConversion);
+
+                return source.Select(frames =>
                 {
-                    var colorChannels = (colorConversion?.GetConversionNumChannels()) ?? input[0].Channels;
-                    var tensorSize = input[0].Size;
-                    var batchSize = input.Length;
-                    var scaleFactor = ScaleFactor;
-                    var poseScale = (double)scaleFactor.GetValueOrDefault(exportMetadata.InputScale);
+                    frameBatch.Update(frames);
+                    using var output = session.Run(frameBatch.Inputs);
 
-                    if (poseScale < 1)
-                    {
-                        tensorSize.Width = (int)(tensorSize.Width * poseScale);
-                        tensorSize.Height = (int)(tensorSize.Height * poseScale);
-                        poseScale = 1.0 / poseScale;
-                    }
-
-                    if (tensor == null || currentImageSize != tensorSize)
-                    {
-                        ReadOnlySpan<int> dimensions = stackalloc int[] { batchSize, colorChannels, tensorSize.Height, tensorSize.Width };
-                        tensor = new DenseTensor<byte>(dimensions);
-                        currentImageSize = tensorSize;
-                    }
-
-                    var frames = Array.ConvertAll(input, frame =>
-                    {
-                        frame = TensorHelper.EnsureFrameSize(frame, tensorSize, ref resizeTemp);
-                        frame = TensorHelper.EnsureColorFormat(frame, colorConversion, ref colorTemp, colorChannels);
-                        return frame;
-                    });
-
-                    TensorHelper.UpdateTensor(tensor, tensorSize, frames);
-                    var inputs = new[] { NamedOnnxValue.CreateFromTensor(inputName, tensor) };
-                    using var output = session.Run(inputs);
-
-                    var centroidCollection = new CentroidCollection(input[0]);
+                    var centroidCollection = new CentroidCollection(frames[0]);
                     var centroidTensor = output[0].AsTensor<float>();
                     var centroidConfidenceTensor = output[1].AsTensor<float>();
                     var centroidValidTensor = output[2].AsTensor<bool>();
@@ -128,8 +86,8 @@ namespace Bonsai.Sleap
                             centroidCollection.Add(new Centroid(frames[0])
                             {
                                 Position = new Point2f(
-                                    (float)(centroidTensor[0, i, 0] * poseScale),
-                                    (float)(centroidTensor[0, i, 1] * poseScale)),
+                                    (float)centroidTensor[0, i, 0],
+                                    (float)centroidTensor[0, i, 1]),
                                 Confidence = centroidConfidenceTensor[0, i]
                             });
                         }
