@@ -9,7 +9,7 @@ namespace Bonsai.Sleap
     internal class FrameBatch(string inputName, ColorConversion? colorConversion)
     {
         IplImage colorTemp;
-        Size tensorSize;
+        Size frameSize;
         int batchSize;
         DenseTensor<byte> tensor = null;
         IReadOnlyCollection<NamedOnnxValue> inputs;
@@ -17,26 +17,25 @@ namespace Bonsai.Sleap
         readonly ColorConversion? colorConversion = colorConversion;
         readonly int? colorChannels = colorConversion?.GetConversionNumChannels();
 
-        public Size TensorSize => tensorSize;
-
         public IReadOnlyCollection<NamedOnnxValue> Inputs => inputs;
 
         public unsafe void Update(params IplImage[] frames)
         {
-            var frameSize = frames[0].Size;
-            if (frameSize != tensorSize || frames.Length != batchSize || tensor is null)
+            if (frames is null || frames.Length == 0)
+                throw new ArgumentException("Frame batch must have at least one frame.", nameof(frames));
+
+            if (frames[0].Size != frameSize || frames.Length != batchSize || tensor is null)
             {
-                tensorSize = frameSize;
+                frameSize = frames[0].Size;
                 batchSize = frames.Length;
                 var channels = colorChannels ?? frames[0].Channels;
-                ReadOnlySpan<int> dimensions = stackalloc int[] { batchSize, channels, tensorSize.Height, tensorSize.Width };
+                ReadOnlySpan<int> dimensions = stackalloc int[] { batchSize, channels, frameSize.Height, frameSize.Width };
                 tensor = new DenseTensor<byte>(dimensions);
                 inputs = new[] { NamedOnnxValue.CreateFromTensor(inputName, tensor) };
             }
 
-            var tensorRows = tensorSize.Height;
-            var tensorCols = tensorSize.Width;
-
+            var tensorRows = frameSize.Height;
+            var tensorCols = frameSize.Width;
             using var handle = tensor.Buffer.Pin();
             using var data = new Mat(batchSize * tensorRows, tensorCols, Depth.U8, 1, (IntPtr)handle.Pointer);
             {
