@@ -46,6 +46,14 @@ namespace Bonsai.Sleap
         public float? PartMinConfidence { get; set; }
 
         /// <summary>
+        /// Gets or sets a value specifying a target size used to resize video frames
+        /// for inference. If no value is specified, no resizing is performed.
+        /// </summary>
+        [TypeConverter(typeof(NumericRecordConverter))]
+        [Description("Specifies the target size used to resize video frames for inference. If no value is specified, no resizing is performed.")]
+        public Size? InputSize { get; set; }
+
+        /// <summary>
         /// Gets or sets a value specifying the optional color conversion used to prepare
         /// RGB video frames for inference. If no value is specified, no color conversion
         /// is performed.
@@ -70,7 +78,7 @@ namespace Bonsai.Sleap
                 }
 
                 var inputName = session.InputMetadata.Keys.First();
-                var frameBatch = new FrameBatch(inputName, ColorConversion);
+                var frameBatch = new FrameBatch(inputName, InputSize, ColorConversion);
 
                 return source.Select(frames =>
                 {

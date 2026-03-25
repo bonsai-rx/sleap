@@ -59,6 +59,14 @@ namespace Bonsai.Sleap
         public float? PartMinConfidence { get; set; }
 
         /// <summary>
+        /// Gets or sets a value specifying a target size used to resize video frames
+        /// for inference. If no value is specified, no resizing is performed.
+        /// </summary>
+        [TypeConverter(typeof(NumericRecordConverter))]
+        [Description("Specifies the target size used to resize video frames for inference. If no value is specified, no resizing is performed.")]
+        public Size? InputSize { get; set; }
+
+        /// <summary>
         /// Gets or sets a value specifying the optional color conversion used to prepare
         /// RGB video frames for inference. If no value is specified, no color conversion
         /// is performed.
@@ -83,7 +91,7 @@ namespace Bonsai.Sleap
                 }
 
                 var inputName = session.InputMetadata.Keys.First();
-                var frameBatch = new FrameBatch(inputName, ColorConversion);
+                var frameBatch = new FrameBatch(inputName, InputSize, ColorConversion);
 
                 return source.Select(frames =>
                 {
@@ -108,6 +116,7 @@ namespace Bonsai.Sleap
                     var partThreshold = PartMinConfidence;
                     var idThreshold = IdentityMinConfidence;
                     var centroidThreshold = CentroidMinConfidence;
+                    var poseScale = frameBatch.PoseScale;
 
                     for (int i = 0; i < instanceCount; i++)
                     {
@@ -120,8 +129,8 @@ namespace Bonsai.Sleap
                         centroid.Name = exportMetadata.AnchorPart;
                         centroid.Confidence = centroidConfidence;
                         centroid.Position = new Point2f(
-                            x: (float)centroidTensor.GetValue(i * 2),
-                            y: (float)centroidTensor.GetValue(i * 2 + 1));
+                            x: (float)centroidTensor.GetValue(i * 2) * poseScale.X,
+                            y: (float)centroidTensor.GetValue(i * 2 + 1) * poseScale.Y);
                         pose.Centroid = centroid;
                         pose.IdentityScores = GetIdentityScores(idTensor, i, classCount, Comparer<float>.Default, out float maxScore, out int maxIndex);
 
@@ -150,8 +159,8 @@ namespace Bonsai.Sleap
                             else
                             {
                                 bodyPart.Position = new Point2f(
-                                    x: (float)poseTensor.GetValue(i * partCount * 2 + j * 2),
-                                    y: (float)poseTensor.GetValue(i * partCount * 2 + j * 2 + 1));
+                                    x: (float)poseTensor.GetValue(i * partCount * 2 + j * 2) * poseScale.X,
+                                    y: (float)poseTensor.GetValue(i * partCount * 2 + j * 2 + 1) * poseScale.Y);
                             }
                             pose.Add(bodyPart);
                         }

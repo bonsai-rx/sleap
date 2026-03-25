@@ -6,32 +6,40 @@ using System.Collections.Generic;
 
 namespace Bonsai.Sleap
 {
-    internal class FrameBatch(string inputName, ColorConversion? colorConversion)
+    internal class FrameBatch(string inputName, Size? inputSize, ColorConversion? colorConversion)
     {
         IplImage colorTemp;
         Size frameSize;
         int batchSize;
+        Point2f poseScale = new(1, 1);
         DenseTensor<byte> tensor = null;
         IReadOnlyCollection<NamedOnnxValue> inputs;
         readonly string inputName = inputName;
+        readonly Size? inputSize = inputSize;
         readonly ColorConversion? colorConversion = colorConversion;
         readonly int? colorChannels = colorConversion?.GetConversionNumChannels();
 
         public IReadOnlyCollection<NamedOnnxValue> Inputs => inputs;
+
+        public Point2f PoseScale => poseScale;
 
         public unsafe void Update(params IplImage[] frames)
         {
             if (frames is null || frames.Length == 0)
                 throw new ArgumentException("Frame batch must have at least one frame.", nameof(frames));
 
-            if (frames[0].Size != frameSize || frames.Length != batchSize || tensor is null)
+            var currentSize = inputSize.HasValue ? inputSize.GetValueOrDefault() : frames[0].Size;
+            if (currentSize != frameSize || frames.Length != batchSize || tensor is null)
             {
-                frameSize = frames[0].Size;
+                frameSize = currentSize;
                 batchSize = frames.Length;
                 var channels = colorChannels ?? frames[0].Channels;
                 ReadOnlySpan<int> dimensions = stackalloc int[] { batchSize, channels, frameSize.Height, frameSize.Width };
                 tensor = new DenseTensor<byte>(dimensions);
                 inputs = new[] { NamedOnnxValue.CreateFromTensor(inputName, tensor) };
+                poseScale = inputSize.HasValue
+                    ? new(frames[0].Size.Width / (float)currentSize.Height, frames[0].Size.Height / (float)currentSize.Height)
+                    : new(1, 1);
             }
 
             var tensorRows = frameSize.Height;
@@ -41,7 +49,7 @@ namespace Bonsai.Sleap
             {
                 if (frames.Length == 1)
                 {
-                    CV.Copy(EnsureColorFormat(frames[0]), data);
+                    CopyResize(EnsureColorFormat(frames[0]), data);
                 }
                 else
                 {
@@ -49,7 +57,7 @@ namespace Bonsai.Sleap
                     {
                         var startRow = i * tensorRows;
                         var image = data.GetRows(startRow, startRow + tensorRows);
-                        CV.Copy(EnsureColorFormat(frames[i]), image);
+                        CopyResize(EnsureColorFormat(frames[i]), image);
                     }
                 }
             }
@@ -57,18 +65,26 @@ namespace Bonsai.Sleap
 
         IplImage EnsureColorFormat(IplImage frame)
         {
-            if (colorConversion != null)
+            if (colorConversion.HasValue)
             {
                 if (colorTemp is null || colorTemp.Size != frame.Size)
                 {
                     colorTemp = new IplImage(frame.Size, frame.Depth, colorChannels ?? frame.Channels);
                 }
 
-                CV.CvtColor(frame, colorTemp, colorConversion.Value);
+                CV.CvtColor(frame, colorTemp, colorConversion.GetValueOrDefault());
                 frame = colorTemp;
             }
 
             return frame;
+        }
+
+        void CopyResize(IplImage frame, Arr destination)
+        {
+            if (inputSize.HasValue && inputSize.GetValueOrDefault() != frame.Size)
+                CV.Resize(frame, destination);
+            else
+                CV.Copy(frame, destination);
         }
     }
 }
