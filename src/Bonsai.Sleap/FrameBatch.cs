@@ -28,12 +28,12 @@ namespace Bonsai.Sleap
             if (frames is null || frames.Length == 0)
                 throw new ArgumentException("Frame batch must have at least one frame.", nameof(frames));
 
+            var channels = colorChannels ?? frames[0].Channels;
             var currentSize = inputSize.HasValue ? inputSize.GetValueOrDefault() : frames[0].Size;
             if (currentSize != frameSize || frames.Length != batchSize || tensor is null)
             {
                 frameSize = currentSize;
                 batchSize = frames.Length;
-                var channels = colorChannels ?? frames[0].Channels;
                 ReadOnlySpan<int> dimensions = stackalloc int[] { batchSize, channels, frameSize.Height, frameSize.Width };
                 tensor = new DenseTensor<byte>(dimensions);
                 inputs = new[] { NamedOnnxValue.CreateFromTensor(inputName, tensor) };
@@ -45,7 +45,7 @@ namespace Bonsai.Sleap
             var tensorRows = frameSize.Height;
             var tensorCols = frameSize.Width;
             using var handle = tensor.Buffer.Pin();
-            using var data = new Mat(batchSize * tensorRows, tensorCols, Depth.U8, 1, (IntPtr)handle.Pointer);
+            using var data = new Mat(batchSize * tensorRows, tensorCols, Depth.U8, channels, (IntPtr)handle.Pointer);
             {
                 if (frames.Length == 1)
                 {
