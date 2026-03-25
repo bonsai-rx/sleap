@@ -18,7 +18,7 @@ namespace Bonsai.Sleap
                     {
                         { "trt_fp16_enable", "true" },
                         { "trt_engine_cache_enable", "true" },
-                        { "trt_engine_cache_path", ".bonsai/onnx" }
+                        { "trt_engine_cache_path", PathHelper.GetOnnxCacheDirectory() }
                     });
                     sessionOptions.AppendExecutionProvider_Tensorrt(tensorRtOptions);
                 }
