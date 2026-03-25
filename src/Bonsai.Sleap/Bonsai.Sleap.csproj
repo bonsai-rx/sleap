@@ -4,7 +4,7 @@
     <Title>Bonsai - SLEAP Library</Title>
     <Description>Bonsai Library for real-time multi-pose tracking using SLEAP with ONNX Runtime inference.</Description>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
-    <TargetFrameworks>net472</TargetFrameworks>
+    <TargetFrameworks>net472;net8.0</TargetFrameworks>
   </PropertyGroup>
 
   <ItemGroup>
