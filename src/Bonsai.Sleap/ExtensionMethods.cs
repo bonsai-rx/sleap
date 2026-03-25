@@ -105,11 +105,5 @@ namespace Bonsai.Sleap
                 default: throw new ArgumentException("Unsupported color conversion code.");
             }
         }
-
-        public static bool FormatEquals(this IplImage image, IplImage other)
-        {
-            return image.Width == other.Width && image.Height == other.Height &&
-                   image.Depth == other.Depth && image.Channels == other.Channels;
-        }
     }
 }

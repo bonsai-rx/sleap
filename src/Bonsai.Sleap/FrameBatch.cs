@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace Bonsai.Sleap
 {
-    internal class FrameBatch(string inputName, Size? inputSize, ColorConversion? colorConversion)
+    internal class FrameBatch(string inputName, Size? inputSize, ColorConversion? colorConversion, ExportMetadata exportMetadata)
     {
         IplImage colorTemp;
         Size frameSize;
@@ -18,6 +18,7 @@ namespace Bonsai.Sleap
         readonly Size? inputSize = inputSize;
         readonly ColorConversion? colorConversion = colorConversion;
         readonly int? colorChannels = colorConversion?.GetConversionNumChannels();
+        readonly ExportMetadata exportMetadata = exportMetadata;
 
         public IReadOnlyCollection<NamedOnnxValue> Inputs => inputs;
 
@@ -28,12 +29,19 @@ namespace Bonsai.Sleap
             if (frames is null || frames.Length == 0)
                 throw new ArgumentException("Frame batch must have at least one frame.", nameof(frames));
 
+            if (frames.Length > exportMetadata.MaxBatchSize)
+                throw new ArgumentException($"Frame batch exceeded maximum batch size of {exportMetadata.MaxBatchSize} frames.");
+
             var channels = colorChannels ?? frames[0].Channels;
             var currentSize = inputSize.HasValue ? inputSize.GetValueOrDefault() : frames[0].Size;
             if (currentSize != frameSize || frames.Length != batchSize || tensor is null)
             {
                 frameSize = currentSize;
                 batchSize = frames.Length;
+                if (channels != exportMetadata.InputChannels)
+                    throw new InvalidOperationException(
+                        $"The current model expects {exportMetadata.InputChannels}-channel images, but a {channels}-channel frame was received.");
+
                 ReadOnlySpan<int> dimensions = stackalloc int[] { batchSize, channels, frameSize.Height, frameSize.Width };
                 tensor = new DenseTensor<byte>(dimensions);
                 inputs = new[] { NamedOnnxValue.CreateFromTensor(inputName, tensor) };

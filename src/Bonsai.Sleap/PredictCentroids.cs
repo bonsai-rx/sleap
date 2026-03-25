@@ -69,7 +69,7 @@ namespace Bonsai.Sleap
                 }
 
                 var inputName = session.InputMetadata.Keys.First();
-                var frameBatch = new FrameBatch(inputName, InputSize, ColorConversion);
+                var frameBatch = new FrameBatch(inputName, InputSize, ColorConversion, exportMetadata);
 
                 return source.Select(frames =>
                 {
