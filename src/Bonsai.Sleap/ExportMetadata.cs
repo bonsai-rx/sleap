@@ -39,7 +39,7 @@ namespace Bonsai.Sleap
         public int? MaxInstances = null;
         public int? MaxPeaksPerNode = null;
         public int MaxBatchSize = 1;
-        public string Precision = "fp32";
+        public ModelPrecision Precision = ModelPrecision.FP32;
         public float? PeakThreshold = null;
 
         // Preprocessing - input is uint8 [0,255], normalized internally to float32 [0,1]

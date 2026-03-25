@@ -16,7 +16,7 @@ namespace Bonsai.Sleap
                     var tensorRtOptions = new OrtTensorRTProviderOptions();
                     tensorRtOptions.UpdateOptions(new()
                     {
-                        { "trt_fp16_enable", "true" },
+                        { "trt_fp16_enable", exportMetadata.Precision == ModelPrecision.FP16 ? "true" : "false" },
                         { "trt_engine_cache_enable", "true" },
                         { "trt_engine_cache_path", PathHelper.GetOnnxCacheDirectory() }
                     });
