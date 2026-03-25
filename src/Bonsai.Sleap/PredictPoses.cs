@@ -100,6 +100,7 @@ namespace Bonsai.Sleap
 
                         var pose = new Pose(frames[0], exportMetadata);
                         var centroid = new BodyPart();
+                        centroid.Name = exportMetadata.AnchorPart;
                         centroid.Confidence = centroidConfidence;
                         centroid.Position = new Point2f(
                             x: (float)centroidTensor.GetValue(i * 2),

@@ -85,6 +85,7 @@ namespace Bonsai.Sleap
                         {
                             centroidCollection.Add(new Centroid(frames[0])
                             {
+                                Name = exportMetadata.AnchorPart,
                                 Position = new Point2f(
                                     (float)centroidTensor[0, i, 0],
                                     (float)centroidTensor[0, i, 1]),

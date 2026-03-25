@@ -50,6 +50,9 @@ namespace Bonsai.Sleap
         [YamlMember(Alias = "n_classes")] public int? ClassCount = null;
         public List<string>? ClassNames = null;
 
+        // Centroid/top-down anchor point
+        public string? AnchorPart = null;
+
         // Training config reference
         public bool TrainingConfigEmbedded = default;
         public string TrainingConfigHash = "";
