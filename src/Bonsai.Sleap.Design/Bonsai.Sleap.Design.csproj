@@ -1,7 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Title>Bonsai - SLEAP Design Library</Title>
     <Description>Bonsai Library containing reactive visualizations for markerless multi-pose estimation using SLEAP-NN.</Description>
     <PackageTags>$(PackageTags) Visualizers</PackageTags>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>

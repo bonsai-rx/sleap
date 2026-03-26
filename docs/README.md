@@ -10,9 +10,9 @@
 
 ## How to install
 
-`Bonsai.Sleap` can be downloaded through the Bonsai package manager. In order to enable visualizer support, you should download both the `Bonsai.Sleap` and `Bonsai.Sleap.Design` packages.
+`Bonsai.Sleap` can be downloaded through the Bonsai package manager. In order to enable visualizer support, you need to download the `Bonsai.Sleap.Design` package.
 
-To use GPU inference (highly recommended for live inference), you also need to install the CUDA Toolkit and cuDNN. The current package backend was developed and tested against CUDA 12.9 and cuDNN 9.19, but other versions should also be compatible. You can find installation instructions for different versions of CUDA and cuDNN at the [CUDA Toolkit Archive](https://developer.nvidia.com/cuda-toolkit-archive) and the [cuDNN Archive](https://developer.nvidia.com/cudnn-archive).
+To use GPU inference (highly recommended for live inference), you also need to install `Bonsai.Sleap.Gpu`, the [CUDA Toolkit](https://developer.nvidia.com/cuda/toolkit), and [cuDNN](https://developer.nvidia.com/cudnn). The current package backend was developed and tested against CUDA 12.9 and cuDNN 9.19, but other versions should also be compatible. You can find installation instructions for different versions of CUDA and cuDNN at the [CUDA Toolkit Archive](https://developer.nvidia.com/cuda-toolkit-archive) and the [cuDNN Archive](https://developer.nvidia.com/cudnn-archive).
 
 For optimized inference using TensorRT you need to further download the [TensorRT SDK](https://developer.nvidia.com/tensorrt). The current backend was found to run successfully on TensorRT 10, but other versions should also be compatible. Make sure to add the `bin` folder of your TensorRT download to the `PATH` environment variable, or copy all DLL files to the `Extensions` folder.
 

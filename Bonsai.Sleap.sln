@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bonsai.Sleap", "src\Bonsai.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bonsai.Sleap.Design", "src\Bonsai.Sleap.Design\Bonsai.Sleap.Design.csproj", "{F7A288A7-0045-4302-82CA-44C5E78B6C6F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bonsai.Sleap.Gpu", "src\Bonsai.Sleap.Gpu\Bonsai.Sleap.Gpu.csproj", "{9708B3B0-D453-43F2-B2B4-67F1D3F9CE8B}"
+EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{DEE5DD87-39C1-BF34-B639-A387DCCF972B}"
 	ProjectSection(SolutionItems) = preProject
 		build\Common.csproj.props = build\Common.csproj.props
@@ -31,6 +33,10 @@ Global
 		{F7A288A7-0045-4302-82CA-44C5E78B6C6F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F7A288A7-0045-4302-82CA-44C5E78B6C6F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F7A288A7-0045-4302-82CA-44C5E78B6C6F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9708B3B0-D453-43F2-B2B4-67F1D3F9CE8B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9708B3B0-D453-43F2-B2B4-67F1D3F9CE8B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9708B3B0-D453-43F2-B2B4-67F1D3F9CE8B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9708B3B0-D453-43F2-B2B4-67F1D3F9CE8B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
