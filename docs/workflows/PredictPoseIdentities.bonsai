@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<WorkflowBuilder Version="2.7.0"
+<WorkflowBuilder Version="2.9.0"
                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                  xmlns:cv="clr-namespace:Bonsai.Vision;assembly=Bonsai.Vision"
                  xmlns:sleap="clr-namespace:Bonsai.Sleap;assembly=Bonsai.Sleap"
@@ -23,8 +23,9 @@
           <sleap:CentroidMinConfidence xsi:nil="true" />
           <sleap:IdentityMinConfidence xsi:nil="true" />
           <sleap:PartMinConfidence xsi:nil="true" />
-          <sleap:ScaleFactor xsi:nil="true" />
+          <sleap:InputSize xsi:nil="true" />
           <sleap:ColorConversion xsi:nil="true" />
+          <sleap:ExecutionProvider>Cpu</sleap:ExecutionProvider>
         </Combinator>
       </Expression>
     </Nodes>

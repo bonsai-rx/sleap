@@ -1,7 +1,7 @@
 How to use
 ==========
 
-`Bonsai.Sleap` currently implements real-time inference on four distinct SLEAP networks through their corresponding Bonsai `Predict` operators.
+`Bonsai.Sleap` currently implements real-time inference on four distinct SLEAP-NN networks through their corresponding Bonsai `Predict` operators.
 
 ```mermaid
 flowchart TD
@@ -15,13 +15,13 @@ id7 -- centroid --> id3("`**PredictCentroids**
 Returns multiple: 
 *Centroid*`")
 
-id7 -- top-down-model --> id4("`**PredictPoses**
+id7 -- topdown --> id4("`**PredictPoses**
 
 Returns multiple:
 *Centroid*, *Pose*`")
 
 
-id7 -- top-down-id-model --> id5("`**PredictPoseIdentities**
+id7 -- multi_class_topdown_combined --> id5("`**PredictPoseIdentities**
 
 Returns multiple:
 *Centroid*, *Pose*, *Identity*`")
@@ -32,7 +32,7 @@ Returns single:
 *Pose*`")
 ```
 
-In order to use the `Predict` operators, you will need to provide the `ModelFileName` to the exported .pb file folder containing your pre-trained SLEAP model, along with the corresponding `PoseConfigFileName` to the `training_config.json` file.
+In order to use the `Predict` operators, you will need to provide the `ModelFileName` of the exported `.onnx` file containing your exported SLEAP-NN model. Make sure the `export_metadata.json` file is located in the same folder as the exported `.onnx` file.
 
 [!include[Introduction](~/articles/sleap-intro.md)]
 

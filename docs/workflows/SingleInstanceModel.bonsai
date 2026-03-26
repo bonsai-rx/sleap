@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<WorkflowBuilder Version="2.7.0"
+<WorkflowBuilder Version="2.9.0"
                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                  xmlns:cv="clr-namespace:Bonsai.Vision;assembly=Bonsai.Vision"
                  xmlns:rx="clr-namespace:Bonsai.Reactive;assembly=Bonsai.Core"
@@ -76,11 +76,11 @@
       </Expression>
       <Expression xsi:type="Combinator">
         <Combinator xsi:type="sleap:PredictSinglePose">
-          <sleap:ModelFileName>models\single_instance_model\frozen_graph.pb</sleap:ModelFileName>
-          <sleap:TrainingConfig>models\single_instance_model\training_config.json</sleap:TrainingConfig>
+          <sleap:ModelFileName>models\single_instance\exports\model.onnx</sleap:ModelFileName>
           <sleap:PartMinConfidence xsi:nil="true" />
-          <sleap:ScaleFactor xsi:nil="true" />
+          <sleap:InputSize xsi:nil="true" />
           <sleap:ColorConversion xsi:nil="true" />
+          <sleap:ExecutionProvider>Cpu</sleap:ExecutionProvider>
         </Combinator>
       </Expression>
       <Expression xsi:type="Index">

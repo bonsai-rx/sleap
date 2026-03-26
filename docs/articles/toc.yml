@@ -1,2 +1,3 @@
-- href: ../index.md
+- name: Getting Started
+  href: ../index.md
 - href: manual.md
