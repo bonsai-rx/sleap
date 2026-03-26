@@ -74,7 +74,7 @@ namespace Bonsai.Sleap
                 var session = RuntimeHelper.ImportModel(ModelFileName, ExecutionProvider, out var exportMetadata);
                 if (exportMetadata.ModelType != ModelType.TopDown)
                 {
-                    throw new UnexpectedModelTypeException($"Expected {nameof(ModelType.CenteredInstance)} model type but found {exportMetadata.ModelType}.");
+                    throw new UnexpectedModelTypeException($"Expected {nameof(ModelType.TopDown)} model type but found {exportMetadata.ModelType}.");
                 }
 
                 var inputName = session.InputMetadata.Keys.First();
